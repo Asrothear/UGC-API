@@ -1,0 +1,86 @@
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\appsettings.Development.json
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\appsettings.json
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.exe
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.deps.json
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.runtimeconfig.json
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.runtimeconfig.dev.json
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\ref\UGC API.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.pdb
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.OpenApi.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.Swagger.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csproj.AssemblyReference.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.GeneratedMSBuildEditorConfig.editorconfig
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.AssemblyInfoInputs.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.AssemblyInfo.cs
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csproj.CoreCompileInputs.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.MvcApplicationPartsAssemblyInfo.cs
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.MvcApplicationPartsAssemblyInfo.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\staticwebassets\UGC API.StaticWebAssets.Manifest.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\staticwebassets\UGC API.StaticWebAssets.xml
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\scopedcss\bundle\UGC API.styles.css
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.RazorTargetAssemblyInfo.cache
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csproj.CopyComplete
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.dll
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\ref\UGC API.dll
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.pdb
+S:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.genruntimeconfig.cache
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.xml
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.Annotations.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.Extensions.PlatformAbstractions.dll
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.GeneratedMSBuildEditorConfig.editorconfig
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.AssemblyInfoInputs.cache
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.AssemblyInfo.cs
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csproj.CoreCompileInputs.cache
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.MvcApplicationPartsAssemblyInfo.cs
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.MvcApplicationPartsAssemblyInfo.cache
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.dll
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\ref\UGC API.dll
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.pdb
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\appsettings.Development.json
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\appsettings.json
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.exe
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.deps.json
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.runtimeconfig.json
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.runtimeconfig.dev.json
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\ref\UGC API.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.pdb
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\UGC API.xml
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.Extensions.PlatformAbstractions.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.OpenApi.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.Annotations.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.Swagger.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\staticwebassets\UGC API.StaticWebAssets.Manifest.cache
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\staticwebassets\UGC API.StaticWebAssets.xml
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\scopedcss\bundle\UGC API.styles.css
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.RazorTargetAssemblyInfo.cache
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csproj.CopyComplete
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.genruntimeconfig.cache
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\BCrypt.Net-Next.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Relational.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\MySqlConnector.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Newtonsoft.Json.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Pomelo.EntityFrameworkCore.MySql.dll
+D:\Cloud\GitHub\UGC API\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
+D:\Cloud\GitHub\UGC API\obj\Debug\net5.0\UGC API.csprojAssemblyReference.cache
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\BCrypt.Net-Next.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Abstractions.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Relational.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Microsoft.Extensions.DependencyInjection.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\MySqlConnector.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Newtonsoft.Json.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\Pomelo.EntityFrameworkCore.MySql.dll
+S:\Cloud\GitHub\UGC API\bin\Debug\net5.0\System.Diagnostics.DiagnosticSource.dll
