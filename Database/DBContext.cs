@@ -13,7 +13,11 @@ namespace UGC_API.Database
         public static ModelBuilder MoBuilder;
         public DBContext() { }
         public DBContext(DbContextOptions<DBContext> options) : base(options) { }
-        public virtual DbSet<DB_Config> DB_Config { get; set; }
+
+        public DbSet<DB_Config> DB_Config { get; set; }
+        public virtual DbSet<DB_Carrier> Carrier { get; set; }
+        public virtual DbSet<DB_Verify_Token> Verify_Token { get; set; }
+        public virtual DbSet<DB_User> DB_Users { get; set; }
         public virtual DbSet<DB_ambiabar> ambiabar { get; set; }
         public virtual DbSet<DB_anahit> anahit { get; set; }
         public virtual DbSet<DB_angurongo> angurongo { get; set; }
@@ -51,6 +55,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_tocorii> tocorii { get; set; }
         public virtual DbSet<DB_wapiya> wapiya { get; set; }
 
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -68,7 +73,6 @@ namespace UGC_API.Database
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            
             MoBuilder = modelBuilder;
             MoBuilder.Entity<DB_Config>(entity =>
             {
@@ -78,6 +82,60 @@ namespace UGC_API.Database
                 entity.Property(e => e.systems).HasColumnName("systems");
                 entity.Property(e => e.events).HasColumnName("events");
                 entity.Property(e => e.update_systems).HasColumnName("update_systems");
+            });
+            MoBuilder.Entity<DB_Carrier>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable("ugc_*carrier", DatabaseConfig.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.CarrierID).HasColumnName("CarrierID");
+                entity.Property(e => e.Name).HasColumnName("Name");
+                entity.Property(e => e.Callsign).HasColumnName("Callsign");
+                entity.Property(e => e.System).HasColumnName("System");
+                entity.Property(e => e.prev_System).HasColumnName("prev_System");
+                entity.Property(e => e.DockingAccess).HasColumnName("DockingAccess");
+                entity.Property(e => e.AllowNotorious).HasColumnName("AllowNotorious");
+                entity.Property(e => e.FuelLevel).HasColumnName("FuelLevel");
+                entity.Property(e => e.JumpRangeCurr).HasColumnName("JumpRangeCurr");
+                entity.Property(e => e.JumpRangeMax).HasColumnName("JumpRangeMax");
+                entity.Property(e => e.PendingDecommission).HasColumnName("PendingDecommission");
+                entity.Property(e => e.SpaceUsage).HasColumnName("SpaceUsage");
+                entity.Property(e => e.Finance).HasColumnName("Finance");
+                entity.Property(e => e.Crew).HasColumnName("Crew");
+                entity.Property(e => e.ShipPacks).HasColumnName("ShipPacks");
+                entity.Property(e => e.ModulePacks).HasColumnName("ModulePacks");
+                entity.Property(e => e.market).HasColumnName("market");
+                entity.Property(e => e.Last_Update).HasColumnName("Last_Update");
+            });
+            MoBuilder.Entity<DB_Verify_Token>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable("ugc_*verify_token", DatabaseConfig.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.discord_id).HasColumnName("discord_id");
+                entity.Property(e => e.discord_name).HasColumnName("discord_name");
+                entity.Property(e => e.token).HasColumnName("token");
+                entity.Property(e => e.used).HasColumnName("used");
+                entity.Property(e => e.created_time).HasColumnName("created_time");
+                entity.Property(e => e.used_time).HasColumnName("used_time");
+            });
+            MoBuilder.Entity<DB_User>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable("ugc_*user", DatabaseConfig.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.user).HasColumnName("user");
+                entity.Property(e => e.uuid).HasColumnName("uuid");
+                entity.Property(e => e.token).HasColumnName("token");
+                entity.Property(e => e.last_pos).HasColumnName("last_pos");
+                entity.Property(e => e.system).HasColumnName("system");
+                entity.Property(e => e.docked).HasColumnName("docked");
+                entity.Property(e => e.docked_faction).HasColumnName("docked_faction");
+                entity.Property(e => e.last_docked).HasColumnName("last_docked");
+                entity.Property(e => e.last_docked_faction).HasColumnName("last_docked_faction");
+                entity.Property(e => e.last_data_insert).HasColumnName("last_data_insert");
+                entity.Property(e => e.version_plugin).HasColumnName("version_plugin");
+                entity.Property(e => e.branch).HasColumnName("branch");
             });
             MoBuilder.Entity<DB_ambiabar>(entity =>
             {

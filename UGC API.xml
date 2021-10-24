@@ -4,30 +4,46 @@
         <name>UGC API</name>
     </assembly>
     <members>
-        <member name="M:UGC_API.Controllers.v1_0.QLS.QLS_Example.Get">
+        <member name="T:UGC_API.Controllers.v1_0.Carrier">
             <summary>
-            Gets the list of all QLS.
+            Lists all UGC Carrier.
             </summary>
-            <returns>The list of QLS.</returns>
         </member>
-        <member name="M:UGC_API.Controllers.v1_0.QLS.QLS_Example.Post(UGC_API.Models.v1_0.test)">
+        <member name="M:UGC_API.Controllers.v1_0.QLS.Post(System.Object)">
             <summary>
             Creates an QLS request.
             </summary>
             <remarks>
             Sample request:
-            
-                POST api/Employee
-                {        
-                  "firstName": "Mike",
-                  "lastName": "Andrew",
-                  "emailId": "Mike.Andrew@gmail.com"        
-                }
+                Post api/qls
+                {
+                        "timestamp": "2021-10-01T17:35:12Z",
+                        "event": "Docked",
+                        "StationName": "Jensen Gateway",
+                        "StationType": "Ocellus",
+                        "StarSystem": "64 Ceti",
+                        "SystemAddress": 800751339875,
+                        "MarketID": 3223182848,
+                        "StationFaction": {"Name": "The Wild Bunch", "FactionState": "Boom"},
+                        "StationGovernment": "$government_Corporate;",
+                        "StationGovernment_Localised": "Konzernpolitik",
+                        "StationServices": ["dock", "autodock", "commodities", "contacts", "exploration", "missions", "outfitting", "crewlounge", "rearm", "refuel", "repair", "shipyard",
+                                            "tuning", "engineer", "missionsgenerated", "flightcontroller", "stationoperations", "powerplay", "searchrescue", "materialtrader", "stationMenu",
+                                            "shop", "voucherredemption"],
+                        "StationEconomy": "$economy_Industrial;",
+                        "StationEconomy_Localised": "Industrie",
+                        "StationEconomies": [{"Name": "$economy_Industrial;", "Name_Localised": "Industrie", "Proportion": 0.77}, {"Name": "$economy_Extraction;", "Name_Localised": "Abbau",
+                                            "Proportion": 0.23}],
+                        "DistFromStarLS": 474.464033,
+                        "user": "John Doe",
+                        "ugc_p_version": 2.1,
+                        "ugc_p_minor": "5", 
+                        "ugc_p_branch": "rel", 
+                        "data_system": "64 Ceti",
+                        "ugc_token_v2": [{"uuid": "58240B00-D7DA-11DD-8862-704D7B68A607", "token":"G4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ"}]}
             </remarks>
-            <param name="value"></param>     
+            /// <param name="value"></param>
             <returns>A newly created QLS request.</returns>
-            <response code="201">Returns the newly created QLS request.</response>
-            <response code="400">If the QLS request. is null</response>  
         </member>
         <member name="M:UGC_API.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>

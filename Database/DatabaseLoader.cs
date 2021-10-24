@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Timers;
 using UGC_API.Config;
 
 namespace UGC_API.Database
@@ -11,7 +12,11 @@ namespace UGC_API.Database
         public static void LoadDatabase()
         {
             DatabaseConfig.ReadDBConfig();
-            DatabaseHandler.LoadConfig();
+            DatabaseHandler.LoadData();
+            System.Timers.Timer UpdateDataCacheTimer = new System.Timers.Timer();
+            UpdateDataCacheTimer.Elapsed += new ElapsedEventHandler(DatabaseHandler.OnUpdateDataCacheTimer);
+            UpdateDataCacheTimer.Interval += 5*(60*1000);
+            UpdateDataCacheTimer.Enabled = true;
         }
     }
 }
