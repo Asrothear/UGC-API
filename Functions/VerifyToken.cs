@@ -84,6 +84,7 @@ namespace UGC_API.Functions
                 return;
             }
             us.used = "1";
+            us.used_time = DateTime.Now;
             using (DBContext db = new DBContext())
             {
                 db.Verify_Token.Update(us);

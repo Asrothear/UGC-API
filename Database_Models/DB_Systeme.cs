@@ -5,13 +5,14 @@ using System.Threading.Tasks;
 
 namespace UGC_API.Database_Models
 {
-    public class DB_kartamayana
+    public class DB_Systeme
     {
         public int id { get; set; }
         public string Timestamp { get; set; }
         public string last_update { get; set; }
         public int User_ID { get; set; }
         public int System_ID { get; set; }
+        public string System_Name { get; set; }
         public string Faction_Name { get; set; }
         public string Faction_State { get; set; }
         public string Faction_Government { get; set; }

@@ -5,6 +5,7 @@ using Discord.WebSocket;
 using Discord;
 using UGC_API.Config;
 using UGC_API.Service;
+using System.Diagnostics;
 
 namespace UGC_API.DiscordBot
 {
@@ -42,7 +43,7 @@ namespace UGC_API.DiscordBot
             {
                 if (Configs.Debug)
                 {
-                    DiscordLogInfo("DEBUG", "Ready", "orange");
+                    //DiscordLogInfo("DEBUG", "Ready", "orange");
                 }
                 else
                 {
@@ -54,7 +55,7 @@ namespace UGC_API.DiscordBot
         }
         private static Task Log(LogMessage msg)
         {
-            Console.WriteLine(msg.ToString());
+            Debug.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
         #endregion
