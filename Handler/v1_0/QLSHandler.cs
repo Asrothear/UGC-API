@@ -21,7 +21,7 @@ namespace UGC_API.Handler.v1_0
         internal static void Startup(object s)
         {
             QLSData = JObject.Parse(s.ToString().Replace("&", "and").Replace("'", ""));
-            UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@"\\", @":").Replace("/", "").Replace("|", "_");
+            UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@":", @"cd_").Replace(@"\\", @":").Replace("/", "").Replace("|", "_");
             Token = QLSData["ugc_token_v2"]["token"].ToString();
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);

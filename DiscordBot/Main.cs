@@ -141,7 +141,7 @@ namespace UGC_API.DiscordBot
             if (!message.Content.StartsWith(BotConfiguration.prefix)) return;
             if (message.Author.IsBot) return;
             if (!Configs.Debug && message.Channel.Id == 840506667837554698) return;
-            if (Configs.Debug && message.Channel.Id != 739971744399622215) return;
+            //if (Configs.Debug && message.Channel.Id != 739971744399622215) return;
             lengthOfCommand = message.Content.Length;
 
             command = message.Content.Substring(lengthOfPrefix, lengthOfCommand - lengthOfPrefix);
