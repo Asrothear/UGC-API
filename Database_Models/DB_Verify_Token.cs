@@ -13,6 +13,6 @@ namespace UGC_API.Database_Models
         public string token { get; set; }
         public string used { get; set; }
         public DateTime created_time { get; set; }
-        public string used_time { get; set; }
+        public DateTime used_time { get; set; }
     }
 }

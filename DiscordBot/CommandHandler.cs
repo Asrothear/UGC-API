@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using Discord;
 using Discord.WebSocket;
+using UGC_API.Handler.v1_0;
 
 namespace UGC_API.DiscordBot
 
 {
     class CommandHandler
     {
-        internal static string Comand;
         internal static string[] Args;
         internal static SocketMessage Message;
         public static void Execute(string command, SocketMessage message)
@@ -28,7 +28,8 @@ namespace UGC_API.DiscordBot
                 case "token":
                     commands.CreateToken(Args);
                     break;
-                case "stop":
+                case "upadtecarrier":
+                    CarrierHandler.UpdateCarrier();
                     break;
                 default:
                     DiscordBot.DiscordLogInfo("Info","Befehl nicht erkannt.","gold");

@@ -1,11 +1,11 @@
 ﻿using UGC_API.Database;
 using UGC_API.Database_Models;
-using UGC_API.Handler;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UGC_API.Models;
+using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 namespace UGC_API.Functions
 {
@@ -33,7 +33,7 @@ namespace UGC_API.Functions
             }
             catch (Exception e)
             {
-                Console.WriteLine(e.ToString());
+                Debug.WriteLine(e.ToString());
             }
         }
         public static bool CheckTokenHash(string uuid, string token)
@@ -46,6 +46,59 @@ namespace UGC_API.Functions
             }
             return CryptHandler.CheckPassword(token, us.token);
         }
-        
+        public static bool ExistUser(string uuid)
+        {
+            var us = _Users.FirstOrDefault(u => u.uuid == uuid);
+
+            if (us == null)
+            {
+                return false;
+            }
+            return true;
+        }
+        public static void Docked(string uuid, JObject qls)
+        {
+            var us = _Users.FirstOrDefault(u => u.uuid == uuid);
+
+            if (us == null)
+            {
+                return;
+            }
+            us.last_docked = us.docked;
+            us.last_docked_faction = us.docked_faction;
+            us.docked = qls["StationName"].ToString();
+            us.docked_faction = qls["StationFaction"]["Name"].ToString();
+            UpdateUser(uuid);
+            return;
+        }
+        public static void UnDocked(string uuid)
+        {
+            var us = _Users.FirstOrDefault(u => u.uuid == uuid);
+
+            if (us == null)
+            {
+                return;
+            }
+            us.last_docked = us.docked;
+            us.last_docked_faction = us.docked_faction;
+            us.docked = "";
+            us.docked_faction = "";
+            UpdateUser(uuid);
+            return;
+        }
+        public static void UpdateUser(string uuid)
+        {
+            var us = _Users.FirstOrDefault(u => u.uuid == uuid);
+
+            if (us == null)
+            {
+                return;
+            }
+            using (DBContext db = new DBContext())
+            {
+                db.DB_Users.Update(us);
+                db.SaveChanges();
+            }
+        }
     }
 }
