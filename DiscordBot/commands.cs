@@ -11,12 +11,6 @@ namespace UGC_API.DiscordBot
     {
         internal static void CreateToken(string[] Args)
         {
-            /*if (Args.Length == 0)
-            {
-                //DiscordBot.DiscordLogInfo("Info", "Fehlender Parameter.", "gold");
-                //return;
-            }
-            */
             var U_ID = CommandHandler.Message.Author.Id;
             var U_Name = CommandHandler.Message.Author.Username;
             if (!VerifyToken.ExistTokenDC(U_ID))
@@ -24,7 +18,6 @@ namespace UGC_API.DiscordBot
                 string NewToken = CryptHandler.HashPasword($"{U_ID}_{U_Name}");
                 VerifyToken.AddToken(NewToken, U_ID, U_Name);
             }
-            //DiscordBot.DiscordLogInfo("Info", $"Dein Token lautet:\n `{VerifyToken.GetToken(U_ID)}`", "gold");
             DiscordBot.SendDM("Info", $"Dein Token lautet:\n `{ VerifyToken.GetToken(U_ID)}`", "gold");
             return;
         }
