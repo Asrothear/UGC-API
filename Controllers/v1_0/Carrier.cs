@@ -20,7 +20,7 @@ namespace UGC_API.Controllers.v1_0
     [Route("api/v{version:apiVersion}/[controller]")]
     public class Carrier : ControllerBase
     {
-        // GET api/<Carrier>/5
+        // GET api/<Carrier>/
         [HttpGet]
         [MapToApiVersion("1.0")]
         public List<CarrierModel> Get()

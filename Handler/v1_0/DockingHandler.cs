@@ -10,11 +10,11 @@ namespace UGC_API.Handler.v1_0
     {
         public static void Docked()
         {
-            User.Docked(QLSHandler.UUID, QLSHandler.QLSData);
+            User.Docked(QLSHandler.user.uuid, QLSHandler.QLSData);
         }
         public static void UnDocked()
         {
-            User.UnDocked(QLSHandler.UUID);
+            User.UnDocked(QLSHandler.user.uuid);
         }
     }
 }

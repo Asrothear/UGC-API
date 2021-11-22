@@ -49,6 +49,7 @@ namespace UGC_API.Database
                 Systems.LoadFromDB(db);
                 Carriers.LoadFromDB(db);
                 CarrierHandler.LoadCarrier(true);
+                SystemHandler.LoadSystems(true);
             }
         }
     }

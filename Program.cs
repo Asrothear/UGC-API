@@ -20,6 +20,7 @@ using System.Text.Json;
 using Microsoft.Extensions.PlatformAbstractions;
 using UGC_API.Database;
 using System.Threading;
+using UGC_API.Service;
 
 namespace UGC_API
 {
@@ -27,6 +28,7 @@ namespace UGC_API
     {
         public static void Main(string[] args)
         {
+            LoggingService.erstelleLogDatei();
             DatabaseLoader.LoadDatabase();
             Thread thread = new Thread(DiscordBot.DiscordBot.Main);
             thread.Start();

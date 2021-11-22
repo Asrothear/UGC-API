@@ -89,7 +89,6 @@ namespace UGC_API.Functions
         public static void UpdateUser(string uuid)
         {
             var us = _Users.FirstOrDefault(u => u.uuid == uuid);
-
             if (us == null)
             {
                 return;

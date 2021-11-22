@@ -23,16 +23,16 @@ namespace UGC_API.DiscordBot
         {
             if (!startup )
             {
-                if (Configs.Debug)
+                if (Configs.Values.Debug)
                 {
-                    BotConfiguration.discordBotInfoChannel = BotConfiguration.discordBotDevChannel;
-                    BotConfiguration.discordBotLogChannel = BotConfiguration.discordBotDevChannel;
+                    Configs.Values.Bot.InfoChannel = Configs.Values.Bot.DevChannel;
+                    Configs.Values.Bot.LogChannel = Configs.Values.Bot.DevChannel;
                 }
                 Bot = new DiscordSocketClient();
                 Bot.MessageReceived += Hanndle;
                 Bot.Ready += Ready;
                 Bot.Log += Log;
-                var token = BotConfiguration.discordBotToken;
+                var token = Configs.Values.Bot.Token;
                 await Bot.LoginAsync(TokenType.Bot, token);
                 await Bot.StartAsync();
             }
@@ -41,7 +41,7 @@ namespace UGC_API.DiscordBot
         {
             if (!startup)
             {
-                if (Configs.Debug)
+                if (Configs.Values.Debug)
                 {
                     //DiscordLogInfo("DEBUG", "Ready", "orange");
                 }
@@ -66,8 +66,7 @@ namespace UGC_API.DiscordBot
             try
             {
                 var DM = CommandHandler.Message.Author.GetOrCreateDMChannelAsync().Result;
-                ITextChannel textChannel = Bot.GetChannel(BotConfiguration.discordBotLogChannel) as ITextChannel;
-                if (textChannel == null) return;
+                if (DM == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
                 DM.SendMessageAsync(embed: embedLog);
@@ -82,7 +81,7 @@ namespace UGC_API.DiscordBot
             //if (Configs.Debug) return;
             try
             { 
-                ITextChannel textChannel = Bot.GetChannel(BotConfiguration.discordBotLogChannel) as ITextChannel;
+                ITextChannel textChannel = Bot.GetChannel(Configs.Values.Bot.LogChannel) as ITextChannel;
                 if (textChannel == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
@@ -98,7 +97,7 @@ namespace UGC_API.DiscordBot
             //if (Configs.Debug) return;
             try
             {
-                ITextChannel textChannel = Bot.GetChannel(BotConfiguration.discordBotInfoChannel) as ITextChannel;
+                ITextChannel textChannel = Bot.GetChannel(Configs.Values.Bot.InfoChannel) as ITextChannel;
                 if (textChannel == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
@@ -137,11 +136,11 @@ namespace UGC_API.DiscordBot
             string command = "";
             int lengthOfCommand = -1;
             int lengthOfPrefix = -1;
-            lengthOfPrefix = BotConfiguration.prefix.Length;
-            if (!message.Content.StartsWith(BotConfiguration.prefix)) return;
+            lengthOfPrefix = Configs.Values.Bot.Prefix.Length;
+            if (!message.Content.StartsWith(Configs.Values.Bot.Prefix)) return;
             if (message.Author.IsBot) return;
-            if (!Configs.Debug && message.Channel.Id == 840506667837554698) return;
-            //if (Configs.Debug && message.Channel.Id != 739971744399622215) return;
+            if (!Configs.Values.Debug && message.Channel.Id == Configs.Values.Bot.InfoChannel) return;
+            if (Configs.Values.Debug && message.Channel.Id != Configs.Values.Bot.DevChannel) return;
             lengthOfCommand = message.Content.Length;
 
             command = message.Content.Substring(lengthOfPrefix, lengthOfCommand - lengthOfPrefix);

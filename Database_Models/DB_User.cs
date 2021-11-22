@@ -18,7 +18,8 @@ namespace UGC_API.Database_Models
         public string last_docked { get; set; }
         public string last_docked_faction { get; set; }
         public DateTime last_data_insert { get; set; }
-        public double? version_plugin { get; set; }
+        public double version_plugin_major { get; set; }
+        public int version_plugin_minor { get; set; }
         public string branch { get; set; }
     }
 }

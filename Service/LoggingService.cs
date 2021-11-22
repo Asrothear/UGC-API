@@ -1,159 +1,57 @@
-﻿using System;
+﻿using System.Reflection;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-/*
+using System.Timers;
+
 namespace UGC_API.Service
 {
     public static class LoggingService
     {
-        public static void NewLoginLog(string name, ulong socialclub, string ip, ulong hwid, bool success, string text)
+        
+        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\LogFiles\");
+
+        public static void HeartbeatLog(object sender, ElapsedEventArgs e)
         {
-            using (gtaContext db = new gtaContext())
+            using (FileStream fs = new(logfileDir, FileMode.Append))
             {
-                db.LogsLogin.Add(new LogsLogin
+                using (StreamWriter sw = new(fs))
                 {
-                    username = name,
-                    socialclub = socialclub,
-                    text = text,
-                    address = ip,
-                    hwid = hwid,
-                    success = success
-                });
-                db.SaveChanges();
+                    sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] - HB");
+                }
             }
         }
 
-        public static void NewShopLog(int charId, string charName, string type, string text,DateTime time)
+        public static void schreibeLogZeile(string content, string Zusatzinformationen = "")
         {
-            try
+            using (FileStream fs = new FileStream(logfileDir, FileMode.Append))
             {
-                using (gtaContext db = new gtaContext())
+                using (StreamWriter sw = new StreamWriter(fs))
                 {
-                    db.LogsShop.Add(new LogsShop
+                    sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] " + content);
+
+                    if (String.IsNullOrWhiteSpace(Zusatzinformationen) == false)
                     {
-                        charId = charId,
-                        charName = charName,
-                        text = text,
-                        type = type,
-                        timestamp = time
-                    });
-                    db.SaveChanges();
+                        sw.WriteLine($"{Environment.NewLine}Zusatzinformationen:{Environment.NewLine}");
+                        sw.WriteLine(Zusatzinformationen);
+                        sw.Write(Environment.NewLine);
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
             }
         }
 
-        public static void NewFactionLog(int factionId, int charId, int targetCharId, string type, string text)
+        public static void erstelleLogDatei()
         {
-            try
-            {
-                if (factionId == 0 || charId == 0) return;
-                var logData = new Logs_Faction
-                {
-                    factionId = factionId,
-                    charId = charId,
-                    targetCharId = targetCharId,
-                    type = type,
-                    text = text,
-                    timestamp = GetTime.DateNow()
-                };
+            string fileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-fff") + ".log";
 
-                ServerFactions.LogsFaction_.Add(logData);
-                
-                using (gtaContext db = new gtaContext())
-                {
-                    db.LogsFaction.Add(logData);
-                    db.SaveChanges();
-                }
-            }
-            catch(Exception e)
-            {
-                Alt.Log($"{e}");
-            }
-        }
+            Directory.CreateDirectory(logfileDir);
 
-        public static void NewCompanyLog(int companyId, int charId, int targetCharId, string type, string text)
-        {
-            try
-            {
-                if (companyId <= 0 || charId <= 0) return;
-                var logData = new Logs_Company
-                {
-                    companyId = companyId,
-                    charId = charId,
-                    targetCharId = targetCharId,
-                    type = type,
-                    text = text,
-                    timestamp = GetTime.DateNow()
-                };
+            StreamWriter sw = File.CreateText(logfileDir + fileName);
+            sw.Close();
 
-                ServerCompanys.LogsCompany_.Add(logData);
-                using (gtaContext db = new gtaContext())
-                {
-                    db.LogsCompany.Add(logData);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Alt.Log($"{e}");
-            }
-        }
-
-        public static void NewDeathLog(int player, int killer, uint weapon)
-        {
-            try
-            {
-                if (player <= 0 || killer <= 0) return;
-                var logData = new Logs_Death
-                {
-                    playerName = player,
-                    killerName = killer,
-                    weaponId = weapon
-                };
-
-                Server_Deaths.Logs_Death_.Add(logData);
-                using (gtaContext db = new gtaContext())
-                {
-                    db.LogsDeath.Add(logData);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Alt.Log($"{e}");
-            }
-        }
-        public static void NewItemLog(int Player, int Target, string Item, int Amount)
-        {
-            try
-            {
-                if (Player <= 0 || Target <= 0) return;
-                var logData = new Logs_Items
-                {
-                    player = Player,
-                    target = Target,
-                    item = Item,
-                    amount = Amount,
-                    timestamp = GetTime.DateNow()
-                };
-
-                Server_Log_Items.Logs_Items_.Add(logData);
-                using (gtaContext db = new gtaContext())
-                {
-                    db.LogsItems.Add(logData);
-                    db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                Alt.Log($"{e}");
-            }
+            logfileDir += fileName;
         }
     }
 }
-*/
