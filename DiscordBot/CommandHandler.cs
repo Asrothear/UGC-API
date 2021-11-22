@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Discord;
 using Discord.WebSocket;
+using UGC_API.Config;
 using UGC_API.Handler.v1_0;
 
 namespace UGC_API.DiscordBot
@@ -38,7 +39,7 @@ namespace UGC_API.DiscordBot
         }
         internal static bool check_perm()
         {
-            SocketGuild guild = DiscordBot.Bot.GetGuild(BotConfiguration.Guild);
+            SocketGuild guild = DiscordBot.Bot.GetGuild(Configs.Values.Bot.Guild);
             ulong AuthorId = Message.Author.Id;
             var user = Message.Author as SocketGuildUser;
             var role = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Name == "Role");

@@ -2,52 +2,42 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using UGC_API.Config;
 using UGC_API.Functions;
+using UGC_API.Models.v1_0;
+using UGC_API.Models.v1_0.Events;
 
 namespace UGC_API.Handler.v1_0
 {
     public class JumpHandler
     {
-        public static void FSDJump()
+        internal static FSDJump JumpData = null;
+        public static void FSDJump(Models.v1_0.Events.FSDJump fSDJump)
         {
+            JumpData = fSDJump;
+            JumpData.Timestamp = QLSHandler.TimeStamp;
             string system = QLSHandler.QLSData["StarSystem"]?.Value<string>() ?? null;
             if (!Configs.Systems.Contains<string>(system)) {
+                LocationHandler.UserSetLocation(JumpData.StarPos, JumpData.StarSystem);
                 return;
             };
-            string time = DateTime.Now.ToString("d");
-            string[] t_arry = time.Split('.');
+            LocationHandler.UserSetLocation(JumpData.StarPos, JumpData.StarSystem);
+            string[] t_arry = JumpData.Timestamp.ToString("d").Split('.');
             int year = Convert.ToInt32(t_arry[2]) + 1286;
-            time = $"{year}-{t_arry[1]}-{t_arry[0]}";
-            var DB_System = Systems.GetSystem(system, time);/*
-            if (DB_System.timestamp != Configs.current.Timestring) SystemHandler.NewDay(system);
-
-            foreach (var Data in QLS.json["Factions"])
-            {
-                SystemSingleData Faction = new SystemSingleData();
-                Faction.Name = Data["Name"].ToString();
-                Faction.State = Data["FactionState"].ToString();
-                Faction.Government = Data["Government"].ToString();
-                Faction.Influence = Data["Influence"].ToString();
-                Faction.Allegiance = Data["Allegiance"].ToString();
-                Faction.Happiness = Data["Happiness"].ToString();
-                Faction.ActiveState = "";
-                Faction.PendingState = "";
-                Faction.RecoveringState = "";
-                if (Data["ActiveStates"] != null)
-                {
-                    Faction.ActiveState = Data["ActiveStates"].ToString().Replace("\"", "").Replace("\n", "").Replace("\r", "").Replace("[", "").Replace("]", "").Replace(" ", "").Replace("State:", "").Replace("{", "").Replace("}", "");
-                }
-                if (Data["PendingStates"] != null)
-                {
-                    Faction.PendingState = Data["PendingStates"].ToString().Replace("\"", "").Replace("\n", "").Replace("\r", "").Replace("[", "").Replace("]", "").Replace(" ", "").Replace("State:", "").Replace("{", "").Replace("}", "");
-                }
-                if (Data["RecoveringStates"] != null)
-                {
-                    Faction.RecoveringState = Data["RecoveringStates"].ToString().Replace("\"", "").Replace("\n", "").Replace("\r", "").Replace("[", "").Replace("]", "").Replace(" ", "").Replace("State:", "").Replace("{", "").Replace("}", "");
-                }
-                DBSystemHandler.UpdateFaction(Faction);
-            }*/
+            var time = DateTime.Parse($"{year}-{t_arry[1]}-{t_arry[0]}");
+            var API_System = SystemHandler.GetSystem(system, time);
+            if (API_System == null) { return; };
+            var DB_System = Systems._Systeme.FirstOrDefault(db => db.System_Name == system && db.Timestamp == time);
+            if (DB_System == null) { return; };
+            API_System.id = DB_System.id;
+            API_System.last_update = DateTime.Now;
+            API_System.User_ID = QLSHandler.user.id;
+            API_System.System_ID = JumpData.SystemAddress;
+            API_System.System_Name = JumpData.StarSystem;
+            API_System.Factions = JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(JsonSerializer.Serialize(JumpData.Factions));
+            SystemHandler.UpdateSystem(API_System);
+            
         }
     }
 }

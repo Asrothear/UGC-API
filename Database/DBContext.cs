@@ -26,7 +26,7 @@ namespace UGC_API.Database
             if (!optionsBuilder.IsConfigured)
             {
                 //Lokal
-                string connectionStr = $"server={DatabaseConfig.Host};port={DatabaseConfig.Port};user={DatabaseConfig.User};password={DatabaseConfig.Password};database={DatabaseConfig.Database}";
+                string connectionStr = $"server={Configs.Values.DB.Host};port={Configs.Values.DB.Port};user={Configs.Values.DB.User};password={Configs.Values.DB.Password};database={Configs.Values.DB.Database}";
                 optionsBuilder.UseMySql(connectionStr, ServerVersion.AutoDetect(connectionStr),
                     mySqlOptionsAction: mysqlOptions =>
                     {
@@ -42,7 +42,7 @@ namespace UGC_API.Database
             MoBuilder.Entity<DB_Config>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.ToTable("ugc_*config", DatabaseConfig.Database);
+                entity.ToTable("ugc_*config", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.systems).HasColumnName("systems");
                 entity.Property(e => e.events).HasColumnName("events");
@@ -51,7 +51,7 @@ namespace UGC_API.Database
             MoBuilder.Entity<DB_Carrier>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.ToTable("ugc_*carrier", DatabaseConfig.Database);
+                entity.ToTable("ugc_*carrier", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.CarrierID).HasColumnName("CarrierID");
                 entity.Property(e => e.Name).HasColumnName("Name");
@@ -75,7 +75,7 @@ namespace UGC_API.Database
             MoBuilder.Entity<DB_Verify_Token>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.ToTable("ugc_*verify_token", DatabaseConfig.Database);
+                entity.ToTable("ugc_*verify_token", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.discord_id).HasColumnName("discord_id");
                 entity.Property(e => e.discord_name).HasColumnName("discord_name");
@@ -87,7 +87,7 @@ namespace UGC_API.Database
             MoBuilder.Entity<DB_User>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.ToTable("ugc_*user", DatabaseConfig.Database);
+                entity.ToTable("ugc_*user", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.user).HasColumnName("user");
                 entity.Property(e => e.uuid).HasColumnName("uuid");
@@ -99,33 +99,21 @@ namespace UGC_API.Database
                 entity.Property(e => e.last_docked).HasColumnName("last_docked");
                 entity.Property(e => e.last_docked_faction).HasColumnName("last_docked_faction");
                 entity.Property(e => e.last_data_insert).HasColumnName("last_data_insert");
-                entity.Property(e => e.version_plugin).HasColumnName("version_plugin");
+                entity.Property(e => e.version_plugin_major).HasColumnName("version_plugin_major");
+                entity.Property(e => e.version_plugin_minor).HasColumnName("version_plugin_minor");
                 entity.Property(e => e.branch).HasColumnName("branch");
             });
             MoBuilder.Entity<DB_Systeme>(entity =>
             {
                 entity.HasKey(e => e.id);
-                entity.ToTable($"ugc_systeme", DatabaseConfig.Database);
+                entity.ToTable($"ugc_systeme", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.Timestamp).HasColumnName("Timestamp");
                 entity.Property(e => e.last_update).HasColumnName("last_update");
                 entity.Property(e => e.User_ID).HasColumnName("User_ID");
                 entity.Property(e => e.System_ID).HasColumnName("System_ID");
                 entity.Property(e => e.System_Name).HasColumnName("System_Name");
-                entity.Property(e => e.Faction_Name).HasColumnName("Faction_Name");
-                entity.Property(e => e.Faction_State).HasColumnName("Faction_State");
-                entity.Property(e => e.Faction_Government).HasColumnName("Faction_Government");
-                entity.Property(e => e.Faction_Influence).HasColumnName("Faction_Influence");
-                entity.Property(e => e.Faction_Influence_change).HasColumnName("Faction_Influence_change");
-                entity.Property(e => e.Faction_Allegiance).HasColumnName("Faction_Allegiance");
-                entity.Property(e => e.Faction_Happiness).HasColumnName("Faction_Happiness");
-                entity.Property(e => e.Faction_ActiveState).HasColumnName("Faction_ActiveState");
-                entity.Property(e => e.Faction_PendingState).HasColumnName("Faction_PendingState");
-                entity.Property(e => e.Faction_RecoveringState).HasColumnName("Faction_RecoveringState");
-                entity.Property(e => e.missions).HasColumnName("missions");
-                entity.Property(e => e.explorer).HasColumnName("explorer");
-                entity.Property(e => e.voucheer).HasColumnName("voucheer");
-                entity.Property(e => e.trade).HasColumnName("trade");
+                entity.Property(e => e.Factions).HasColumnName("Factions");
             });
         }
     }
