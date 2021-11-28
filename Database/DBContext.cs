@@ -18,6 +18,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_Carrier> Carrier { get; set; }
         public virtual DbSet<DB_Verify_Token> Verify_Token { get; set; }
         public virtual DbSet<DB_User> DB_Users { get; set; }
+        public virtual DbSet<DB_Log> DB_Log { get; set; }
         public virtual DbSet<DB_Systeme> DB_Systemes { get; set; }
 
 
@@ -102,6 +103,17 @@ namespace UGC_API.Database
                 entity.Property(e => e.version_plugin_major).HasColumnName("version_plugin_major");
                 entity.Property(e => e.version_plugin_minor).HasColumnName("version_plugin_minor");
                 entity.Property(e => e.branch).HasColumnName("branch");
+            });
+            MoBuilder.Entity<DB_Log>(entity =>
+            {
+                entity.HasKey(e => e.ID);
+                entity.ToTable($"ugc_*log", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.ID).HasDatabaseName("id");
+                entity.Property(e => e.Timestamp).HasColumnName("Timestamp");
+                entity.Property(e => e.User).HasColumnName("User");
+                entity.Property(e => e.Event).HasColumnName("Event");
+                entity.Property(e => e.JSON).HasColumnName("JSON");
+                entity.Property(e => e.version_plugin).HasColumnName("version_plugin");
             });
             MoBuilder.Entity<DB_Systeme>(entity =>
             {

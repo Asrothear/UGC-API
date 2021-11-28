@@ -72,6 +72,7 @@ namespace UGC_API.Handler.v1_0
                     BGSPointsHandler.Init();
                     break;
             }
+            LogHandler.Create(v);
         }
     }
 }
