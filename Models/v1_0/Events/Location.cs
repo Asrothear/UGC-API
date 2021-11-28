@@ -30,7 +30,7 @@ namespace UGC_API.Models.v1_0.Events
         public long Population { get; set; }
         public string Wanted { get; set; }
         public List<FSDJump.FactionsL> Factions { get; set; }
-        public FSDJump.ConflictsL Conflicts { get; set; }
+        public List<FSDJump.ConflictsL> Conflicts { get; set; }
         public string Powers { get; set; }
         public string PowerplayState { get; set; }
         public string StationFaction { get; set; }
