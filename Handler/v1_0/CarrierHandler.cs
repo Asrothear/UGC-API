@@ -14,6 +14,80 @@ namespace UGC_API.Handler.v1_0
     public class CarrierHandler
     {
         public static List<CarrierModel> _Carriers = new();
+        internal static void CarrierEvent(string json)
+        {
+            LoadCarrier();
+            switch (QLSHandler.Event)
+            {
+                case "CarrierStats":
+                    CarrierStats(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierStats>(json));
+                    break;
+                case "CarrierJump":
+                    CarrierJump(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierJump>(json));
+                    break;
+                case "CarrierJumpRequest":
+                    CarrierJumpRequest(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierJumpRequest>(json));
+                    break;
+                case "CarrierJumpCancelled":
+                    CarrierJumpCancelled(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierJumpCancelled>(json));
+                    break;
+                default:
+                    break;
+
+            }
+        }
+
+        private static void CarrierJumpCancelled(Models.v1_0.Events.CarrierJumpCancelled carrierJumpCancelled)
+        {
+            var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierJumpCancelled.CarrierID);
+            if (Carrier == null) Carrier = new();
+            Carrier.CarrierID = carrierJumpCancelled.CarrierID;
+            Carrier.System = Carrier.prev_System;
+            Carrier.prev_System = "";
+            UpdateCarrier(Carrier);
+        }
+
+        private static void CarrierJumpRequest(Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest)
+        {
+            var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierJumpRequest.CarrierID);
+            if (Carrier == null) Carrier = new();
+            Carrier.CarrierID = carrierJumpRequest.CarrierID;
+            Carrier.prev_System = Carrier.System;
+            Carrier.System = carrierJumpRequest.SystemName;
+            UpdateCarrier(Carrier);
+        }
+
+        private static void CarrierJump(Models.v1_0.Events.CarrierJump carrierJump)
+        {
+            var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierJump.MarketID);
+            if (Carrier == null) Carrier = new();
+            Carrier.CarrierID = carrierJump.MarketID;
+            Carrier.prev_System = Carrier.System;
+            Carrier.System = carrierJump.StarSystem;
+            UpdateCarrier(Carrier);
+        }
+
+        private static void CarrierStats(Models.v1_0.Events.CarrierStats carrierStats)
+        {
+            var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierStats.CarrierID);
+            if (Carrier == null) Carrier = new();
+            Carrier.CarrierID = carrierStats.CarrierID;
+            Carrier.Name = carrierStats.Name;
+            Carrier.Callsign = carrierStats.Callsign;
+            Carrier.DockingAccess = carrierStats.DockingAccess;
+            Carrier.AllowNotorious = carrierStats.AllowNotorious;
+            Carrier.FuelLevel = carrierStats.FuelLevel;
+            Carrier.JumpRangeCurr = carrierStats.JumpRangeCurr;
+            Carrier.JumpRangeMax = carrierStats.JumpRangeMax;
+            Carrier.PendingDecommission = carrierStats.PendingDecommission;
+            Carrier.SpaceUsage = JsonSerializer.Deserialize<CarrierModel.SpaceUsageModel>(JsonSerializer.Serialize(carrierStats.SpaceUsage));
+            Carrier.Finance = JsonSerializer.Deserialize<CarrierModel.FinanceModel>(JsonSerializer.Serialize(carrierStats.Finance));
+            Carrier.Crew = JsonSerializer.Deserialize<List<CarrierModel.CrewModel>>(JsonSerializer.Serialize(carrierStats.Crew));
+            Carrier.ShipPacks = JsonSerializer.Deserialize<List<CarrierModel.ShipPacksModel>>(JsonSerializer.Serialize(carrierStats.ShipPacks));
+            Carrier.ModulePacks = JsonSerializer.Deserialize<List<CarrierModel.ModulePacksModel>>(JsonSerializer.Serialize(carrierStats.ModulePacks));
+            UpdateCarrier(Carrier);
+        }
+
         internal static void LoadCarrier(bool force = false)
         {
             if (_Carriers.Count != 0 && !force) return;
@@ -80,7 +154,7 @@ namespace UGC_API.Handler.v1_0
                     FuelLevel = Convert.ToInt32(DB_Carrier.FuelLevel),
                     JumpRangeCurr = Convert.ToInt32(DB_Carrier.JumpRangeCurr),
                     JumpRangeMax = Convert.ToInt32(DB_Carrier.JumpRangeMax),
-                    PendingDecommission = DB_Carrier.PendingDecommission == "" ? null : DB_Carrier.PendingDecommission,
+                    PendingDecommission = DB_Carrier.PendingDecommission != "1" ? false : true,
                     SpaceUsage = ConvertToSpaceUsage(DB_Carrier.SpaceUsage),
                     Finance = ConvertToFinance(DB_Carrier.Finance),
                     Crew = ConvertToCrew(DB_Carrier.Crew),
@@ -255,9 +329,39 @@ namespace UGC_API.Handler.v1_0
             }
             return OBJ;
         }
-        internal static void UpdateCarrier()
+        internal static void UpdateCarrier(Models.v1_0.CarrierModel CarrierEntry)
         {
-            LoadCarrier();
+            var DBCarrier = Carriers._Carriers.FirstOrDefault(c => c.CarrierID == CarrierEntry.CarrierID);
+            if (DBCarrier == null) DBCarrier = new();
+            DBCarrier.CarrierID = CarrierEntry.CarrierID;
+            DBCarrier.Name = CarrierEntry.Name;
+            DBCarrier.Callsign = CarrierEntry.Callsign;
+            DBCarrier.System = CarrierEntry.System;
+            DBCarrier.prev_System = CarrierEntry.prev_System;
+            DBCarrier.DockingAccess = CarrierEntry.DockingAccess;
+            DBCarrier.AllowNotorious = CarrierEntry.AllowNotorious.ToString();
+            DBCarrier.FuelLevel = CarrierEntry.FuelLevel.ToString();
+            DBCarrier.JumpRangeCurr = CarrierEntry.JumpRangeCurr.ToString();
+            DBCarrier.JumpRangeMax = CarrierEntry.JumpRangeMax.ToString();
+            DBCarrier.PendingDecommission = CarrierEntry.PendingDecommission.ToString();
+            DBCarrier.SpaceUsage = JsonSerializer.Serialize(CarrierEntry.SpaceUsage);
+            DBCarrier.Finance = JsonSerializer.Serialize(CarrierEntry.Finance);
+            DBCarrier.Crew = JsonSerializer.Serialize(CarrierEntry.Crew);
+            DBCarrier.ShipPacks = JsonSerializer.Serialize(CarrierEntry.ShipPacks);
+            DBCarrier.ModulePacks = JsonSerializer.Serialize(CarrierEntry.ModulePacks);
+            DBCarrier.market = JsonSerializer.Serialize(CarrierEntry.market);
+            DBCarrier.Last_Update = DateTime.Now.ToString();
+
+            using (DBContext db = new DBContext())
+            {                    
+
+                db.Carrier.Update(DBCarrier);
+                db.SaveChanges();
+            }
+        }
+
+        internal static void UpdateAllCarrier()
+        {
             foreach (var CAR in _Carriers)
             {
                 using (DBContext db = new DBContext())
@@ -273,7 +377,7 @@ namespace UGC_API.Handler.v1_0
                     DBCarrier.FuelLevel = CAR.FuelLevel.ToString();
                     DBCarrier.JumpRangeCurr = CAR.JumpRangeCurr.ToString();
                     DBCarrier.JumpRangeMax = CAR.JumpRangeMax.ToString();
-                    DBCarrier.PendingDecommission = CAR.PendingDecommission;
+                    DBCarrier.PendingDecommission = CAR.PendingDecommission.ToString();
                     DBCarrier.SpaceUsage = JsonSerializer.Serialize(CAR.SpaceUsage);
                     DBCarrier.Finance = JsonSerializer.Serialize(CAR.Finance);
                     DBCarrier.Crew = JsonSerializer.Serialize(CAR.Crew);

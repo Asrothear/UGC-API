@@ -1,25 +1,20 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UGC_API.Database;
-using UGC_API.Database_Models;
 
-namespace UGC_API.Models.v1_0
+namespace UGC_API.Models.v1_0.Events
 {
-
-    public class CarrierModel
+    public class CarrierStats
     {
-        public static List<CarrierModel> _Carriers = new List<CarrierModel>();
         public int id { get; set; }
         public long CarrierID { get; set; }
-        public string Name { get; set; } = "";
-        public string Callsign { get; set; } = "";
+        public string Name { get; set; }
+        public string Callsign { get; set; }
         public string System { get; set; }
         public string prev_System { get; set; }
         public string DockingAccess { get; set; }
-        public bool? AllowNotorious { get; set; }
+        public bool AllowNotorious { get; set; }
         public double FuelLevel { get; set; }
         public double JumpRangeCurr { get; set; }
         public double JumpRangeMax { get; set; }
@@ -45,21 +40,21 @@ namespace UGC_API.Models.v1_0
         public class CrewModel
         {
             public string CrewRole { get; set; }
-            public bool? Activated { get; set; }
-            public bool? Enabled { get; set; }
+            public bool Activated { get; set; }
+            public bool Enabled { get; set; }
             public string CrewName { get; set; }
         }
         public class FinanceModel
         {
-            public long? CarrierBalance { get; set; }
-            public long? ReserveBalance { get; set; }
-            public long? AvailableBalance { get; set; }
-            public long? ReservePercent { get; set; }
+            public long CarrierBalance { get; set; }
+            public long ReserveBalance { get; set; }
+            public long AvailableBalance { get; set; }
+            public long ReservePercent { get; set; }
             public double? TaxRate { get; set; }
         }
         public class MarketModel
         {
-            public long? id { get; set; }
+            public long id { get; set; }
             public string Name { get; set; }
             public string Name_Localised { get; set; }
             public string Category { get; set; }
