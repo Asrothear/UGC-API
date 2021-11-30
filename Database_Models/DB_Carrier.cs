@@ -8,9 +8,9 @@ namespace UGC_API.Database_Models
     public class DB_Carrier
     {
         public int id { get; set; }
-        public long? CarrierID { get; set; }
-        public string Name { get; set; }
-        public string Callsign { get; set; }
+        public long CarrierID { get; set; }
+        public string Name { get; set; } = "";
+        public string Callsign { get; set; } = "";
         public string System { get; set; }
         public string prev_System { get; set; }
         public string DockingAccess { get; set; }

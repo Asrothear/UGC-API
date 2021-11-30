@@ -22,8 +22,8 @@ namespace UGC_API.Handler.v1_0
                 Event = QLSHandler.Event,
                 JSON = Data.ToString()                
             };
-            var ss = String.Format("{0:0.##}", QLSHandler.user.version_plugin_major);
-            NewLog.version_plugin = $"{ss}.{QLSHandler.user.version_plugin_minor}";
+            var ss = String.Format("{0:0.0#}", QLSHandler.user.version_plugin_major);
+            NewLog.version_plugin = $"{ss},{QLSHandler.user.version_plugin_minor} {QLSHandler.user.branch}";
             using (DBContext db = new DBContext())
             {
                 db.DB_Log.Update(NewLog);

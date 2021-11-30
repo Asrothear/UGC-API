@@ -57,7 +57,7 @@ namespace UGC_API.Handler.v1_0
                     LocationHandler.UserSetLocation(JsonSerializer.Deserialize<Location>(v)?.StarPos, JsonSerializer.Deserialize<Location>(v)?.StarSystem);
                     break;
                 case "Carrier":
-                    CarrierHandler.UpdateCarrier();
+                    CarrierHandler.CarrierEvent(v);
                     break;
                 case "Docked":
                     DockingHandler.Docked();

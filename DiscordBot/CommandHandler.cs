@@ -29,9 +29,6 @@ namespace UGC_API.DiscordBot
                 case "token":
                     commands.CreateToken(Args);
                     break;
-                case "upadtecarrier":
-                    CarrierHandler.UpdateCarrier();
-                    break;
                 default:
                     DiscordBot.DiscordLogInfo("Info","Befehl nicht erkannt.","gold");
                     break;
