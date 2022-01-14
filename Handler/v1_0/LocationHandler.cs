@@ -9,11 +9,11 @@ namespace UGC_API.Handler.v1_0
 {
     public class LocationHandler
     {
-        public static void UserSetLocation(double[] starPos, string starSystem)
+        public static void UserSetLocation(Database_Models.DB_User user, double[] starPos, string starSystem)
         {
-            QLSHandler.user.last_pos = JsonSerializer.Serialize(starPos);
-            QLSHandler.user.system = JsonSerializer.Serialize(starSystem);
-            User.UpdateUser(QLSHandler.user.uuid);
+            user.last_pos = JsonSerializer.Serialize(starPos);
+            user.system = JsonSerializer.Serialize(starSystem);
+            User.UpdateUser(user.uuid);
         }
     }
 }

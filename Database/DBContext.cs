@@ -14,7 +14,7 @@ namespace UGC_API.Database
         public DBContext() { }
         public DBContext(DbContextOptions<DBContext> options) : base(options) { }
 
-        public DbSet<DB_Config> DB_Config { get; set; }
+        public virtual DbSet<DB_Config> DB_Config { get; set; }
         public virtual DbSet<DB_Carrier> Carrier { get; set; }
         public virtual DbSet<DB_Verify_Token> Verify_Token { get; set; }
         public virtual DbSet<DB_User> DB_Users { get; set; }

@@ -50,10 +50,12 @@ namespace UGC_API.Controllers.v1_0
         /// <returns>A newly created QLS request.</returns>
         [HttpPost]
         [MapToApiVersion("1.0")]
-        public void Post([FromBody] object value)
+        public void Post([FromBody] object value )
         {
-            var s = JObject.Parse(value.ToString());
-            Thread thread = new Thread(new ParameterizedThreadStart(QLSHandler.Startup));
+            string ss = Convert.ToString(value);
+            var s = JObject.Parse(ss);
+            var qls = new QLSHandler();
+            Thread thread = new Thread(new ParameterizedThreadStart(qls.Startup));
             thread.Start(s);
         }
     }

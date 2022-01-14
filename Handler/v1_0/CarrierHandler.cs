@@ -14,10 +14,10 @@ namespace UGC_API.Handler.v1_0
     public class CarrierHandler
     {
         public static List<CarrierModel> _Carriers = new();
-        internal static void CarrierEvent(string json)
+        internal static void CarrierEvent(string json, string @event)
         {
             LoadCarrier();
-            switch (QLSHandler.Event)
+            switch (@event)
             {
                 case "CarrierStats":
                     CarrierStats(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierStats>(json));
@@ -92,7 +92,7 @@ namespace UGC_API.Handler.v1_0
         {
             if (_Carriers.Count != 0 && !force) return;
             _Carriers = new();
-            if (force) Carriers.LoadFromDB(new DBContext());
+            if (force) Carriers.LoadFromDB();
             _Carriers = ParseCarrier(Carriers._Carriers);
         }
 
@@ -351,44 +351,37 @@ namespace UGC_API.Handler.v1_0
             DBCarrier.ModulePacks = JsonSerializer.Serialize(CarrierEntry.ModulePacks);
             DBCarrier.market = JsonSerializer.Serialize(CarrierEntry.market);
             DBCarrier.Last_Update = DateTime.Now.ToString();
-
-            using (DBContext db = new DBContext())
-            {                    
-
-                db.Carrier.Update(DBCarrier);
-                db.SaveChanges();
-            }
+            DatabaseHandler.db.Carrier.Update(DBCarrier);
+            DatabaseHandler.db.SaveChanges();
         }
 
         internal static void UpdateAllCarrier()
         {
             foreach (var CAR in _Carriers)
             {
-                using (DBContext db = new DBContext())
-                {
-                    var DBCarrier = db.Carrier.FirstOrDefault(c => c.Callsign == CAR.Callsign);
-                    DBCarrier.CarrierID = CAR.CarrierID;
-                    DBCarrier.Name = CAR.Name;
-                    DBCarrier.Callsign = CAR.Callsign;
-                    DBCarrier.System = CAR.System;
-                    DBCarrier.prev_System = CAR.prev_System;
-                    DBCarrier.DockingAccess = CAR.DockingAccess;
-                    DBCarrier.AllowNotorious = CAR.AllowNotorious.ToString();
-                    DBCarrier.FuelLevel = CAR.FuelLevel.ToString();
-                    DBCarrier.JumpRangeCurr = CAR.JumpRangeCurr.ToString();
-                    DBCarrier.JumpRangeMax = CAR.JumpRangeMax.ToString();
-                    DBCarrier.PendingDecommission = CAR.PendingDecommission.ToString();
-                    DBCarrier.SpaceUsage = JsonSerializer.Serialize(CAR.SpaceUsage);
-                    DBCarrier.Finance = JsonSerializer.Serialize(CAR.Finance);
-                    DBCarrier.Crew = JsonSerializer.Serialize(CAR.Crew);
-                    DBCarrier.ShipPacks = JsonSerializer.Serialize(CAR.ShipPacks);
-                    DBCarrier.ModulePacks = JsonSerializer.Serialize(CAR.ModulePacks);
-                    DBCarrier.market = JsonSerializer.Serialize(CAR.market);
-                    DBCarrier.Last_Update = CAR.Last_Update.ToString();
+                var DBCarrier = DatabaseHandler.db.Carrier.FirstOrDefault(c => c.Callsign == CAR.Callsign);
+                DBCarrier.CarrierID = CAR.CarrierID;
+                DBCarrier.Name = CAR.Name;
+                DBCarrier.Callsign = CAR.Callsign;
+                DBCarrier.System = CAR.System;
+                DBCarrier.prev_System = CAR.prev_System;
+                DBCarrier.DockingAccess = CAR.DockingAccess;
+                DBCarrier.AllowNotorious = CAR.AllowNotorious.ToString();
+                DBCarrier.FuelLevel = CAR.FuelLevel.ToString();
+                DBCarrier.JumpRangeCurr = CAR.JumpRangeCurr.ToString();
+                DBCarrier.JumpRangeMax = CAR.JumpRangeMax.ToString();
+                DBCarrier.PendingDecommission = CAR.PendingDecommission.ToString();
+                DBCarrier.SpaceUsage = JsonSerializer.Serialize(CAR.SpaceUsage);
+                DBCarrier.Finance = JsonSerializer.Serialize(CAR.Finance);
+                DBCarrier.Crew = JsonSerializer.Serialize(CAR.Crew);
+                DBCarrier.ShipPacks = JsonSerializer.Serialize(CAR.ShipPacks);
+                DBCarrier.ModulePacks = JsonSerializer.Serialize(CAR.ModulePacks);
+                DBCarrier.market = JsonSerializer.Serialize(CAR.market);
+                DBCarrier.Last_Update = CAR.Last_Update.ToString();
 
-                    db.Carrier.Update(DBCarrier);
-                    db.SaveChanges();
-                }
+                DatabaseHandler.db.Carrier.Update(DBCarrier);
+                DatabaseHandler.db.SaveChanges();
+
             }
             LoadCarrier(true);
         }
