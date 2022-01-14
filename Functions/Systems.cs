@@ -10,9 +10,9 @@ namespace UGC_API.Functions
     public class Systems
     {
         public static List<DB_Systeme> _Systeme = new();
-        internal static void LoadFromDB(DBContext db)
+        internal static void LoadFromDB()
         {
-            _Systeme = new(db.DB_Systemes);
+            _Systeme = new(DatabaseHandler.db.DB_Systemes);
         }
     }
 }

@@ -23,12 +23,8 @@ namespace UGC_API.Functions
             _Verify_Token.Add(TokenData);
             try
             {
-
-                using (DBContext db = new DBContext())
-                {
-                    db.Verify_Token.Update(TokenData);
-                    db.SaveChanges();
-                }
+                DatabaseHandler.db.Verify_Token.Update(TokenData);
+                DatabaseHandler.db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -85,11 +81,8 @@ namespace UGC_API.Functions
             }
             us.used = "1";
             us.used_time = DateTime.Now;
-            using (DBContext db = new DBContext())
-            {
-                db.Verify_Token.Update(us);
-                db.SaveChanges();
-            }
+            DatabaseHandler.db.Verify_Token.Update(us);
+            DatabaseHandler.db.SaveChanges();
             return;
         }
     }

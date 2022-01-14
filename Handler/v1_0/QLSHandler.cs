@@ -13,57 +13,58 @@ namespace UGC_API.Handler.v1_0
 {
     internal class QLSHandler
     {
-        internal static string Event { get; set; }
-        internal static DateTime TimeStamp { get; set; }
-        internal static JObject QLSData { get; set; }
-        internal static DB_User user { get; set; }
-        internal static void Startup(object s)
+        internal string Event { get; set; } = null;
+        internal DateTime TimeStamp { get; set; }
+        internal JObject QLSData { get; set; } = null;
+        internal DB_User user { get; set; } = null;
+        internal void Startup(object s)
         {
             if (s == null) return;
             QLSData = JObject.Parse(s.ToString().Replace("&", "and").Replace("'", ""));
-            string UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@":", @"cd_").Replace(@"\\", @":").Replace("/", "").Replace("|", "_");
+            string UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@":", @"cd_").Replace(@"\\", @":").Replace(@"\", @":").Replace("/", "").Replace("|", "_");
             string Token = QLSData["ugc_token_v2"]["token"].ToString();
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);
             if (!User.CheckTokenHash(UUID, Token)) return;
+            if (!Filter(QLSData["event"]?.Value<string>() ?? "")) return;
             Event = QLSData["event"]?.Value<string>() ?? "";
-            if (!Filter(Event)) return;
             user = User._Users.FirstOrDefault(u => u.uuid == UUID);
             if (user == null) return;
             user.user = QLSData["user"]?.Value<string>() ?? "";
-            TimeStamp = QLSData["timestamp"].Value<DateTime>();
+            TimeStamp = QLSData["timestamp"]?.Value<DateTime>() ?? DateTime.Now;
             user.version_plugin_major = QLSData["ugc_p_version"]?.Value<double?>() ?? 0;
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
         }
-        internal static bool Filter(string evt)
+        internal bool Filter(string evt)
         {
             return Configs.Events?.Contains(evt) ?? false;
         }
-        internal static void Run(string v)
+        internal void Run(string v)
         {
             var index = Event;
             if (Event.Contains("Carrier")) index = "Carrier";
             if (Event.Contains("Mission")) index = "Mission";
+            LogHandler.Create(v, TimeStamp, user, Event);
             switch (index)
             {
                 case "FSDJump":
                     SystemHandler.LoadSystems();
-                    DockingHandler.UnDocked();
-                    JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v));
+                    DockingHandler.UnDocked(user);
+                    JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
                     break;
                 case "Location":
-                    LocationHandler.UserSetLocation(JsonSerializer.Deserialize<Location>(v)?.StarPos, JsonSerializer.Deserialize<Location>(v)?.StarSystem);
+                    LocationHandler.UserSetLocation(user, JsonSerializer.Deserialize<Location>(v)?.StarPos, JsonSerializer.Deserialize<Location>(v)?.StarSystem);
                     break;
                 case "Carrier":
-                    CarrierHandler.CarrierEvent(v);
+                    CarrierHandler.CarrierEvent(v, Event);
                     break;
                 case "Docked":
-                    DockingHandler.Docked();
+                    DockingHandler.Docked(user, QLSData);
                     break;
                 case "Undocked":
-                    DockingHandler.UnDocked();
+                    DockingHandler.UnDocked(user);
                     break;
                 case "Mission":
                     MissionHandler.Init();
@@ -72,7 +73,6 @@ namespace UGC_API.Handler.v1_0
                     BGSPointsHandler.Init();
                     break;
             }
-            LogHandler.Create(v);
         }
     }
 }

@@ -8,13 +8,13 @@ namespace UGC_API.Handler.v1_0
 {
     public class DockingHandler
     {
-        public static void Docked()
+        public static void Docked(Database_Models.DB_User user, Newtonsoft.Json.Linq.JObject qLSData)
         {
-            User.Docked(QLSHandler.user.uuid, QLSHandler.QLSData);
+            User.Docked(user.uuid, qLSData);
         }
-        public static void UnDocked()
+        public static void UnDocked(Database_Models.DB_User user)
         {
-            User.UnDocked(QLSHandler.user.uuid);
+            User.UnDocked(user.uuid);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace UGC_API.Handler.v1_0
         {
             if (_Systeme.Count != 0 && !force) return;
             _Systeme = new();
-            if (force) Systems.LoadFromDB(new DBContext());
+            if (force) Systems.LoadFromDB();
             _Systeme = ParseSystem(Systems._Systeme);
         }
 
@@ -53,13 +53,13 @@ namespace UGC_API.Handler.v1_0
         {
             return _Systeme.Count();
         }
-        internal static SystemModel GetSystem(string SystemName, DateTime time)
+        internal static SystemModel GetSystem(DB_User user, string SystemName, DateTime time)
         {
             var sys = _Systeme.FirstOrDefault(u => u.System_Name == SystemName && u.Timestamp == time);
-            if (sys == null) CreateSystemDayEntry(time);
+            if (sys == null) CreateSystemDayEntry(user, time);
             return sys;
         }
-        internal static void CreateSystemDayEntry(DateTime time)
+        internal static void CreateSystemDayEntry(DB_User user, DateTime time)
         {
             SystemModel newSystemEntry = new SystemModel
             {
@@ -94,18 +94,18 @@ namespace UGC_API.Handler.v1_0
                 newSystemEntry.Factions.Add(faction);
             }
             _Systeme.Add(newSystemEntry);
-            UpdateSystem(newSystemEntry);
+            UpdateSystem(user, newSystemEntry);
             LoadSystems(true);
             return;
         }
 
-        public static void UpdateSystem(Models.v1_0.SystemModel SystemEntry)
+        public static void UpdateSystem(DB_User user, Models.v1_0.SystemModel SystemEntry)
         {
             var UpdateEntry = Systems._Systeme.FirstOrDefault(sy => sy.Timestamp == SystemEntry.Timestamp && sy.System_Name == SystemEntry.System_Name);
             if (UpdateEntry == null) UpdateEntry = new();
             UpdateEntry.Timestamp = SystemEntry.Timestamp;
             UpdateEntry.last_update = SystemEntry.last_update;
-            UpdateEntry.User_ID = QLSHandler.user.id;
+            UpdateEntry.User_ID = user.id;
             UpdateEntry.System_ID = SystemEntry.System_ID;
             UpdateEntry.System_Name = SystemEntry.System_Name;
             UpdateEntry.Factions = JsonSerializer.Serialize(SystemEntry.Factions);
@@ -114,11 +114,8 @@ namespace UGC_API.Handler.v1_0
             {
                 return;
             }
-            using (DBContext db = new DBContext())
-            {
-                db.DB_Systemes.Update(UpdateEntry);
-                db.SaveChanges();
-            }
+            DatabaseHandler.db.DB_Systemes.Update(UpdateEntry);
+            DatabaseHandler.db.SaveChanges();
         }
 
 

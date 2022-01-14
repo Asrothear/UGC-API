@@ -32,6 +32,7 @@ namespace UGC_API.DiscordBot
                 Bot.MessageReceived += Hanndle;
                 Bot.Ready += Ready;
                 Bot.Log += Log;
+                _ = Bot.SetActivityAsync(new Game($"auf {Configs.Values.Bot.Prefix}token", ActivityType.Watching, ActivityProperties.None));
                 var token = Configs.Values.Bot.Token;
                 await Bot.LoginAsync(TokenType.Bot, token);
                 await Bot.StartAsync();
@@ -139,7 +140,7 @@ namespace UGC_API.DiscordBot
             lengthOfPrefix = Configs.Values.Bot.Prefix.Length;
             if (!message.Content.StartsWith(Configs.Values.Bot.Prefix)) return;
             if (message.Author.IsBot) return;
-            if (!Configs.Values.Debug && message.Channel.Id == Configs.Values.Bot.InfoChannel) return;
+            if (!Configs.Values.Debug && message.Channel.Id != Configs.Values.Bot.InfoChannel) return;
             if (Configs.Values.Debug && message.Channel.Id != Configs.Values.Bot.DevChannel) return;
             lengthOfCommand = message.Content.Length;
 

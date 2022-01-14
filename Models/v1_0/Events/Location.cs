@@ -33,14 +33,25 @@ namespace UGC_API.Models.v1_0.Events
         public List<FSDJump.ConflictsL> Conflicts { get; set; }
         public string Powers { get; set; }
         public string PowerplayState { get; set; }
-        public string StationFaction { get; set; }
+        public StationFactionL StationFaction { get; set; }
         public string StationGovernment { get; set; }
         public string StationAllegiance { get; set; }
-        public string StationServices { get; set; }
-        public string StationEconomies { get; set; }
+        public string[] StationServices { get; set; }
+        public List<StationEconomiesL> StationEconomies { get; set; }
         public bool Taxi { get; set; }
         public bool Multicrew { get; set; }
         public bool InSRV { get; set; }
         public bool OnFoot { get; set; }
+        public class StationFactionL
+        {
+            public string Name { get; set; }
+            public string FactionState { get; set; }
+        }
+        public class StationEconomiesL
+        {
+            public string Name { get; set; }
+            public double Proportion { get; set; }
+            public string Name_Localised { get; set; }
+        }
     }
 }

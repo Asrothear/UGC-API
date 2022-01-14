@@ -15,22 +15,20 @@ namespace UGC_API.Database
 {
     internal class DatabaseHandler
     {
+        internal static DBContext db = new();
         internal static void LoadData()
         {
             try
             {
-                using (var db = new DBContext())
-                {
-                    db.Database.EnsureCreated();
-                    Config_F.Configs = new List<DB_Config>(db.DB_Config);
-                    Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
-                    Configs.Events =Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
-                    Configs.UpdateSystems = Config_F.Configs[0].update_systems;
-                    Systems.LoadFromDB(db);
-                    Carriers.LoadFromDB(db);
-                    User._Users = new(db.DB_Users);
-                    VerifyToken._Verify_Token = new(db.Verify_Token);
-                }
+                db.Database.EnsureCreated();
+                Config_F.Configs = new List<DB_Config>(db.DB_Config);
+                Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
+                Configs.Events =Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
+                Configs.UpdateSystems = Config_F.Configs[0].update_systems;
+                Systems.LoadFromDB();
+                Carriers.LoadFromDB();
+                User._Users = new(db.DB_Users);
+                VerifyToken._Verify_Token = new(db.Verify_Token);
             }
             catch (Exception e)
             {
@@ -44,13 +42,10 @@ namespace UGC_API.Database
         }
         public static void OnUpdateDataCacheTimer(object sender, ElapsedEventArgs e)
         {
-            using (var db = new DBContext())
-            {
-                Systems.LoadFromDB(db);
-                Carriers.LoadFromDB(db);
-                CarrierHandler.LoadCarrier(true);
-                SystemHandler.LoadSystems(true);
-            }
+            Systems.LoadFromDB();
+            Carriers.LoadFromDB();
+            CarrierHandler.LoadCarrier(true);
+            SystemHandler.LoadSystems(true);
         }
     }
 }

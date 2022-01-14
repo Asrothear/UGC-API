@@ -11,9 +11,9 @@ namespace UGC_API.Functions
     public class Carriers
     {
         public static List<DB_Carrier> _Carriers = new();
-        internal static void LoadFromDB(DBContext db)
+        internal static void LoadFromDB()
         {
-            _Carriers = new List<DB_Carrier>(db.Carrier);
+            _Carriers = new List<DB_Carrier>(DatabaseHandler.db.Carrier);
         }
     }
 }

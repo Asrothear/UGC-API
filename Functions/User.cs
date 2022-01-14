@@ -24,12 +24,8 @@ namespace UGC_API.Functions
             _Users.Add(UserData);
             try
             {
-
-                using (DBContext db = new DBContext())
-                {
-                    db.DB_Users.Update(UserData);
-                    db.SaveChanges();
-                }
+                DatabaseHandler.db.DB_Users.Update(UserData);
+                DatabaseHandler.db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -93,11 +89,8 @@ namespace UGC_API.Functions
             {
                 return;
             }
-            using (DBContext db = new DBContext())
-            {
-                db.DB_Users.Update(us);
-                db.SaveChanges();
-            }
+            DatabaseHandler.db.DB_Users.Update(us);
+            DatabaseHandler.db.SaveChanges();
         }
     }
 }
