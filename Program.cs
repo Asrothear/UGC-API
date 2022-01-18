@@ -30,6 +30,7 @@ namespace UGC_API
         {
             LoggingService.erstelleLogDatei();
             DatabaseLoader.LoadDatabase();
+            //Eddn_Main.eddn_listener();
             Thread thread = new Thread(DiscordBot.DiscordBot.Main);
             thread.Start();
             CreateHostBuilder(args).Build().Run();

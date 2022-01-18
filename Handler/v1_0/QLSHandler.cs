@@ -46,6 +46,7 @@ namespace UGC_API.Handler.v1_0
             var index = Event;
             if (Event.Contains("Carrier")) index = "Carrier";
             if (Event.Contains("Mission")) index = "Mission";
+            if (Event.Contains("Market")) index = "Market";
             LogHandler.Create(v, TimeStamp, user, Event);
             switch (index)
             {
@@ -68,6 +69,9 @@ namespace UGC_API.Handler.v1_0
                     break;
                 case "Mission":
                     MissionHandler.Init();
+                    break;
+                case "Market":
+                    MarketHandler.MarketEvent(v, Event);
                     break;
                 default:
                     BGSPointsHandler.Init();

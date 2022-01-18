@@ -27,6 +27,7 @@ namespace UGC_API.Database
                 Configs.UpdateSystems = Config_F.Configs[0].update_systems;
                 Systems.LoadFromDB();
                 Carriers.LoadFromDB();
+                Markets.LoadFromDB();
                 User._Users = new(db.DB_Users);
                 VerifyToken._Verify_Token = new(db.Verify_Token);
             }

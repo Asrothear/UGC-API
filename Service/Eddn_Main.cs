@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UGC_API.Service;
 
-namespace UGC_Market
+namespace UGC_API.Service
 {
     public static class Eddn_Main
     {
@@ -36,7 +37,6 @@ namespace UGC_Market
                             var uncompressed = ZlibStream.UncompressBuffer(bytes);
                             var result = utf8.GetString(uncompressed);
                             JObject resObjJson = JObject.Parse(result);
-                            
                         }
                         catch (Exception ex)
                         {
