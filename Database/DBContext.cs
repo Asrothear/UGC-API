@@ -16,6 +16,7 @@ namespace UGC_API.Database
 
         public virtual DbSet<DB_Config> DB_Config { get; set; }
         public virtual DbSet<DB_Carrier> Carrier { get; set; }
+        public virtual DbSet<DB_Market> Market { get; set; }
         public virtual DbSet<DB_Verify_Token> Verify_Token { get; set; }
         public virtual DbSet<DB_User> DB_Users { get; set; }
         public virtual DbSet<DB_Log> DB_Log { get; set; }
@@ -72,6 +73,17 @@ namespace UGC_API.Database
                 entity.Property(e => e.ModulePacks).HasColumnName("ModulePacks");
                 entity.Property(e => e.market).HasColumnName("market");
                 entity.Property(e => e.Last_Update).HasColumnName("Last_Update");
+            });
+            MoBuilder.Entity<DB_Market>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.ToTable("ugc_*market", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.Id).HasDatabaseName("id");
+                entity.Property(e => e.MarketID).HasColumnName("MarketID");
+                entity.Property(e => e.StarSystem).HasColumnName("StarSystem");
+                entity.Property(e => e.StationName).HasColumnName("StationName");
+                entity.Property(e => e.StationType).HasColumnName("System");
+                entity.Property(e => e.Items).HasColumnName("Items");
             });
             MoBuilder.Entity<DB_Verify_Token>(entity =>
             {

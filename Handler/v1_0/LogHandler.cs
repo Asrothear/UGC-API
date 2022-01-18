@@ -15,6 +15,7 @@ namespace UGC_API.Handler.v1_0
         {
             var Data = JObject.Parse(logtext);
             Data.Remove("ugc_token_v2");
+            Data.Remove("user");
             DB_Log NewLog = new DB_Log
             {
                 Timestamp = timeStamp,

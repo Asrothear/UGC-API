@@ -11,7 +11,7 @@ namespace UGC_API.Service
     public static class LoggingService
     {
         
-        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\LogFiles\");
+        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"\Logs\LogFiles\");
 
         public static void HeartbeatLog(object sender, ElapsedEventArgs e)
         {
