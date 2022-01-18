@@ -1,11 +1,17 @@
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using Discord.WebSocket;
 using Discord;
+using Discord.Net;
+using Discord.Commands;
+using Discord.Interactions;
+using Discord.WebSocket;
 using UGC_API.Config;
 using UGC_API.Service;
 using System.Diagnostics;
+using System.Threading;
+using Microsoft.Extensions.DependencyInjection;
+using UGC_API.DiscordBot.Services;
 
 namespace UGC_API.DiscordBot
 {
@@ -13,6 +19,7 @@ namespace UGC_API.DiscordBot
     public class DiscordBot
     {
         public static DiscordSocketClient Bot;
+        private InteractionService _commands;
         public static SocketMessage Smessage;
         private static bool startup = false;
 
@@ -28,17 +35,43 @@ namespace UGC_API.DiscordBot
                     Configs.Values.Bot.InfoChannel = Configs.Values.Bot.DevChannel;
                     Configs.Values.Bot.LogChannel = Configs.Values.Bot.DevChannel;
                 }
-                Bot = new DiscordSocketClient();
-                Bot.MessageReceived += Hanndle;
-                Bot.Ready += Ready;
-                Bot.Log += Log;
-                _ = Bot.SetActivityAsync(new Game($"auf {Configs.Values.Bot.Prefix}token", ActivityType.Watching, ActivityProperties.None));
-                var token = Configs.Values.Bot.Token;
-                await Bot.LoginAsync(TokenType.Bot, token);
-                await Bot.StartAsync();
+                using (var services = ConfigureServices())
+                {
+                    // get the client and assign to client 
+                    // you get the services via GetRequiredService<T>
+                    Bot = services.GetRequiredService<DiscordSocketClient>();
+                    var commands = services.GetRequiredService<InteractionService>();
+                    _commands = commands;
+
+                    // setup logging and the ready event
+                    Bot.Log += LogAsync;
+                    commands.Log += LogAsync;
+                    Bot.Ready += ReadyAsync;
+
+                    _ = Bot.SetActivityAsync(new Game($"auf {Configs.Values.Bot.Prefix}token", ActivityType.Watching, ActivityProperties.None));
+                    // this is where we get the Token value from the configuration file, and start the bot
+                    await Bot.LoginAsync(TokenType.Bot, Configs.Values.Bot.Token);
+                    await Bot.StartAsync();
+
+                    // we get the CommandHandler class here and call the InitializeAsync method to start things up for the CommandHandler service
+                    await services.GetRequiredService<CommandHandler>().InitializeAsync();
+
+                    await Task.Delay(Timeout.Infinite);
+                }
             }
         }
-        private static Task Ready()
+        private ServiceProvider ConfigureServices()
+        {
+            // this returns a ServiceProvider that is used later to call for those services
+            // we can add types we have access to here, hence adding the new using statement:
+            // using csharpi.Services;
+            return new ServiceCollection()
+                .AddSingleton<DiscordSocketClient>()
+                .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
+                .AddSingleton<CommandHandler>()
+                .BuildServiceProvider();
+        }
+        private async Task ReadyAsync()
         {
             if (!startup)
             {
@@ -48,25 +81,25 @@ namespace UGC_API.DiscordBot
                 }
                 else
                 {
+                    await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
                     DiscordLogInfo("Bot Satus", "Ready", "orange");
                 }
                 startup = true;
             }
-            return Task.CompletedTask;
         }
-        private static Task Log(LogMessage msg)
+        private Task LogAsync(LogMessage msg)
         {
             Debug.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
         #endregion
         #region Logs
-        public static async void SendDM(string title, string content, string color)
+        public static async void SendDM(string title, string content, string color, SocketUser user)
         {
             //if (Configs.Debug) return;
             try
-            {
-                var DM = CommandHandler.Message.Author.GetOrCreateDMChannelAsync().Result;
+            {   
+                var DM = user.CreateDMChannelAsync().Result;
                 if (DM == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
@@ -146,7 +179,7 @@ namespace UGC_API.DiscordBot
 
             command = message.Content.Substring(lengthOfPrefix, lengthOfCommand - lengthOfPrefix);
 
-            CommandHandler.Execute(command, message);
+            //CommandHandler.Execute(command, message);
             return;
         }
         #endregion
