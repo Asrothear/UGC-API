@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using UGC_API.Models;
+using UGC_API.Service;
 
 namespace UGC_API.Config
 {
@@ -30,6 +31,7 @@ namespace UGC_API.Config
                 File.WriteAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), cfgFile), JsonSerializer.Serialize(new ConfigModel()));
                 path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), cfgFile);
                 Console.WriteLine($"Neue Konfig in {path} erstellt. Bitte diese anpassen!!");
+                LoggingService.schreibeLogZeile($"Neue Konfig in {path} erstellt. Bitte diese anpassen!!");
                 Thread.Sleep(5000);
                 System.Environment.Exit(0);
             }

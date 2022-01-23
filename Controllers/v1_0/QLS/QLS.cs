@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using UGC_API.Handler.v1_0;
@@ -50,13 +51,34 @@ namespace UGC_API.Controllers.v1_0
         /// <returns>A newly created QLS request.</returns>
         [HttpPost]
         [MapToApiVersion("1.0")]
-        public void Post([FromBody] object value )
+        public async Task<StatusCodeResult> PostAsync([FromBody] object value )
         {
-            string ss = Convert.ToString(value);
-            var s = JObject.Parse(ss);
+            string ss = "";
+            JObject s = new JObject();
+            try
+            {
+                ss = Convert.ToString(value);
+                s = JObject.Parse(ss);
+            }catch (Exception ex)
+            {
+                return StatusCode(403);
+            }
             var qls = new QLSHandler();
             Thread thread = new Thread(new ParameterizedThreadStart(qls.Startup));
             thread.Start(s);
+            int xxx = 0;
+            while(qls.result == null)
+            {
+                await Task.Delay(500);
+                xxx++;
+                if(xxx/2 >= 60)
+                {
+                    return StatusCode(500);
+                }
+            }
+            if (qls.result == 0) return StatusCode(403);
+            if (qls.result == 1) return StatusCode(200);
+            return StatusCode(200);
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UGC_API.Database;
 using UGC_API.Database_Models;
+using UGC_API.Service;
 
 namespace UGC_API.Functions
 {
@@ -17,18 +18,24 @@ namespace UGC_API.Functions
                 token = Token,
                 discord_id = DCid,
                 discord_name = DCname,
-                used = "0",
+                used = 0,
+                max_usage = 2,
                 created_time = DateTime.Now,
             };
             _Verify_Token.Add(TokenData);
             try
             {
-                DatabaseHandler.db.Verify_Token.Update(TokenData);
-                DatabaseHandler.db.SaveChanges();
+                using (DBContext db = new())
+                {
+                    db.Verify_Token.Update(TokenData);
+                    db.SaveChanges();
+                    db.Dispose();
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+                LoggingService.schreibeLogZeile(e.ToString());
             }
         }
         public static bool ExistToken(string Token)
@@ -69,20 +76,31 @@ namespace UGC_API.Functions
             {
                 return false;
             }
-            return us.used != "0" ? false : true;
+            if(us.used < us.max_usage)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         public static void TakeToken(string token)
         {
             var us = _Verify_Token.FirstOrDefault(u => u.token == token);
 
-            if ((us == null) || (us.used == "1"))
+            if ((us == null) || (us.used >= us.max_usage))
             {
                 return;
             }
-            us.used = "1";
+            us.used ++;
             us.used_time = DateTime.Now;
-            DatabaseHandler.db.Verify_Token.Update(us);
-            DatabaseHandler.db.SaveChanges();
+            using (DBContext db = new())
+            {
+                db.Verify_Token.Update(us);
+                db.SaveChanges();
+                db.Dispose();
+            }
             return;
         }
     }

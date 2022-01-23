@@ -29,7 +29,6 @@ namespace UGC_API.Models.v1_0
         public List<CrewModel> Crew { get; set; } = new();
         public List<ShipPacksModel> ShipPacks { get; set; } = new();
         public List<ModulePacksModel> ModulePacks { get; set; } = new();
-        public List<MarketModel> market { get; set; } = new();
         public DateTime Last_Update { get; set; }
 
         public class SpaceUsageModel
@@ -57,24 +56,6 @@ namespace UGC_API.Models.v1_0
             public long? ReservePercent { get; set; }
             public double? TaxRate { get; set; }
         }
-        public class MarketModel
-        {
-            public long? id { get; set; }
-            public string Name { get; set; }
-            public string Name_Localised { get; set; }
-            public string Category { get; set; }
-            public string Category_Localised { get; set; }
-            public long? BuyPrice { get; set; }
-            public long? SellPrice { get; set; }
-            public long? MeanPrice { get; set; }
-            public long? StockBracket { get; set; }
-            public long? DemandBracket { get; set; }
-            public long? Stock { get; set; }
-            public long? Demand { get; set; }
-            public bool? Consumer { get; set; }
-            public bool? Producer { get; set; }
-            public bool? Rare { get; set; }
-        }
         public class ModulePacksModel
         {
             public string PackTheme { get; set; }
@@ -84,16 +65,6 @@ namespace UGC_API.Models.v1_0
         {
             public string PackTheme { get; set; }
             public long? PackTier { get; set; }
-        }
-        public class MarketSearchModel
-        {
-            public int id { get; set; }
-            public long? CarrierID { get; set; }
-            public string Name { get; set; }
-            public string Callsign { get; set; }
-            public string System { get; set; }
-            public string DockingAccess { get; set; }
-            public List<MarketModel> market { get; set; } = new();
         }
     }
 }

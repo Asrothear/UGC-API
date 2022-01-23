@@ -21,12 +21,14 @@ namespace UGC_API.Database
         public virtual DbSet<DB_User> DB_Users { get; set; }
         public virtual DbSet<DB_Log> DB_Log { get; set; }
         public virtual DbSet<DB_Systeme> DB_Systemes { get; set; }
+        public virtual DbSet<DB_Localisation> Localisation { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
+
                 //Lokal
                 string connectionStr = $"server={Configs.Values.DB.Host};port={Configs.Values.DB.Port};user={Configs.Values.DB.User};password={Configs.Values.DB.Password};database={Configs.Values.DB.Database}";
                 optionsBuilder.UseMySql(connectionStr, ServerVersion.AutoDetect(connectionStr),
@@ -71,7 +73,6 @@ namespace UGC_API.Database
                 entity.Property(e => e.Crew).HasColumnName("Crew");
                 entity.Property(e => e.ShipPacks).HasColumnName("ShipPacks");
                 entity.Property(e => e.ModulePacks).HasColumnName("ModulePacks");
-                entity.Property(e => e.market).HasColumnName("market");
                 entity.Property(e => e.Last_Update).HasColumnName("Last_Update");
             });
             MoBuilder.Entity<DB_Market>(entity =>
@@ -82,8 +83,9 @@ namespace UGC_API.Database
                 entity.Property(e => e.MarketID).HasColumnName("MarketID");
                 entity.Property(e => e.StarSystem).HasColumnName("StarSystem");
                 entity.Property(e => e.StationName).HasColumnName("StationName");
-                entity.Property(e => e.StationType).HasColumnName("System");
+                entity.Property(e => e.StationType).HasColumnName("StationType");
                 entity.Property(e => e.Items).HasColumnName("Items");
+                entity.Property(e => e.Last_Update).HasColumnName("Last_Update");
             });
             MoBuilder.Entity<DB_Verify_Token>(entity =>
             {
@@ -111,6 +113,7 @@ namespace UGC_API.Database
                 entity.Property(e => e.docked_faction).HasColumnName("docked_faction");
                 entity.Property(e => e.last_docked).HasColumnName("last_docked");
                 entity.Property(e => e.last_docked_faction).HasColumnName("last_docked_faction");
+                entity.Property(e => e.Language).HasColumnName("language");
                 entity.Property(e => e.last_data_insert).HasColumnName("last_data_insert");
                 entity.Property(e => e.version_plugin_major).HasColumnName("version_plugin_major");
                 entity.Property(e => e.version_plugin_minor).HasColumnName("version_plugin_minor");
@@ -138,6 +141,15 @@ namespace UGC_API.Database
                 entity.Property(e => e.System_ID).HasColumnName("System_ID");
                 entity.Property(e => e.System_Name).HasColumnName("System_Name");
                 entity.Property(e => e.Factions).HasColumnName("Factions");
+            });
+            MoBuilder.Entity<DB_Localisation>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable($"ugc_*localisation", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.Name).HasColumnName("Name");
+                entity.Property(e => e.de).HasColumnName("de");
+                entity.Property(e => e.en).HasColumnName("en");
             });
         }
     }

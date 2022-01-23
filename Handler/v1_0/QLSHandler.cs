@@ -8,6 +8,7 @@ using UGC_API.Config;
 using UGC_API.Database_Models;
 using UGC_API.Functions;
 using UGC_API.Models.v1_0.Events;
+using UGC_API.Service;
 
 namespace UGC_API.Handler.v1_0
 {
@@ -17,16 +18,22 @@ namespace UGC_API.Handler.v1_0
         internal DateTime TimeStamp { get; set; }
         internal JObject QLSData { get; set; } = null;
         internal DB_User user { get; set; } = null;
+        internal int? result { get; set; } = null;
         internal void Startup(object s)
         {
-            if (s == null) return;
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            if (s == null) { result = 1; return; }
             QLSData = JObject.Parse(s.ToString().Replace("&", "and").Replace("'", ""));
             string UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@":", @"cd_").Replace(@"\\", @":").Replace(@"\", @":").Replace("/", "").Replace("|", "_");
+            if (UUID == "none" || UUID == "" || UUID == " " || UUID == null) { result = 0; return; }
             string Token = QLSData["ugc_token_v2"]["token"].ToString();
+            if (Token == "none" || Token == "" || Token == " " || Token == null) { result = 0; return; }
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);
-            if (!User.CheckTokenHash(UUID, Token)) return;
-            if (!Filter(QLSData["event"]?.Value<string>() ?? "")) return;
+            if (!User.CheckTokenHash(UUID, Token)) { result = 0; return; }
+            if (!Filter(QLSData["event"]?.Value<string>() ?? "")) {result = 1; return; }
+            result = 1;
             Event = QLSData["event"]?.Value<string>() ?? "";
             user = User._Users.FirstOrDefault(u => u.uuid == UUID);
             if (user == null) return;
@@ -36,6 +43,8 @@ namespace UGC_API.Handler.v1_0
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"QLSHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
         internal bool Filter(string evt)
         {
@@ -47,9 +56,13 @@ namespace UGC_API.Handler.v1_0
             if (Event.Contains("Carrier")) index = "Carrier";
             if (Event.Contains("Mission")) index = "Mission";
             if (Event.Contains("Market")) index = "Market";
-            LogHandler.Create(v, TimeStamp, user, Event);
+            var Logg = new LogHandler();
+            Logg.Create(v, TimeStamp, user, Event);
             switch (index)
             {
+                case "LoadGame":
+                    Localisation.SetUserLang(JsonSerializer.Deserialize<LoadGame>(v), user);
+                    break;
                 case "FSDJump":
                     SystemHandler.LoadSystems();
                     DockingHandler.UnDocked(user);
@@ -71,7 +84,7 @@ namespace UGC_API.Handler.v1_0
                     MissionHandler.Init();
                     break;
                 case "Market":
-                    MarketHandler.MarketEvent(v, Event);
+                    MarketHandler.MarketEvent(v, Event, user);
                     break;
                 default:
                     BGSPointsHandler.Init();

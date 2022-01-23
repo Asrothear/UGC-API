@@ -8,14 +8,18 @@ using UGC_API.Database;
 using UGC_API.Database_Models;
 using UGC_API.Functions;
 using UGC_API.Models.v1_0;
+using UGC_API.Service;
 
 namespace UGC_API.Handler.v1_0
 {
     public class CarrierHandler
     {
         public static List<CarrierModel> _Carriers = new();
+        internal static long LastCarrierID = 0;
         internal static void CarrierEvent(string json, string @event)
         {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             LoadCarrier();
             switch (@event)
             {
@@ -33,8 +37,9 @@ namespace UGC_API.Handler.v1_0
                     break;
                 default:
                     break;
-
             }
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"CarrierHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
         private static void CarrierJumpCancelled(Models.v1_0.Events.CarrierJumpCancelled carrierJumpCancelled)
@@ -69,8 +74,14 @@ namespace UGC_API.Handler.v1_0
 
         private static void CarrierStats(Models.v1_0.Events.CarrierStats carrierStats)
         {
+            var create = false;
             var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierStats.CarrierID);
-            if (Carrier == null) Carrier = new();
+            if (Carrier == null)
+            {
+                if (LastCarrierID == carrierStats.CarrierID) return;
+                Carrier = new();
+                create = true;
+            }
             Carrier.CarrierID = carrierStats.CarrierID;
             Carrier.Name = carrierStats.Name;
             Carrier.Callsign = carrierStats.Callsign;
@@ -85,7 +96,8 @@ namespace UGC_API.Handler.v1_0
             Carrier.Crew = JsonSerializer.Deserialize<List<CarrierModel.CrewModel>>(JsonSerializer.Serialize(carrierStats.Crew));
             Carrier.ShipPacks = JsonSerializer.Deserialize<List<CarrierModel.ShipPacksModel>>(JsonSerializer.Serialize(carrierStats.ShipPacks));
             Carrier.ModulePacks = JsonSerializer.Deserialize<List<CarrierModel.ModulePacksModel>>(JsonSerializer.Serialize(carrierStats.ModulePacks));
-            UpdateCarrier(Carrier);
+            UpdateCarrier(Carrier, create);
+            LastCarrierID = 0;
         }
 
         internal static void LoadCarrier(bool force = false)
@@ -95,46 +107,12 @@ namespace UGC_API.Handler.v1_0
             if (force) Carriers.LoadFromDB();
             _Carriers = ParseCarrier(Carriers._Carriers);
         }
-
-        internal static List<CarrierModel.MarketModel> GetCarrierMarket(string CS)
-        {
-            LoadCarrier();
-            var CM = _Carriers.FirstOrDefault(u => u.Callsign == CS);
-            return CM.market;
-        }
         internal static CarrierModel GetCarrier(string CS)
         {
             LoadCarrier();
             var CM = _Carriers.FirstOrDefault(u => u.Callsign == CS);
             return CM;
-        }
-        internal static List<CarrierModel.MarketSearchModel> FindWare(string Ware)
-        {
-            LoadCarrier();
-            List<CarrierModel.MarketSearchModel> OBJ = new();
-            List <CarrierModel> CM = new();
-            try
-            {
-                CM = _Carriers.Where(u => u.market.SingleOrDefault(m => m.Name == Ware && m.BuyPrice > 0 && m.Stock > 0) != null && u.DockingAccess != "none").ToList();
-            }catch(Exception e){
-                return OBJ;
-            }
-            foreach (var Data in CM)
-            {
-                var NewData = new CarrierModel.MarketSearchModel
-                {
-                    id = Data.id,
-                    CarrierID = Data.CarrierID,
-                    Name = Data.Name,
-                    Callsign = Data.Callsign,
-                    System = Data.System,
-                    DockingAccess = Data.DockingAccess,
-                    market = Data.market.Where(i => i.Name == Ware).ToList()
-                };
-                OBJ.Add(NewData);
-            }
-            return OBJ;
-        }
+        }        
         public static List<CarrierModel> ParseCarrier(List<DB_Carrier> dB_Carriers)
         {
             List<CarrierModel> API_Carier = new();
@@ -160,7 +138,6 @@ namespace UGC_API.Handler.v1_0
                     Crew = ConvertToCrew(DB_Carrier.Crew),
                     ShipPacks = ConvertToShipPacks(DB_Carrier.ShipPacks),
                     ModulePacks = ConvertToModulePacks(DB_Carrier.ModulePacks),
-                    market = ConvertToMarket(DB_Carrier.market),
                     Last_Update = DateTime.Parse(DB_Carrier.Last_Update)
                 };
                 API_Carier.Add(CarrierData);
@@ -289,47 +266,7 @@ namespace UGC_API.Handler.v1_0
             }
             return OBJ;
         }
-        private static List<CarrierModel.MarketModel> ConvertToMarket(string DB_Carrier)
-        {
-            List<CarrierModel.MarketModel> OBJ = new();
-            if (String.IsNullOrEmpty(DB_Carrier) || DB_Carrier.Length <= 4)
-            {
-                return OBJ;
-            }
-            try
-            {
-                var _Obj = JObject.Parse(DB_Carrier.Replace("[", "").Replace("]", "").Replace("\\", ""));
-                foreach (var Data in _Obj)
-                {
-                    if (Data.Key == "update") { return OBJ; }
-
-                    var NewData = new CarrierModel.MarketModel
-                    {
-                        id = Data.Value["id"]?.Value<long?>() ?? 0,
-                        Name = Data.Value["Name"]?.Value<string>() ?? null,
-                        Name_Localised = Data.Value["Name_Localised"]?.Value<string>() ?? null,
-                        Category = Data.Value["Category"]?.Value<string>() ?? null,
-                        Category_Localised = Data.Value["Category_Localised"]?.Value<string>() ?? null,
-                        BuyPrice = Data.Value["BuyPrice"]?.Value<long?>() ?? 0,
-                        SellPrice = Data.Value["SellPrice"]?.Value<long?>() ?? 0,
-                        MeanPrice = Data.Value["MeanPrice"]?.Value<long?>() ?? 0,
-                        StockBracket = Data.Value["StockBracket"]?.Value<long?>() ?? 0,
-                        DemandBracket = Data.Value["DemandBracket"]?.Value<long?>() ?? 0,
-                        Stock = Data.Value["Stock"]?.Value<long?>() ?? 0,
-                        Demand = Data.Value["Demand"]?.Value<long?>() ?? 0,
-                        Consumer = Data.Value["Consumer"]?.Value<bool?>() ?? false,
-                        Producer = Data.Value["Producer"]?.Value<bool?>() ?? false,
-                        Rare = Data.Value["Rare"]?.Value<bool?>() ?? false,
-                    };
-                    OBJ.Add(NewData);
-                }
-            }catch(Exception e)
-            {
-                OBJ = JsonSerializer.Deserialize<List<CarrierModel.MarketModel>>(DB_Carrier);
-            }
-            return OBJ;
-        }
-        internal static void UpdateCarrier(Models.v1_0.CarrierModel CarrierEntry)
+        internal static void UpdateCarrier(Models.v1_0.CarrierModel CarrierEntry, bool create = false)
         {
             var DBCarrier = Carriers._Carriers.FirstOrDefault(c => c.CarrierID == CarrierEntry.CarrierID);
             if (DBCarrier == null) DBCarrier = new();
@@ -349,10 +286,21 @@ namespace UGC_API.Handler.v1_0
             DBCarrier.Crew = JsonSerializer.Serialize(CarrierEntry.Crew);
             DBCarrier.ShipPacks = JsonSerializer.Serialize(CarrierEntry.ShipPacks);
             DBCarrier.ModulePacks = JsonSerializer.Serialize(CarrierEntry.ModulePacks);
-            DBCarrier.market = JsonSerializer.Serialize(CarrierEntry.market);
             DBCarrier.Last_Update = DateTime.Now.ToString();
-            DatabaseHandler.db.Carrier.Update(DBCarrier);
-            DatabaseHandler.db.SaveChanges();
+            using (DBContext db = new())
+            {
+                if (create)
+                {
+                    db.Carrier.Add(DBCarrier);
+                }
+                else
+                {
+                    db.Carrier.Update(DBCarrier);
+                }
+                db.SaveChanges();
+                db.Dispose();
+            }
+            LoadCarrier(true);
         }
 
         internal static void UpdateAllCarrier()
@@ -376,11 +324,10 @@ namespace UGC_API.Handler.v1_0
                 DBCarrier.Crew = JsonSerializer.Serialize(CAR.Crew);
                 DBCarrier.ShipPacks = JsonSerializer.Serialize(CAR.ShipPacks);
                 DBCarrier.ModulePacks = JsonSerializer.Serialize(CAR.ModulePacks);
-                DBCarrier.market = JsonSerializer.Serialize(CAR.market);
                 DBCarrier.Last_Update = CAR.Last_Update.ToString();
 
                 DatabaseHandler.db.Carrier.Update(DBCarrier);
-                DatabaseHandler.db.SaveChanges();
+                DatabaseHandler.db.SaveChangesAsync();
 
             }
             LoadCarrier(true);

@@ -6,19 +6,24 @@ using System.Threading.Tasks;
 using UGC_API.Database;
 using UGC_API.Database_Models;
 using UGC_API.Functions;
+using UGC_API.Models.v1_0;
+using UGC_API.Service;
 
 namespace UGC_API.Handler.v1_0
 {
     public class MarketHandler
     {
         public static List<Models.v1_0.Events.Market> _Markets = new();
-        internal static void MarketEvent(string json, string @event)
+        internal static ulong LastMarketID = 0;
+        internal static void MarketEvent(string json, string @event, DB_User user)
         {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             LoadMarket();
             switch (@event)
             {
                 case "Market":
-                    Market(JsonSerializer.Deserialize<Models.v1_0.Events.Market>(json));
+                    Market(JsonSerializer.Deserialize<Models.v1_0.Events.Market>(json), user);
                     break;
                 case "MarketBuy":
                     MarketBuy(JsonSerializer.Deserialize<Models.v1_0.Events.CarrierJump>(json));
@@ -29,20 +34,94 @@ namespace UGC_API.Handler.v1_0
                 default:
                     break;
             }
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"MarketHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
+        internal static Models.v1_0.Events.Market GetMarket(string name)
+        {
+            LoadMarket();
+            var outs = _Markets.FirstOrDefault(m => m.StationName == name);
+            if(outs == null)
+            {
+                return new Models.v1_0.Events.Market();
+            }
+            return outs;
+        }
+        internal static List<MarketSearchModel> FindWare(string Ware)
+        {
+            LoadMarket();
+            List<MarketSearchModel> OBJ = new();
+            List<Models.v1_0.Events.Market> CM = new();
+            try
+            {
+                CM = _Markets.Where(u => u.Items.SingleOrDefault(m => m.Name == Ware && m.BuyPrice > 0 && m.Stock > 0) != null).ToList();
+            }
+            catch (Exception e)
+            {
+                return OBJ;
+            }
+            foreach (var Data in CM)
+            {
+                var NewData = new MarketSearchModel
+                {
+                    MarketID = Data.MarketID,
+                    Name = Data.StationName,
+                    System = Data.StarSystem,
+                    StationType = Data.StationType,
+                    //market = Data.market.Where(i => i.Name == Ware).ToList()
+                };
+                Data.Items = Data.Items.Where(m => m.Name == Ware && m.BuyPrice > 0 && m.Stock > 0).ToList();
+                foreach(var Item in Data.Items)
+                {
+                    var newItem = new MarketModel
+                    {
+                        Name = Item.Name,
+                        Name_Localised = Item.Name_Localised,
+                        Category = Item.Category,
+                        Category_Localised = Item.Category_Localised,
+                        BuyPrice = Item.BuyPrice,
+                        SellPrice = Item.SellPrice,
+                        MeanPrice = Item.MeanPrice,
+                        StockBracket = Item.StockBracket,
+                        DemandBracket = Item.DemandBracket,
+                        Stock = Item.Stock,
+                        Demand = Item.Demand,
+                        Consumer = Item.Consumer,
+                        Producer = Item.Producer,
+                        Rare = Item.Rare,
+
+                    };
+                    NewData.market.Add(newItem);
+                }
+                if(NewData.StationType != "FleetCarrier")
+                {
+                    NewData.DockingAccess = "Public";
+                }
+                else
+                {
+                    CarrierHandler.LoadCarrier();
+                    var carr = CarrierHandler._Carriers.FirstOrDefault(c => c.Callsign == NewData.Name);
+                    NewData.DockingAccess = carr.DockingAccess;
+                }
+                OBJ.Add(NewData);
+            }
+            return OBJ;
+        }
         private static void MarketSell(Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest)
         {
-            throw new NotImplementedException();
+            
         }
 
         private static void MarketBuy(Models.v1_0.Events.CarrierJump carrierJump)
         {
-            throw new NotImplementedException();
+            
         }
 
-        private static void Market(Models.v1_0.Events.Market market)
+        private static void Market(Models.v1_0.Events.Market market, DB_User user)
         {
+            var ve = JsonSerializer.Serialize(market.Items);
+            Localisation.Fetch(ve, user);
             UpdateMarket(market);
         }
 
@@ -71,32 +150,56 @@ namespace UGC_API.Handler.v1_0
             }
             return API_Market;
         }
-        internal static void UpdateMarket(Models.v1_0.Events.Market MarketEntry)
+        internal static async void UpdateMarket(Models.v1_0.Events.Market MarketEntry)
         {
+            var create = false;
             var DBMarket = Markets._Markets.FirstOrDefault(c => c.MarketID == MarketEntry.MarketID);
-            if (DBMarket == null) DBMarket = new();
+            if (DBMarket == null)
+            {
+                if (LastMarketID == MarketEntry.MarketID) return;
+                DBMarket = new();
+                create = true;
+            }
             DBMarket.MarketID = MarketEntry.MarketID;
+            LastMarketID = MarketEntry.MarketID;
             DBMarket.StarSystem = MarketEntry.StarSystem;
             DBMarket.StationName = MarketEntry.StationName;
             DBMarket.StationType = MarketEntry.StationType;
             DBMarket.Items = JsonSerializer.Serialize(MarketEntry.Items);
-            //DBMarket.Last_Update = DateTime.Now.ToString();
-            DatabaseHandler.db.Market.Update(DBMarket);
-            DatabaseHandler.db.SaveChanges();
+            DBMarket.Last_Update = DateTime.Now;
+            using (DBContext db = new())
+            {
+                if (create)
+                {
+                    db.Market.Add(DBMarket);
+                }
+                else
+                {
+                    db.Market.Update(DBMarket);
+                }
+                db.SaveChanges();
+                db.Dispose();
+            }
+            LoadMarket(true);
+            LastMarketID = 0;
         }
 
-        internal static void UpdateAllMarket()
+        internal async static void UpdateAllMarket()
         {
-            foreach (var MAR in _Markets)
+            using (DBContext db = new())
             {
-                var DBMarket = DatabaseHandler.db.Market.FirstOrDefault(c => c.MarketID == MAR.MarketID);
-                DBMarket.MarketID = MAR.MarketID;
-                DBMarket.StarSystem = MAR.StarSystem;
-                DBMarket.StationName = MAR.StationName;
-                DBMarket.StationType = MAR.StationType;
-                DBMarket.Items = JsonSerializer.Serialize(MAR.Items);
-                DatabaseHandler.db.Market.Update(DBMarket);
-                DatabaseHandler.db.SaveChanges();
+                foreach (var MAR in _Markets)
+                {
+                    var DBMarket = DatabaseHandler.db.Market.FirstOrDefault(c => c.MarketID == MAR.MarketID);
+                    DBMarket.MarketID = MAR.MarketID;
+                    DBMarket.StarSystem = MAR.StarSystem;
+                    DBMarket.StationName = MAR.StationName;
+                    DBMarket.StationType = MAR.StationType;
+                    DBMarket.Items = JsonSerializer.Serialize(MAR.Items);
+                    db.Market.Update(DBMarket);
+                }
+                db.SaveChanges();
+                db.Dispose();
             }
             LoadMarket(true);
         }

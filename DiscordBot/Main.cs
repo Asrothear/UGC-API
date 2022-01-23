@@ -28,7 +28,7 @@ namespace UGC_API.DiscordBot
 
         public async Task MainAsync()
         {
-            if (!startup )
+            if (!startup)
             {
                 if (Configs.Values.Debug)
                 {
@@ -82,7 +82,7 @@ namespace UGC_API.DiscordBot
                 else
                 {
                     await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
-                    DiscordLogInfo("Bot Satus", "Ready", "orange");
+                    //DiscordLogInfo("Bot Satus", "Ready", "orange");
                 }
                 startup = true;
             }
@@ -90,6 +90,7 @@ namespace UGC_API.DiscordBot
         private Task LogAsync(LogMessage msg)
         {
             Debug.WriteLine(msg.ToString());
+            LoggingService.schreibeLogZeile(msg.ToString());
             return Task.CompletedTask;
         }
         #endregion
@@ -98,7 +99,7 @@ namespace UGC_API.DiscordBot
         {
             //if (Configs.Debug) return;
             try
-            {   
+            {
                 var DM = user.CreateDMChannelAsync().Result;
                 if (DM == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
@@ -107,6 +108,7 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
+                LoggingService.schreibeLogZeile(e.ToString());
                 Console.WriteLine(e.ToString());
             }
         }
@@ -114,7 +116,7 @@ namespace UGC_API.DiscordBot
         {
             //if (Configs.Debug) return;
             try
-            { 
+            {
                 ITextChannel textChannel = Bot.GetChannel(Configs.Values.Bot.LogChannel) as ITextChannel;
                 if (textChannel == null) return;
                 var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
@@ -123,6 +125,7 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
+                LoggingService.schreibeLogZeile(e.ToString());
                 Console.WriteLine(e.ToString());
             }
         }
@@ -139,13 +142,14 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
+                LoggingService.schreibeLogZeile(e.ToString());
                 Console.WriteLine(e.ToString());
             }
         }
 
         public static Discord.Color GetColor(string col)
         {
-            switch(col)
+            switch (col)
             {
                 case "red": return Color.Red;
                 case "green": return Color.Green;
@@ -155,32 +159,6 @@ namespace UGC_API.DiscordBot
                 case "gold": return Color.Gold;
             }
             return Color.Blue;
-        }
-        #endregion
-        #region handle
-        private static async Task Hanndle(SocketMessage message)
-        {
-            Smessage = message;
-            await Task.Run(Command);
-            return;
-        }
-        public static void Command ()
-        {
-            SocketMessage message = Smessage;
-            string command = "";
-            int lengthOfCommand = -1;
-            int lengthOfPrefix = -1;
-            lengthOfPrefix = Configs.Values.Bot.Prefix.Length;
-            if (!message.Content.StartsWith(Configs.Values.Bot.Prefix)) return;
-            if (message.Author.IsBot) return;
-            if (!Configs.Values.Debug && message.Channel.Id != Configs.Values.Bot.InfoChannel) return;
-            if (Configs.Values.Debug && message.Channel.Id != Configs.Values.Bot.DevChannel) return;
-            lengthOfCommand = message.Content.Length;
-
-            command = message.Content.Substring(lengthOfPrefix, lengthOfCommand - lengthOfPrefix);
-
-            //CommandHandler.Execute(command, message);
-            return;
         }
         #endregion
     }

@@ -6,14 +6,23 @@ namespace UGC_API.Service
 {
     class GetTime
     {
-        public static DateTime DateNow()
+        public static DateTime DateNow(DateTime? vars = null)
         {
+            DateTime inpu;
+            if(vars == null)
+            {
+                inpu = DateTime.UtcNow;
+            }
+            else
+            {
+                inpu = vars.Value;
+            }
             try
             {//Linux
-                return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("CET"));
+                return TimeZoneInfo.ConvertTimeFromUtc(inpu, TimeZoneInfo.FindSystemTimeZoneById("CET"));
             } catch(Exception e)
             {//windows
-                return TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+                return TimeZoneInfo.ConvertTimeFromUtc(inpu, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
             }
         }
     }

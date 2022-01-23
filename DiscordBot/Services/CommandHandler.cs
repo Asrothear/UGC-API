@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using UGC_API.Service;
 
 namespace UGC_API.DiscordBot.Services
 {
@@ -135,9 +136,10 @@ namespace UGC_API.DiscordBot.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                LoggingService.schreibeLogZeile(ex.ToString());
                 // if a Slash Command execution fails it is most likely that the original interaction acknowledgement will persist. It is a good idea to delete the original
                 // response, or at least let the user know that something went wrong during the command execution.
-                if(arg.Type == InteractionType.ApplicationCommand)
+                if (arg.Type == InteractionType.ApplicationCommand)
                 {
                     await arg.GetOriginalResponseAsync().ContinueWith(async (msg) => await msg.Result.DeleteAsync());
                 }

@@ -12,26 +12,26 @@ namespace UGC_API.Controllers.v1_0
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class CarrierMarket : ControllerBase
+    public class Market : ControllerBase
     {
-        [HttpGet("{CallSign}")]
+        [HttpGet("{Name}")]
         [MapToApiVersion("1.0")]
-        public List<CarrierModel.MarketModel> Get(string CallSign)
+        public Models.v1_0.Events.Market Get(string Name)
         {
-            var Out = CarrierHandler.GetCarrierMarket(CallSign);
+            var Out = MarketHandler.GetMarket(Name);
             return Out;
         }
     }
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class CarrierFindItem : ControllerBase
+    public class MarketFindItem : ControllerBase
     {
         [HttpGet("{Ware}")]
         [MapToApiVersion("1.0")]
-        public List<CarrierModel.MarketSearchModel> Get(string Ware)
+        public List<MarketSearchModel> Get(string Ware)
         {
-            var Out = CarrierHandler.FindWare(Ware);
+            List<MarketSearchModel> Out = MarketHandler.FindWare(Ware);
             return Out;
         }
     }

@@ -10,10 +10,11 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using System.Timers;
 using UGC_API.Handler.v1_0;
+using UGC_API.Service;
 
 namespace UGC_API.Database
 {
-    internal class DatabaseHandler
+    internal static class DatabaseHandler
     {
         internal static DBContext db = new();
         internal static void LoadData()
@@ -28,6 +29,7 @@ namespace UGC_API.Database
                 Systems.LoadFromDB();
                 Carriers.LoadFromDB();
                 Markets.LoadFromDB();
+                Localisation.LoadFromDB();
                 User._Users = new(db.DB_Users);
                 VerifyToken._Verify_Token = new(db.Verify_Token);
             }
@@ -35,6 +37,7 @@ namespace UGC_API.Database
             {
                 Console.WriteLine(e);
                 Debug.WriteLine(e);
+                LoggingService.schreibeLogZeile(e.ToString());
             }
         }
         internal static bool CheckUsername(string Username)
@@ -43,10 +46,16 @@ namespace UGC_API.Database
         }
         public static void OnUpdateDataCacheTimer(object sender, ElapsedEventArgs e)
         {
+            Config_F.Configs = new List<DB_Config>(db.DB_Config);
+            Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
+            Configs.Events = Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
+            Configs.UpdateSystems = Config_F.Configs[0].update_systems;
+            Markets.LoadFromDB();
             Systems.LoadFromDB();
             Carriers.LoadFromDB();
             CarrierHandler.LoadCarrier(true);
             SystemHandler.LoadSystems(true);
+            MarketHandler.LoadMarket(true);
         }
     }
 }

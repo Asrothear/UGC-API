@@ -28,6 +28,7 @@ namespace UGC_API.Models.v1_0.Events
             public ulong StockBracket { get; set; }
             public ulong DemandBracket { get; set; }
             public string Name_Localised { get; set; }
+            public string Category { get; set; }
             public string Category_Localised { get; set; }
         }
     }

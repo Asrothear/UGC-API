@@ -13,5 +13,6 @@ namespace UGC_API.Database_Models
         public string StationName { get; set; }
         public string StationType { get; set; }
         public string Items { get; set; }        
+        public DateTime Last_Update { get; set; }        
     }
 }

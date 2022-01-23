@@ -5,13 +5,15 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Threading;
 
 namespace UGC_API.Service
 {
     public static class LoggingService
     {
-        
-        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"\Logs\LogFiles\");
+        private const int NumberOfRetries = 3;
+        private const int DelayOnRetry = 1000;
+        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\LogFiles\");
 
         public static void HeartbeatLog(object sender, ElapsedEventArgs e)
         {
@@ -19,36 +21,47 @@ namespace UGC_API.Service
             {
                 using (StreamWriter sw = new(fs))
                 {
-                    sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] - HB");
+                    sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] - HB");
                 }
             }
         }
 
-        public static void schreibeLogZeile(string content, string Zusatzinformationen = "")
+        public async static void schreibeLogZeile(string content, string Zusatzinformationen = "")
         {
-            using (FileStream fs = new FileStream(logfileDir, FileMode.Append))
+            for (int i = 1; i <= NumberOfRetries; ++i)
             {
-                using (StreamWriter sw = new StreamWriter(fs))
+                try
                 {
-                    sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff")}] " + content);
-
-                    if (String.IsNullOrWhiteSpace(Zusatzinformationen) == false)
+                    using (FileStream fs = new FileStream(logfileDir, FileMode.Append))
                     {
-                        sw.WriteLine($"{Environment.NewLine}Zusatzinformationen:{Environment.NewLine}");
-                        sw.WriteLine(Zusatzinformationen);
-                        sw.Write(Environment.NewLine);
+                        using (StreamWriter sw = new StreamWriter(fs))
+                        {
+                            sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] " + content);
+
+                            if (String.IsNullOrWhiteSpace(Zusatzinformationen) == false)
+                            {
+                                sw.WriteLine($"{Environment.NewLine}Zusatzinformationen:{Environment.NewLine}");
+                                sw.WriteLine(Zusatzinformationen);
+                                sw.Write(Environment.NewLine);
+                            }
+                        }
                     }
+                    break;
+                }
+                catch (IOException e) when (i <= NumberOfRetries)
+                {
+                    Thread.Sleep(DelayOnRetry);
                 }
             }
         }
 
         public static void erstelleLogDatei()
         {
-            string fileName = DateTime.Now.ToString("yyyy-MM-dd HH-mm-ss-fff") + ".log";
+            string fileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
 
             Directory.CreateDirectory(logfileDir);
 
-            StreamWriter sw = File.CreateText(logfileDir + fileName);
+            StreamWriter sw = File.AppendText(logfileDir + fileName);
             sw.Close();
 
             logfileDir += fileName;

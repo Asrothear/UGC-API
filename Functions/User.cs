@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using UGC_API.Service;
 
 namespace UGC_API.Functions
 {
@@ -24,8 +25,12 @@ namespace UGC_API.Functions
             _Users.Add(UserData);
             try
             {
-                DatabaseHandler.db.DB_Users.Update(UserData);
-                DatabaseHandler.db.SaveChanges();
+                using (DBContext db = new())
+                {
+                    db.DB_Users.Update(UserData);                    
+                    db.SaveChanges();
+                    db.Dispose();
+                }
             }
             catch (Exception e)
             {
@@ -89,8 +94,12 @@ namespace UGC_API.Functions
             {
                 return;
             }
-            DatabaseHandler.db.DB_Users.Update(us);
-            DatabaseHandler.db.SaveChanges();
+            using (DBContext db = new())
+            {
+                db.DB_Users.Update(us);
+                db.SaveChanges();
+                db.Dispose();
+            }
         }
     }
 }

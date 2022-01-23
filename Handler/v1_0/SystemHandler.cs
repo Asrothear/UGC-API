@@ -94,28 +94,44 @@ namespace UGC_API.Handler.v1_0
                 newSystemEntry.Factions.Add(faction);
             }
             _Systeme.Add(newSystemEntry);
-            UpdateSystem(user, newSystemEntry);
-            LoadSystems(true);
+            UpdateSystem(user, newSystemEntry, true);
             return;
         }
 
-        public static void UpdateSystem(DB_User user, Models.v1_0.SystemModel SystemEntry)
+        public async static void UpdateSystem(DB_User user, Models.v1_0.SystemModel SystemEntry, bool create = false)
         {
             var UpdateEntry = Systems._Systeme.FirstOrDefault(sy => sy.Timestamp == SystemEntry.Timestamp && sy.System_Name == SystemEntry.System_Name);
-            if (UpdateEntry == null) UpdateEntry = new();
+            if (UpdateEntry == null)
+            {
+                UpdateEntry = new();
+                create = true;
+            }
+
             UpdateEntry.Timestamp = SystemEntry.Timestamp;
             UpdateEntry.last_update = SystemEntry.last_update;
             UpdateEntry.User_ID = user.id;
             UpdateEntry.System_ID = SystemEntry.System_ID;
             UpdateEntry.System_Name = SystemEntry.System_Name;
             UpdateEntry.Factions = JsonSerializer.Serialize(SystemEntry.Factions);
+
             
             if (SystemEntry == null)
             {
                 return;
             }
-            DatabaseHandler.db.DB_Systemes.Update(UpdateEntry);
-            DatabaseHandler.db.SaveChanges();
+            using (DBContext db = new())
+            {
+                if (create)
+                {
+                    db.DB_Systemes.Add(UpdateEntry);
+                }
+                else
+                {
+                    db.DB_Systemes.Update(UpdateEntry);
+                }
+                db.SaveChanges();
+                db.Dispose();
+            }
         }
 
 

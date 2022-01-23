@@ -29,10 +29,20 @@ namespace UGC_API
         public static void Main(string[] args)
         {
             LoggingService.erstelleLogDatei();
-            DatabaseLoader.LoadDatabase();
-            //Eddn_Main.eddn_listener();
-            Thread thread = new Thread(DiscordBot.DiscordBot.Main);
-            thread.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            try
+            {
+                DatabaseLoader.LoadDatabase();
+                //Eddn_Main.eddn_listener();
+                Thread thread = new Thread(DiscordBot.DiscordBot.Main);
+                thread.Start();
+            }catch (Exception ex)
+            {
+                LoggingService.schreibeLogZeile(ex.ToString());
+            }
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"StartUp Time: {watch.ElapsedMilliseconds} ms");
             CreateHostBuilder(args).Build().Run();
         }
 

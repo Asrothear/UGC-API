@@ -18,10 +18,6 @@ namespace UGC_API.Database
             UpdateDataCacheTimer.Elapsed += new(DatabaseHandler.OnUpdateDataCacheTimer);
             UpdateDataCacheTimer.Interval += 5*(60*1000);
             UpdateDataCacheTimer.Enabled = true;
-            Timer LoggerTimer = new();
-            LoggerTimer.Elapsed += new(LoggingService.HeartbeatLog);
-            LoggerTimer.Interval += 1 * (60 * 1000);
-            LoggerTimer.Enabled = true;
         }
     }
 }
