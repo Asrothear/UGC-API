@@ -24,8 +24,8 @@ namespace UGC_API.Handler.v1_0
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
             if (s == null) { result = 1; return; }
-            QLSData = JObject.Parse(s.ToString().Replace("&", "and").Replace("'", ""));
-            string UUID = QLSData["ugc_token_v2"]["uuid"].ToString().Replace(@":", @"cd_").Replace(@"\\", @":").Replace(@"\", @":").Replace("/", "").Replace("|", "_");
+            QLSData = JObject.Parse(s.ToString());
+            string UUID = User.CreateUUID(QLSData["ugc_token_v2"]["uuid"].ToString());
             if (UUID == "none" || UUID == "" || UUID == " " || UUID == null) { result = 0; return; }
             string Token = QLSData["ugc_token_v2"]["token"].ToString();
             if (Token == "none" || Token == "" || Token == " " || Token == null) { result = 0; return; }
@@ -35,7 +35,7 @@ namespace UGC_API.Handler.v1_0
             if (!Filter(QLSData["event"]?.Value<string>() ?? "")) {result = 1; return; }
             result = 1;
             Event = QLSData["event"]?.Value<string>() ?? "";
-            user = User._Users.FirstOrDefault(u => u.uuid == UUID);
+            user = User.GetUser(UUID);
             if (user == null) return;
             user.user = QLSData["user"]?.Value<string>() ?? "";
             TimeStamp = QLSData["timestamp"]?.Value<DateTime>() ?? DateTime.Now;

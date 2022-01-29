@@ -9,7 +9,7 @@
             Lists all UGC Carrier.
             </summary>
         </member>
-        <member name="M:UGC_API.Controllers.v1_0.QLS.Post(System.Object)">
+        <member name="M:UGC_API.Controllers.v1_0.QLS.PostAsync(System.Object)">
             <summary>
             Creates an QLS request.
             </summary>

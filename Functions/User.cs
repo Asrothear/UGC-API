@@ -13,6 +13,11 @@ namespace UGC_API.Functions
     class User
     {
         public static List<DB_User> _Users = new();
+        public static string CreateUUID(string UUID)
+        {
+            if (UUID == null) return null;
+            return UUID.Replace(@":", @"cd_").Replace(@"\\", @":").Replace(@"\", @":").Replace("/", "").Replace("|", "_").Replace("::",":");
+        }
         public static void CreateUserAccount(string uuid, string token, string verify)
         {
             if (!VerifyToken.IsUsed(verify)) return;
@@ -36,6 +41,12 @@ namespace UGC_API.Functions
             {
                 Debug.WriteLine(e.ToString());
             }
+        }
+        public static DB_User GetUser (string UUID)
+        {
+            var user = _Users.FirstOrDefault(u => u.uuid == UUID);
+            if (user == null) return null;
+            return user;
         }
         public static bool CheckTokenHash(string uuid, string token)
         {

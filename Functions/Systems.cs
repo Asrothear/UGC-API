@@ -14,5 +14,10 @@ namespace UGC_API.Functions
         {
             _Systeme = new(DatabaseHandler.db.DB_Systemes);
         }
+
+        internal static void SetSystemData(string starSystem, long systemAddress, double[] starPos, long population)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

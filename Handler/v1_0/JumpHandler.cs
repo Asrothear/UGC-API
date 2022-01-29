@@ -20,12 +20,12 @@ namespace UGC_API.Handler.v1_0
             JumpData = fSDJump;
             JumpData.Timestamp = timeStamp;
             string system = qLSData["StarSystem"]?.Value<string>() ?? null;
+            LocationHandler.UserSetLocation(user, JumpData.StarPos, JumpData.StarSystem);
             if (!Configs.Systems.Contains<string>(system))
             {
-                LocationHandler.UserSetLocation(user, JumpData.StarPos, JumpData.StarSystem);
                 return;
             };
-            LocationHandler.UserSetLocation(user, JumpData.StarPos, JumpData.StarSystem);
+            Systems.SetSystemData(fSDJump.StarSystem, fSDJump.SystemAddress, fSDJump.StarPos, fSDJump.Population);
             string[] t_arry = JumpData.Timestamp.ToString("d").Split('.');
             int year = Convert.ToInt32(t_arry[2]) + 1286;
             var time = DateTime.Parse($"{year}-{t_arry[1]}-{t_arry[0]}");

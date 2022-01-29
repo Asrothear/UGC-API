@@ -38,13 +38,13 @@ namespace UGC_API.Handler.v1_0
             LoggingService.schreibeLogZeile($"MarketHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
-        internal static Models.v1_0.Events.Market GetMarket(string name)
+        internal static List<Models.v1_0.Events.Market> GetMarket(string name)
         {
             LoadMarket();
-            var outs = _Markets.FirstOrDefault(m => m.StationName == name);
+            var outs = _Markets.Where(m => m.StationName == name).ToList();
             if(outs == null)
             {
-                return new Models.v1_0.Events.Market();
+                return new List<Models.v1_0.Events.Market>();
             }
             return outs;
         }
@@ -53,9 +53,11 @@ namespace UGC_API.Handler.v1_0
             LoadMarket();
             List<MarketSearchModel> OBJ = new();
             List<Models.v1_0.Events.Market> CM = new();
+            var find = Localisation._Localisations.FirstOrDefault(l => l.Name == Ware || l.de == Ware || l.en == Ware);
+            if (find == null) return OBJ;
             try
             {
-                CM = _Markets.Where(u => u.Items.SingleOrDefault(m => m.Name == Ware && m.BuyPrice > 0 && m.Stock > 0) != null).ToList();
+                CM = _Markets.Where(u => u.Items.SingleOrDefault(m => m.Name == find.Name && m.BuyPrice > 0 && m.Stock > 0) != null).ToList();
             }
             catch (Exception e)
             {
@@ -71,15 +73,17 @@ namespace UGC_API.Handler.v1_0
                     StationType = Data.StationType,
                     //market = Data.market.Where(i => i.Name == Ware).ToList()
                 };
-                Data.Items = Data.Items.Where(m => m.Name == Ware && m.BuyPrice > 0 && m.Stock > 0).ToList();
+                Data.Items = Data.Items.Where(m => m.Name == find.Name && m.BuyPrice > 0 && m.Stock > 0).ToList();
                 foreach(var Item in Data.Items)
                 {
                     var newItem = new MarketModel
                     {
                         Name = Item.Name,
-                        Name_Localised = Item.Name_Localised,
+                        Name_de = Localisation.GetLocalisationString(Item.Name),
+                        Name_en = Localisation.GetLocalisationString(Item.Name, true),
                         Category = Item.Category,
-                        Category_Localised = Item.Category_Localised,
+                        Category_de = Localisation.GetLocalisationString(Item.Category_Localised),
+                        Category_en = Localisation.GetLocalisationString(Item.Category_Localised, true),
                         BuyPrice = Item.BuyPrice,
                         SellPrice = Item.SellPrice,
                         MeanPrice = Item.MeanPrice,

@@ -16,7 +16,7 @@ namespace UGC_API.Controllers.v1_0
     {
         [HttpGet("{Name}")]
         [MapToApiVersion("1.0")]
-        public Models.v1_0.Events.Market Get(string Name)
+        public List<Models.v1_0.Events.Market> Get(string Name)
         {
             var Out = MarketHandler.GetMarket(Name);
             return Out;

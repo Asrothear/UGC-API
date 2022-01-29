@@ -22,6 +22,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_Log> DB_Log { get; set; }
         public virtual DbSet<DB_Systeme> DB_Systemes { get; set; }
         public virtual DbSet<DB_Localisation> Localisation { get; set; }
+        public virtual DbSet<DB_Plugin> Plugin { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -150,6 +151,16 @@ namespace UGC_API.Database
                 entity.Property(e => e.Name).HasColumnName("Name");
                 entity.Property(e => e.de).HasColumnName("de");
                 entity.Property(e => e.en).HasColumnName("en");
+            });
+            MoBuilder.Entity<DB_Plugin>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable($"ugc_*plugin", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.force_url).HasColumnName("force_url");
+                entity.Property(e => e.force_update).HasColumnName("force_update");
+                entity.Property(e => e.min_version).HasColumnName("min_version");
+                entity.Property(e => e.min_minor).HasColumnName("min_minor");
             });
         }
     }

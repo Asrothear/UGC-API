@@ -129,9 +129,9 @@ namespace UGC_API.Handler.v1_0
                     prev_System = DB_Carrier.prev_System == "" ? null : DB_Carrier.prev_System,
                     DockingAccess = DB_Carrier.DockingAccess,
                     AllowNotorious = (DB_Carrier.AllowNotorious != "1" ? false : true),
-                    FuelLevel = Convert.ToInt32(DB_Carrier.FuelLevel),
-                    JumpRangeCurr = Convert.ToInt32(DB_Carrier.JumpRangeCurr),
-                    JumpRangeMax = Convert.ToInt32(DB_Carrier.JumpRangeMax),
+                    FuelLevel = Convert.ToDouble(DB_Carrier.FuelLevel),
+                    JumpRangeCurr = Convert.ToDouble(DB_Carrier.JumpRangeCurr),
+                    JumpRangeMax = Convert.ToDouble(DB_Carrier.JumpRangeMax),
                     PendingDecommission = DB_Carrier.PendingDecommission != "1" ? false : true,
                     SpaceUsage = ConvertToSpaceUsage(DB_Carrier.SpaceUsage),
                     Finance = ConvertToFinance(DB_Carrier.Finance),
@@ -140,6 +140,7 @@ namespace UGC_API.Handler.v1_0
                     ModulePacks = ConvertToModulePacks(DB_Carrier.ModulePacks),
                     Last_Update = DateTime.Parse(DB_Carrier.Last_Update)
                 };
+                
                 API_Carier.Add(CarrierData);
             }
             return API_Carier;

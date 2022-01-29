@@ -12,11 +12,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UGC_API.Service;
 
-namespace UGC_API.Service
+namespace UGC_API.EDDN
 {
-    public static class Eddn_Main
+    public static class EDDNListener
     {
-        public async static void eddn_listener()
+        public async static void listener()
         {
             await Task.Run(new Action(() =>
             {
@@ -37,6 +37,8 @@ namespace UGC_API.Service
                             var uncompressed = ZlibStream.UncompressBuffer(bytes);
                             var result = utf8.GetString(uncompressed);
                             JObject resObjJson = JObject.Parse(result);
+                            var EDDNWorker = new EDDNWorker();
+                            EDDNWorker.WorkerThread(resObjJson);
                         }
                         catch (Exception ex)
                         {

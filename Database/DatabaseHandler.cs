@@ -26,6 +26,7 @@ namespace UGC_API.Database
                 Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
                 Configs.Events =Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
                 Configs.UpdateSystems = Config_F.Configs[0].update_systems;
+                Configs.Plugin = new List<DB_Plugin>(db.Plugin);
                 Systems.LoadFromDB();
                 Carriers.LoadFromDB();
                 Markets.LoadFromDB();

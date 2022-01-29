@@ -10,9 +10,11 @@ namespace UGC_API.Models.v1_0
     public class MarketModel
     {
         public string Name { get; set; }
-        public string Name_Localised { get; set; }
+        public string Name_de { get; set; }
+        public string Name_en { get; set; }
         public string Category { get; set; }
-        public string Category_Localised { get; set; }
+        public string Category_de { get; set; }
+        public string Category_en { get; set; }
         public ulong? BuyPrice { get; set; }
         public ulong? SellPrice { get; set; }
         public ulong? MeanPrice { get; set; }

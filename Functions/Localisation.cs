@@ -82,6 +82,20 @@ namespace UGC_API.Functions
                 }
             }
         }
+        internal static string GetLocalisationString(string Name, bool en = false) 
+        {
+            LoadLocalisation();
+            var find = _Localisations.FirstOrDefault(l => l.Name == Name);
+            if (find == null) return null;
+            if (!en)
+            {
+                return find.de;
+            }
+            else
+            {
+                return find.en;
+            }
+        }
         private static DB_Localisation setlocalisation(DB_Localisation loc,string value, Database_Models.DB_User user)
         {
             if (user.Language == "de")

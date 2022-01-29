@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
+using UGC_API.Database_Models;
 using UGC_API.Models;
 using UGC_API.Service;
 
@@ -16,6 +17,8 @@ namespace UGC_API.Config
         public static string[] Systems { get; set; }
         public static string[] Events { get; set; }
         public static int UpdateSystems { get; set; }
+
+        internal static List<DB_Plugin> Plugin = new List<DB_Plugin>();
 
         internal static ConfigModel Values = new();
         public static void ReadConfig()

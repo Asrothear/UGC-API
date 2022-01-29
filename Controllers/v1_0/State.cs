@@ -28,7 +28,7 @@ namespace UGC_API.Controllers.v1_0
             watch.Start();
             StateModel stateModel = new StateModel
             {
-                UUID = uuid,
+                UUID = Functions.User.CreateUUID(uuid),
                 Token = token,
                 Visible = cmdr != "1" ? false : true,
                 Version = Convert.ToDouble(version),

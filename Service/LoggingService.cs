@@ -55,6 +55,30 @@ namespace UGC_API.Service
             }
         }
 
+        internal static void schreibeEDDNLog(string v)
+        {
+             var target = erstelleEDDNDatei();
+            for (int i = 1; i <= NumberOfRetries; ++i)
+            {
+                try
+                {
+                    using (FileStream fs = new FileStream(target, FileMode.Append))
+                    {
+                        using (StreamWriter sw = new StreamWriter(fs))
+                        {
+                            sw.WriteLine(v);
+                        }
+                    }
+                    break;
+                }
+                catch (IOException e) when (i <= NumberOfRetries)
+                {
+                    Thread.Sleep(DelayOnRetry);
+                }
+            }
+
+        }
+
         public static void erstelleLogDatei()
         {
             string fileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
@@ -65,6 +89,23 @@ namespace UGC_API.Service
             sw.Close();
 
             logfileDir += fileName;
+        }
+        public static string erstelleEDDNDatei()
+        {
+            string fileName = "EDDN" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+            try
+            {
+                Directory.CreateDirectory(logfileDir);
+            }
+            catch ( IOException e )
+            {
+
+            }
+
+            StreamWriter sw = File.AppendText(logfileDir + fileName);
+            sw.Close();
+            
+            return (logfileDir + fileName);
         }
     }
 }

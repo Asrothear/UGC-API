@@ -21,6 +21,7 @@ using Microsoft.Extensions.PlatformAbstractions;
 using UGC_API.Database;
 using System.Threading;
 using UGC_API.Service;
+using UGC_API.EDDN;
 
 namespace UGC_API
 {
@@ -34,7 +35,7 @@ namespace UGC_API
             try
             {
                 DatabaseLoader.LoadDatabase();
-                //Eddn_Main.eddn_listener();
+                //EDDNListener.listener();
                 Thread thread = new Thread(DiscordBot.DiscordBot.Main);
                 thread.Start();
             }catch (Exception ex)
