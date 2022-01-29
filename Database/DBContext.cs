@@ -20,6 +20,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_Verify_Token> Verify_Token { get; set; }
         public virtual DbSet<DB_User> DB_Users { get; set; }
         public virtual DbSet<DB_Log> DB_Log { get; set; }
+        public virtual DbSet<DB_SystemData> DB_SystemData { get; set; }
         public virtual DbSet<DB_Systeme> DB_Systemes { get; set; }
         public virtual DbSet<DB_Localisation> Localisation { get; set; }
         public virtual DbSet<DB_Plugin> Plugin { get; set; }
@@ -130,6 +131,16 @@ namespace UGC_API.Database
                 entity.Property(e => e.Event).HasColumnName("Event");
                 entity.Property(e => e.JSON).HasColumnName("JSON");
                 entity.Property(e => e.version_plugin).HasColumnName("version_plugin");
+            });
+            MoBuilder.Entity<DB_SystemData>(entity =>
+            {
+                entity.HasKey(e => e.id);
+                entity.ToTable($"ugc_*systems", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.starSystem).HasColumnName("name");
+                entity.Property(e => e.systemAddress).HasColumnName("address");
+                entity.Property(e => e.starPos).HasColumnName("starPos");
+                entity.Property(e => e.population).HasColumnName("population");
             });
             MoBuilder.Entity<DB_Systeme>(entity =>
             {

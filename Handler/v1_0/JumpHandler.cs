@@ -25,7 +25,7 @@ namespace UGC_API.Handler.v1_0
             {
                 return;
             };
-            Systems.SetSystemData(fSDJump.StarSystem, fSDJump.SystemAddress, fSDJump.StarPos, fSDJump.Population);
+            Systems.UpdateSystemData(fSDJump.StarSystem, fSDJump.SystemAddress, fSDJump.StarPos, fSDJump.Population);
             string[] t_arry = JumpData.Timestamp.ToString("d").Split('.');
             int year = Convert.ToInt32(t_arry[2]) + 1286;
             var time = DateTime.Parse($"{year}-{t_arry[1]}-{t_arry[0]}");

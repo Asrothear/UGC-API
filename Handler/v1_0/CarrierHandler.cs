@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -118,7 +119,6 @@ namespace UGC_API.Handler.v1_0
             List<CarrierModel> API_Carier = new();
             foreach (var DB_Carrier in dB_Carriers)
             {
-
                 var CarrierData = new CarrierModel
                 {
                     id = DB_Carrier.id,
@@ -129,9 +129,9 @@ namespace UGC_API.Handler.v1_0
                     prev_System = DB_Carrier.prev_System == "" ? null : DB_Carrier.prev_System,
                     DockingAccess = DB_Carrier.DockingAccess,
                     AllowNotorious = (DB_Carrier.AllowNotorious != "1" ? false : true),
-                    FuelLevel = Convert.ToDouble(DB_Carrier.FuelLevel),
-                    JumpRangeCurr = Convert.ToDouble(DB_Carrier.JumpRangeCurr),
-                    JumpRangeMax = Convert.ToDouble(DB_Carrier.JumpRangeMax),
+                    FuelLevel = double.Parse(DB_Carrier.FuelLevel, CultureInfo.InvariantCulture),
+                    JumpRangeCurr = double.Parse(DB_Carrier.JumpRangeCurr, CultureInfo.InvariantCulture),
+                    JumpRangeMax = double.Parse(DB_Carrier.JumpRangeMax, CultureInfo.InvariantCulture),
                     PendingDecommission = DB_Carrier.PendingDecommission != "1" ? false : true,
                     SpaceUsage = ConvertToSpaceUsage(DB_Carrier.SpaceUsage),
                     Finance = ConvertToFinance(DB_Carrier.Finance),
@@ -139,8 +139,7 @@ namespace UGC_API.Handler.v1_0
                     ShipPacks = ConvertToShipPacks(DB_Carrier.ShipPacks),
                     ModulePacks = ConvertToModulePacks(DB_Carrier.ModulePacks),
                     Last_Update = DateTime.Parse(DB_Carrier.Last_Update)
-                };
-                
+                };                
                 API_Carier.Add(CarrierData);
             }
             return API_Carier;
