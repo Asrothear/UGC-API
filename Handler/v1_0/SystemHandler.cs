@@ -34,7 +34,8 @@ namespace UGC_API.Handler.v1_0
                     last_update = DB_System.last_update,
                     User_ID = DB_System.User_ID,
                     System_ID = DB_System.System_ID,
-                    System_Name = DB_System.System_Name
+                    System_Name = DB_System.System_Name,
+                    Factions = ConvertToFactions(DB_System.Factions)
                 };
                 API_Systeme.Add(SystemData);
             }

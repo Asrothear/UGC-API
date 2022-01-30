@@ -70,16 +70,13 @@ namespace UGC_API.Handler.v1_0
                 return Systems_out.ToArray();
             }
             //Entferne Systeme aus der Liste die Aktuell sind
-
             foreach(var sys in HSystems)
             {
                 Systems_out.Remove(sys.System_Name);
             }
-            //Array.Sort(b.ToArray(), c);
             if (advanced)
             {
                 string[] pos_array = null;
-                //[41.9375,-155.6875,16.3125]
                 try
                 {
                     pos_array = user.last_pos.Replace("[", "").Replace("]", "").Split(',');
@@ -112,10 +109,6 @@ namespace UGC_API.Handler.v1_0
             {
                 return Systems_out.ToArray();
             }
-        }
-        internal static string[] returnn()
-        {
-            return new string[0];
         }
     }
 }
