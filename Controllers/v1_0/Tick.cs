@@ -24,17 +24,9 @@ namespace UGC_API.Controllers.v1_0
     {
         [HttpGet]
         [MapToApiVersion("1.0")]        
-        public string[] Get()
-        {
-            List<TickModel> tick = new();
-            using (WebClient wc = new WebClient())
-            {
-                var json = wc.DownloadString("https://elitebgs.app/api/ebgs/v5/ticks");
-                tick = JsonSerializer.Deserialize<List<TickModel>>(json);
-            }
-            
-            string[] outs = {$"{GetTime.DateNow(tick.ElementAt(0).time)}" };
-            return outs;
+        public async Task<string[]> GetAsync()
+        {            
+            return Functions.Tick.AktualTick;
         }
     }
 }

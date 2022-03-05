@@ -12,7 +12,7 @@ namespace UGC_API.Models.v1_0.Events
         public string StarSystem { get; set; }
         public long SystemAddress { get; set; }
         public double[] StarPos { get; set; }
-        public string SystemAllegianceSystemAllegiance { get; set; }
+        public string SystemAllegiance { get; set; }
         public string SystemEconomy { get; set; }
         public string SystemEconomy_Localised { get; set; }
         public string SystemSecondEconomy { get; set; }

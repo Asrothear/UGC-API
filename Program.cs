@@ -22,6 +22,7 @@ using UGC_API.Database;
 using System.Threading;
 using UGC_API.Service;
 using UGC_API.EDDN;
+using UGC_API.Handler;
 
 namespace UGC_API
 {
@@ -31,14 +32,19 @@ namespace UGC_API
         {
             LoggingService.erstelleLogDatei();
             var watch = new System.Diagnostics.Stopwatch();
+            var Tick = new Functions.Tick();
             watch.Start();
             try
             {
-                DatabaseLoader.LoadDatabase();
-                //EDDNListener.listener();
+                Config.Configs.ReadConfig();
+                DatabaseHandler.LoadData();
+                TimerHandler.Start();
+                EDDNListener.listener();
                 Thread thread = new Thread(DiscordBot.DiscordBot.Main);
                 thread.Start();
-            }catch (Exception ex)
+                Tick.GetTick();
+            }
+            catch (Exception ex)
             {
                 LoggingService.schreibeLogZeile(ex.ToString());
             }

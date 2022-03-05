@@ -30,7 +30,7 @@ namespace UGC_API.Controllers.v1_0
             {
                 UUID = Functions.User.CreateUUID(uuid),
                 Token = token,
-                Visible = cmdr != "1" ? false : true,
+                Visible = cmdr != "True" ? false : true,
                 Version = Convert.ToDouble(version),
                 Minor = Convert.ToInt32(br),
                 Branch = branch
@@ -38,7 +38,7 @@ namespace UGC_API.Controllers.v1_0
             var StateHandler = new StateHandler();
             var ous = StateHandler.state(stateModel);
             watch.Stop();
-            LoggingService.schreibeLogZeile($"StateHandler Execution Time: {watch.ElapsedMilliseconds} ms");
+            LoggingService.schreibeLogZeile($"StateHandler Execution Time: {watch.ElapsedMilliseconds} ms - {cmdr}");
             return ous;
         }
     }

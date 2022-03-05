@@ -16,7 +16,7 @@ namespace UGC_API.Controllers.v1_0
     {
         // GET: System_History
         [HttpGet("{Name}")]
-        public List<SystemModel> Index(string Name)
+        public List<SystemModel> Index(string Name, [FromHeader] string token)
         {
             SystemHandler.LoadSystems();
             var sys = SystemHandler._Systeme.Where(sys => sys.System_Name == Name).ToList();

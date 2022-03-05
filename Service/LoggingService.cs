@@ -92,7 +92,8 @@ namespace UGC_API.Service
         }
         public static string erstelleEDDNDatei()
         {
-            string fileName = "EDDN" + DateTime.Now.ToString("yyyy-MM-dd") + ".log";
+            var dat = DateTime.Now.ToString("yyyy - MM - dd");
+            string fileName = $"EDDN-{dat}.log";
             try
             {
                 Directory.CreateDirectory(logfileDir);

@@ -32,5 +32,12 @@ namespace UGC_API.DiscordBot.Modules
             DiscordBot.SendDM("Info", $"Dein Token lautet:\n `{ VerifyToken.GetToken(U_ID)}`", "gold", Context.User);
             await RespondAsync("Das Token wird dir per DM gesendet!");
         }
+        [SlashCommand("update", "update the data cache")]
+        public async Task updatechache()
+        {
+            var DatabaseHandler = new Database.DatabaseHandler();
+            DatabaseHandler.UpdateDataCache();
+            await RespondAsync("Chache wir aktuallisiert.");
+        }
     }
 }

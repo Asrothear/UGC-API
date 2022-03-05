@@ -42,9 +42,13 @@ namespace UGC_API.Handler.v1_0
                 else
                 {
                     user = User.GetUser(stateModel.UUID);
-                    if (user != null)
+                    if (user != null && stateModel.Visible)
                     {
                         advanced = true;
+                    }
+                    else
+                    {
+                        advanced = false;
                     }
                 }
             }
@@ -59,21 +63,41 @@ namespace UGC_API.Handler.v1_0
             }
 
             SystemHandler.LoadSystems();
-            //Liste aller aktuellen systeme
-            List<SystemModel> HSystems = SystemHandler._Systeme.Where(s => s.last_update.Month == DateTime.Now.Month && s.last_update.Day == DateTime.Now.Day).ToList();
+            //Hole alle Einträge aus dem aktuellen Monat
+            List<SystemModel> HSystems = SystemHandler._Systeme.Where(s => (s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year)).ToList();
+            //Filer Systeme
+            List<string> Systems_outs = new();
+            Systems_outs = Systems_out;
+            foreach (var System in Systems_outs.ToArray())
+            {
+                var list = HSystems.Where(s => s.System_Name == System).ToList();
+                if (list.Count == 0) continue;
+                //Hole aus MonatsListe das System das mindestens am vortag Aktuallisiert wurde
+                var list2 = list.Where(s => s.last_update.Day >= (GetTime.DateNow().Day - 1)).ToList();
+                //Wenn System 2 Einträge hat, vortag und aktueller Tag, Prüfe ob das System Nach dem Tick Atuallisiert wurde
+                if (list2.Count == 2)
+                {
+                    //Wenn das System nach dem Tick aktuallisiert wurde, entferne System aus der Liste
+                    var list3 = list2.Where(s => s.last_update < Tick.DateTimeTick);
+                    if (list3 == null) continue;
+                    Systems_out.Remove(list2.LastOrDefault()?.System_Name);
+                }
+                else if(list2.Count == 1)
+                {
+                    var list3 = list.LastOrDefault();
+                    if(list3.last_update.Day < GetTime.DateNow().Day) continue;
+                    Systems_out.Remove(list2.LastOrDefault()?.System_Name);
+                }
+            }
 
             //Alle Systeme sind Aktuell
-            if (HSystems.Count == Systems_out.Count)
+            if (Systems_out.Count == 0)
             {
-                Systems_out = new();
                 Systems_out.Add("Alles Aktuell!");
                 return Systems_out.ToArray();
             }
-            //Entferne Systeme aus der Liste die Aktuell sind
-            foreach(var sys in HSystems)
-            {
-                Systems_out.Remove(sys.System_Name);
-            }
+            
+            //Berechne Distanz zum CMDr
             if (advanced)
             {
                 string[] pos_array = null;
@@ -103,10 +127,12 @@ namespace UGC_API.Handler.v1_0
                     _systData.Distance = dist;
                     _syst.Add(_systData);
                 }
+                //Ausgabe der Erweiterten System-Liste *EOE
                 return _syst.OrderBy(y => y.Distance).ToList().Select(r => r.Name).ToArray();
             }
             else
             {
+                //Ausgabe der Noemalen-Systemliste *EOE
                 return Systems_out.ToArray();
             }
         }

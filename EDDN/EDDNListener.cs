@@ -37,7 +37,7 @@ namespace UGC_API.EDDN
                             var uncompressed = ZlibStream.UncompressBuffer(bytes);
                             var result = utf8.GetString(uncompressed);
                             JObject resObjJson = JObject.Parse(result);
-                            var EDDNWorker = new EDDNWorker();
+                            var EDDNWorker = new EDDNWorker();                            
                             EDDNWorker.WorkerThread(resObjJson);
                         }
                         catch (Exception ex)
