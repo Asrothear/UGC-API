@@ -60,6 +60,7 @@ namespace UGC_API.Database
                 entity.ToTable("ugc_*carrier", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
                 entity.Property(e => e.CarrierID).HasColumnName("CarrierID");
+                entity.Property(e => e.OwnerDC).HasColumnName("OwnerDC");
                 entity.Property(e => e.Name).HasColumnName("Name");
                 entity.Property(e => e.Callsign).HasColumnName("Callsign");
                 entity.Property(e => e.System).HasColumnName("System");

@@ -32,6 +32,71 @@ namespace UGC_API.DiscordBot.Modules
             DiscordBot.SendDM("Info", $"Dein Token lautet:\n `{ VerifyToken.GetToken(U_ID)}`", "gold", Context.User);
             await RespondAsync("Das Token wird dir per DM gesendet!");
         }
+        [SlashCommand("authcarrier", "Authentificate Ownership to a Carrier")]
+        public async Task AuthCarrier(string Callsign, string Captain)
+        {
+            //Check Callsign
+            if (Callsign.Length != 7)
+            {
+                RespondAsync($"Fehlerhaftes Callsign! `ABC-CDA`\n`Du hast `{Callsign}` angegeben");
+                return;
+            }
+            var checks = Callsign.Split("-");
+            if (checks.Length != 2)
+            {
+                RespondAsync($"Kein Callsign erkannt! Bsp. `ABC-CDA\n`Du hast `{Callsign}` angegeben");
+                return;
+            }
+            foreach(var chk in checks)
+            {
+                if(chk.Length != 3)
+                {
+                    RespondAsync($"Callsign häkfte zu kurz! Bsp. `ABC-CDA\n`Du hast `{Callsign}` angegeben");
+                    return;
+                }
+            }
+            //Check Captain
+            if(Captain.Length < 4)
+            {
+                RespondAsync("Fehlerhafter Cpatian Name! `John Doe`");
+                return;
+            }
+            //Get Carrier
+            var Carrier = Handler.v1_0.CarrierHandler._Carriers.FirstOrDefault(c => c.Callsign.ToLower() == Callsign.ToLower());
+            if(Carrier == null)
+            {
+                RespondAsync("Unbekanntes Callsign!");
+                return;
+            }
+            foreach(var Crew in Carrier.Crew)
+            {
+                if (Crew.CrewRole != "Captain") continue;
+                if ((bool)Crew.Activated)
+                {
+                    if(Crew.CrewName.ToLower() == Captain.ToLower())
+                    {
+                        if(Carrier.OwnerDC != 0)
+                        {
+                            if(Carrier.OwnerDC == Context.User.Id)
+                            {
+                                RespondAsync("Du bist bereits diesem Carrer zugeordnet.");
+                                return;
+                            }
+                            RespondAsync("Dieser Carrier ist bereits zugeordnet.\nWenn du glaubst das dies ein Fehler ist, bitte an Lord Asrothear wenden.");
+                            return;
+                        }
+                        Carrier.OwnerDC = Context.User.Id;
+                        Handler.v1_0.CarrierHandler.UpdateCarrier(Carrier);
+                        Handler.v1_0.CarrierHandler.LoadCarrier(true);
+                        RespondAsync("Carrier Erfolgreich zugewiesen.");
+                        return;
+                    }
+                    RespondAsync("Es konnte kein Captian in der Crew des Carriers gefunden werden.");
+                }
+                RespondAsync("Dieser Captain ist nicht auf dem Carrier oder aktiv.");
+            }
+            await RespondAsync("Da hat etwas bict gekalppt");
+        }
         [SlashCommand("update", "update the data cache")]
         public async Task updatechache()
         {

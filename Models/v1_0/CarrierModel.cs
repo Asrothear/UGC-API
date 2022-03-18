@@ -14,6 +14,7 @@ namespace UGC_API.Models.v1_0
         public static List<CarrierModel> _Carriers = new List<CarrierModel>();
         public int id { get; set; }
         public long CarrierID { get; set; }
+        public ulong OwnerDC { get; set; }
         public string Name { get; set; } = "";
         public string Callsign { get; set; } = "";
         public string System { get; set; }

@@ -57,39 +57,33 @@ namespace UGC_API.Handler.v1_0
                 Systems_out.Add("!! Plugin Outdated !!");
                 return Systems_out.ToArray();
             }
-            foreach (var sys in Configs.Systems)
-            {
-                Systems_out.Add(sys);
-            }
-
+            var full = true;
             SystemHandler.LoadSystems();
-            //Hole alle Einträge aus dem aktuellen Monat
-            List<SystemModel> HSystems = SystemHandler._Systeme.Where(s => (s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year)).ToList();
-            //Filer Systeme
-            List<string> Systems_outs = new();
-            Systems_outs = Systems_out;
-            foreach (var System in Systems_outs.ToArray())
+            foreach (var CSystem in Configs.Systems)
             {
-                var list = HSystems.Where(s => s.System_Name == System).ToList();
-                if (list.Count == 0) continue;
-                //Hole aus MonatsListe das System das mindestens am vortag Aktuallisiert wurde
-                var list2 = list.Where(s => s.last_update.Day >= (GetTime.DateNow().Day - 1)).ToList();
-                //Wenn System 2 Einträge hat, vortag und aktueller Tag, Prüfe ob das System Nach dem Tick Atuallisiert wurde
-                if (list2.Count == 2)
+                //Hole alle Einträge aus dem aktuellen Monat
+                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.last_update.Day == GetTime.DateNow().Day && s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year && s.System_Name == CSystem));                
+                //Filer Systeme
+                if (full)
                 {
-                    //Wenn das System nach dem Tick aktuallisiert wurde, entferne System aus der Liste
-                    var list3 = list2.Where(s => s.last_update < Tick.DateTimeTick);
-                    if (list3 == null) continue;
-                    Systems_out.Remove(list2.LastOrDefault()?.System_Name);
+                    if (HSystem == null)
+                    {
+                        Systems_out.Add($"~{CSystem}~");
+                    }
+                    else if (HSystem.last_update < Tick.DateTimeTick)
+                    {
+                        Systems_out.Add(CSystem);
+                    }
                 }
-                else if(list2.Count == 1)
+                else
                 {
-                    var list3 = list.LastOrDefault();
-                    if(list3.last_update.Day < GetTime.DateNow().Day) continue;
-                    Systems_out.Remove(list2.LastOrDefault()?.System_Name);
+                    if (HSystem == null) continue;
+                    if (HSystem.last_update < Tick.DateTimeTick)
+                    {
+                        Systems_out.Add(CSystem);
+                    }
                 }
             }
-
             //Alle Systeme sind Aktuell
             if (Systems_out.Count == 0)
             {
@@ -115,7 +109,7 @@ namespace UGC_API.Handler.v1_0
                 List<SystemDistance> _syst = new();
                 foreach (var System in Systems_out)
                 {
-                    DB_SystemData SystemData = Systems._SystemData.FirstOrDefault(sy => sy.starSystem.ToLower() == System.ToLower());
+                    DB_SystemData SystemData = Systems._SystemData.FirstOrDefault(sy => sy.starSystem.ToLower() == System.Replace("~", "").ToLower());
                     if (SystemData == null) continue;
                     SystemDistance _systData = new();
                     var star_pos = SystemData.starPos.Replace("[", "").Replace("]", "").Split(',');

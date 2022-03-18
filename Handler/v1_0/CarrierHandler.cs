@@ -123,6 +123,7 @@ namespace UGC_API.Handler.v1_0
                 {
                     id = DB_Carrier.id,
                     CarrierID = DB_Carrier.CarrierID,
+                    OwnerDC = DB_Carrier.OwnerDC,
                     Name = DB_Carrier.Name,
                     Callsign = DB_Carrier.Callsign,
                     System = DB_Carrier.System,
@@ -271,6 +272,7 @@ namespace UGC_API.Handler.v1_0
             var DBCarrier = Carriers._Carriers.FirstOrDefault(c => c.CarrierID == CarrierEntry.CarrierID);
             if (DBCarrier == null) DBCarrier = new();
             DBCarrier.CarrierID = CarrierEntry.CarrierID;
+            DBCarrier.OwnerDC = CarrierEntry.OwnerDC;
             DBCarrier.Name = CarrierEntry.Name;
             DBCarrier.Callsign = CarrierEntry.Callsign;
             DBCarrier.System = CarrierEntry.System;

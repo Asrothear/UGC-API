@@ -32,8 +32,7 @@ namespace UGC_API.Handler.v1_0
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);
             if (!User.CheckTokenHash(UUID, Token)) { result = 0; return; }
-            if (!Filter(QLSData["event"]?.Value<string>() ?? "")) {result = 1; return; }
-            result = 1;
+            var Logg = new LogHandler();
             Event = QLSData["event"]?.Value<string>() ?? "";
             user = User.GetUser(UUID);
             if (user == null) return;
@@ -43,6 +42,15 @@ namespace UGC_API.Handler.v1_0
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             user.last_data_insert = GetTime.DateNow();
+            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);
+            if (!Filter(QLSData["event"]?.Value<string>() ?? ""))
+            {
+                result = 1;
+                return;
+            }
+            result = 1;
+            
+            
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
             watch.Stop();
             LoggingService.schreibeLogZeile($"QLSHandler Execution Time: {watch.ElapsedMilliseconds} ms");
@@ -57,8 +65,6 @@ namespace UGC_API.Handler.v1_0
             if (Event.Contains("Carrier")) index = "Carrier";
             if (Event.Contains("Mission")) index = "Mission";
             if (Event.Contains("Market")) index = "Market";
-            var Logg = new LogHandler();
-            Logg.Create(v, TimeStamp, user, Event);
             switch (index)
             {
                 case "LoadGame":

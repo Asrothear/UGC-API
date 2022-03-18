@@ -25,6 +25,8 @@ namespace UGC_API.Handler.v1_0
             {
                 return;
             };
+            return;
+            /*
             Systems.UpdateSystemData(fSDJump.StarSystem, fSDJump.SystemAddress, fSDJump.StarPos, fSDJump.Population);
             string[] t_arry = JumpData.Timestamp.ToString("d").Split('.');
             int year = Convert.ToInt32(t_arry[2]) + 1286;
@@ -40,6 +42,8 @@ namespace UGC_API.Handler.v1_0
             API_System.System_Name = JumpData.StarSystem;
             API_System.Factions = JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(JsonSerializer.Serialize(JumpData.Factions));
             SystemHandler.UpdateSystem(user, API_System);
+            */
+            // Moved to EDDNWorker, Data is now processed by EDDN Data Stream
         }
     }
 }

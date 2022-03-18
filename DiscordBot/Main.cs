@@ -78,12 +78,15 @@ namespace UGC_API.DiscordBot
                 if (Configs.Values.Debug)
                 {
                     //DiscordLogInfo("DEBUG", "Ready", "orange");
+
+                    
                 }
                 else
                 {
-                    await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
-                    //DiscordLogInfo("Bot Satus", "Ready", "orange");
+                    
+                    DiscordLogInfo("Bot Satus", "Ready", "orange");
                 }
+                await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
                 startup = true;
             }
         }
