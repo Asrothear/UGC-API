@@ -32,11 +32,11 @@ namespace UGC_API.Handler.v1_0
             {
                 if (Configs.Plugin == null) Configs.Plugin = new List<DB_Plugin>(db.Plugin);
             }
-            if (stateModel.UUID != null || stateModel.Token != null)
+            if (!string.IsNullOrWhiteSpace(stateModel.UUID)|| !string.IsNullOrWhiteSpace(stateModel.Token))
             {
-
                 if (!User.CheckTokenHash(stateModel.UUID, stateModel.Token))
                 {
+                    LoggingService.schreibeLogZeile($"*{stateModel.UUID}.-{string.IsNullOrWhiteSpace(stateModel.UUID)}* | *{stateModel.Token}.-{string.IsNullOrWhiteSpace(stateModel.Token)}*");
                     Systems_out = new();
                     Systems_out.Add("!! CMDr-Daten Unbekannt !!");
                     return Systems_out.ToArray();
