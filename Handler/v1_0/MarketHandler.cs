@@ -41,7 +41,7 @@ namespace UGC_API.Handler.v1_0
         internal static List<Models.v1_0.Events.Market> GetMarket(string name)
         {
             LoadMarket();
-            var outs = _Markets.Where(m => m.StationName == name).ToList();
+            var outs = _Markets.Where(m => m.StationName.ToLower() == name.ToLower()).ToList();
             if(outs == null)
             {
                 return new List<Models.v1_0.Events.Market>();
@@ -53,7 +53,7 @@ namespace UGC_API.Handler.v1_0
             LoadMarket();
             List<MarketSearchModel> OBJ = new();
             List<Models.v1_0.Events.Market> CM = new();
-            var find = Localisation._Localisations.FirstOrDefault(l => l.Name == Ware || l.de == Ware || l.en == Ware);
+            var find = Localisation._Localisations.FirstOrDefault(l => l.Name.ToLower() == Ware.ToLower() || l.de.ToLower() == Ware.ToLower() || l.en.ToLower() == Ware.ToLower());
             if (find == null) return OBJ;
             try
             {
@@ -104,7 +104,6 @@ namespace UGC_API.Handler.v1_0
                 }
                 else
                 {
-                    CarrierHandler.LoadCarrier();
                     var carr = CarrierHandler._Carriers.FirstOrDefault(c => c.Callsign == NewData.Name);
                     NewData.DockingAccess = carr.DockingAccess;
                 }

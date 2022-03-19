@@ -17,11 +17,11 @@ namespace UGC_API.Handler.v1_0
     {
         public static List<CarrierModel> _Carriers = new();
         internal static long LastCarrierID = 0;
+        private static bool UpdateRuning = false;
         internal static void CarrierEvent(string json, string @event)
         {
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            LoadCarrier();
             switch (@event)
             {
                 case "CarrierStats":
@@ -103,15 +103,18 @@ namespace UGC_API.Handler.v1_0
 
         internal static void LoadCarrier(bool force = false)
         {
-            if (_Carriers.Count != 0 && !force) return;
-            _Carriers = new();
-            if (force) Carriers.LoadFromDB();
-            _Carriers = ParseCarrier(Carriers._Carriers);
+            if (!UpdateRuning) { 
+                UpdateRuning = true;
+                if (_Carriers.Count != 0 && !force) return;
+                _Carriers = new();
+                if (force) Carriers.LoadFromDB();
+                _Carriers = ParseCarrier(Carriers._Carriers);
+                UpdateRuning = false;
+            }
         }
         internal static CarrierModel GetCarrier(string CS)
         {
-            LoadCarrier();
-            var CM = _Carriers.FirstOrDefault(u => u.Callsign == CS);
+            var CM = _Carriers.FirstOrDefault(u => u.Callsign.ToLower() == CS.ToLower());
             return CM;
         }        
         public static List<CarrierModel> ParseCarrier(List<DB_Carrier> dB_Carriers)
@@ -302,7 +305,7 @@ namespace UGC_API.Handler.v1_0
                 db.SaveChanges();
                 db.Dispose();
             }
-            LoadCarrier(true);
+            Task.Run(() => { ParseCarrier(Carriers._Carriers); });
         }
 
         internal static void UpdateAllCarrier()
@@ -332,7 +335,7 @@ namespace UGC_API.Handler.v1_0
                 DatabaseHandler.db.SaveChangesAsync();
 
             }
-            LoadCarrier(true);
+            Task.Run(() => { ParseCarrier(Carriers._Carriers); });
         }
     }
 }

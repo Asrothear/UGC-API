@@ -85,9 +85,8 @@ namespace UGC_API.DiscordBot.Modules
                             RespondAsync("Dieser Carrier ist bereits zugeordnet.\nWenn du glaubst das dies ein Fehler ist, bitte an Lord Asrothear wenden.");
                             return;
                         }
-                        Carrier.OwnerDC = Context.User.Id;
-                        Handler.v1_0.CarrierHandler.UpdateCarrier(Carrier);
-                        Handler.v1_0.CarrierHandler.LoadCarrier(true);
+                        Carrier.OwnerDC = Context.User.Id;                        
+                        Task.Run(() => { Handler.v1_0.CarrierHandler.UpdateCarrier(Carrier); Handler.v1_0.CarrierHandler.ParseCarrier(Carriers._Carriers); });
                         RespondAsync("Carrier Erfolgreich zugewiesen.");
                         return;
                     }

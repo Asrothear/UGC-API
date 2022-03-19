@@ -38,7 +38,7 @@ namespace UGC_API
             {
                 Config.Configs.ReadConfig();
                 DatabaseHandler.LoadData();
-                TimerHandler.Start();
+                TaskHandler.Start();
                 EDDNListener.listener();
                 Thread thread = new Thread(DiscordBot.DiscordBot.Main);
                 thread.Start();

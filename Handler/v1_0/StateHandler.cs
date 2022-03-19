@@ -16,7 +16,8 @@ using UGC_API.Service;
 namespace UGC_API.Handler.v1_0
 {
     public class StateHandler
-    {
+    {        
+        internal static List<string> Systems_out = new();
         public class SystemDistance
         {
             public string Name { get; set; }
@@ -26,7 +27,6 @@ namespace UGC_API.Handler.v1_0
         internal string[] state(StateModel stateModel)
         {
             DB_User user = new();
-            List<string> Systems_out = new();
             List<double> Pos_out = new();
             using (DBContext db = new())
             {
@@ -34,8 +34,10 @@ namespace UGC_API.Handler.v1_0
             }
             if (stateModel.UUID != null || stateModel.Token != null)
             {
+
                 if (!User.CheckTokenHash(stateModel.UUID, stateModel.Token))
                 {
+                    Systems_out = new();
                     Systems_out.Add("!! CMDr-Daten Unbekannt !!");
                     return Systems_out.ToArray();
                 }
@@ -54,43 +56,27 @@ namespace UGC_API.Handler.v1_0
             }
             if(stateModel.Version < Configs.Plugin.First().min_version)
             {
+                Systems_out = new();
                 Systems_out.Add("!! Plugin Outdated !!");
                 return Systems_out.ToArray();
-            }
-            var full = true;
-            SystemHandler.LoadSystems();
-            foreach (var CSystem in Configs.Systems)
+            }            
+            if (true)
             {
-                //Hole alle Einträge aus dem aktuellen Monat
-                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.last_update.Day == GetTime.DateNow().Day && s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year && s.System_Name == CSystem));                
-                //Filer Systeme
-                if (full)
+                List<string> Filter = new();
+                foreach(string Sys in Systems_out)
                 {
-                    if (HSystem == null)
-                    {
-                        Systems_out.Add($"~{CSystem}~");
-                    }
-                    else if (HSystem.last_update < Tick.DateTimeTick)
-                    {
-                        Systems_out.Add(CSystem);
-                    }
+                    if (Sys.Contains("~")) continue;
+                    Filter.Add(Sys);
                 }
-                else
-                {
-                    if (HSystem == null) continue;
-                    if (HSystem.last_update < Tick.DateTimeTick)
-                    {
-                        Systems_out.Add(CSystem);
-                    }
-                }
+                Systems_out = new();
+                Systems_out = Filter;
             }
-            //Alle Systeme sind Aktuell
             if (Systems_out.Count == 0)
             {
+                Systems_out = new();
                 Systems_out.Add("Alles Aktuell!");
                 return Systems_out.ToArray();
             }
-            
             //Berechne Distanz zum CMDr
             if (advanced)
             {

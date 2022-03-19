@@ -25,7 +25,7 @@ namespace UGC_API.Controllers.v1_0
             string system_find = syst;
             foreach (var sys in Config.Configs.Systems)
             {
-                if (sys == system_find) return sys;
+                if (sys.ToLower() == system_find.ToLower()) return sys;
             }
             return  "Kein System gefunden";
         }

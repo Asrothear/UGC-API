@@ -1,12 +1,33 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using UGC_API.Config;
 using UGC_API.Database;
 using UGC_API.Database_Models;
 using UGC_API.Functions;
+using UGC_API.Handler.v1_0;
+using UGC_API.Models.v1_0;
+using UGC_API.Service;
 
 namespace UGC_API.Handler
 {
+    public class TaskHandler
+    {
+        private static int xx = 0;
+        internal static async void Start()
+        {
+            Debug.WriteLine($"Execution: {xx}");
+            xx++;
+            await Task.Run(() => { Localisation.LoadLocalisation(true); });
+            await Task.Run(() => { SystemHandler.LoadSystems(true); });
+            await Task.Run(() => { CarrierHandler.LoadCarrier(true); });
+            await Task.Run(() => { MarketHandler.LoadMarket(true); });
+            await Task.Run(() => { ShedulerHandler.StateListUpdate(); });
+            TimerHandler.Start();
+        }
+    }
     public class TimerHandler
     {
         internal static void Start()
@@ -35,6 +56,40 @@ namespace UGC_API.Handler
         {
             var Tick = new Tick();
             Tick.GetTick();
+        }
+
+    }
+    public class ShedulerHandler
+    {
+
+        private static bool updating = false;
+        internal static void StateListUpdate()
+        {
+            if (updating) return;
+            updating = true;
+            SystemHandler.LoadSystems();
+            List<string> Systems = new();
+            foreach (var CSystem in Configs.Systems)
+            {
+                //Hole alle Einträge aus dem aktuellen Monat
+                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.last_update.Day == GetTime.DateNow().Day && s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year && s.System_Name == CSystem));
+                //Filer Systeme
+                if (HSystem == null)
+                {
+                    Systems.Add($"~{CSystem}~");
+                }
+                else if (HSystem.last_update < Tick.DateTimeTick)
+                {
+                    Systems.Add(CSystem);
+                }
+                if (Systems.Count == 0)
+                {
+                    Systems = new();
+                    Systems.Add("Alles Aktuell!");
+                }
+                StateHandler.Systems_out = Systems;
+            }
+            updating = false;
         }
     }
 }

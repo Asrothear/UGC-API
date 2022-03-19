@@ -27,10 +27,6 @@ namespace UGC_API.Database
                 Configs.Events =Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
                 Configs.UpdateSystems = Config_F.Configs[0].update_systems;
                 Configs.Plugin = new List<DB_Plugin>(db.Plugin);
-                CarrierHandler.LoadCarrier(true);
-                SystemHandler.LoadSystems(true);
-                MarketHandler.LoadMarket(true);
-                Localisation.LoadFromDB();
                 User._Users = new(db.DB_Users);
                 VerifyToken._Verify_Token = new(db.Verify_Token);
             }

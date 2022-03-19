@@ -32,6 +32,7 @@ namespace UGC_API.Handler.v1_0
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);
             if (!User.CheckTokenHash(UUID, Token)) { result = 0; return; }
+            result = 1;
             var Logg = new LogHandler();
             Event = QLSData["event"]?.Value<string>() ?? "";
             user = User.GetUser(UUID);
@@ -45,11 +46,8 @@ namespace UGC_API.Handler.v1_0
             Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);
             if (!Filter(QLSData["event"]?.Value<string>() ?? ""))
             {
-                result = 1;
                 return;
-            }
-            result = 1;
-            
+            }          
             
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
             watch.Stop();
@@ -71,7 +69,6 @@ namespace UGC_API.Handler.v1_0
                     Localisation.SetUserLang(JsonSerializer.Deserialize<LoadGame>(v), user);
                     break;
                 case "FSDJump":
-                    SystemHandler.LoadSystems();
                     DockingHandler.UnDocked(user);
                     JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
                     break;

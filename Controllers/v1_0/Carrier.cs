@@ -25,7 +25,6 @@ namespace UGC_API.Controllers.v1_0
         [MapToApiVersion("1.0")]
         public List<CarrierModel> Get()
         {
-            CarrierHandler.LoadCarrier();
             return CarrierHandler._Carriers;
         }
         [HttpGet("{CallSign}")]
