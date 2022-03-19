@@ -36,10 +36,9 @@ namespace UGC_API.Handler.v1_0
             {
                 if (!User.CheckTokenHash(stateModel.UUID, stateModel.Token))
                 {
-                    LoggingService.schreibeLogZeile($"*{stateModel.UUID}.-{string.IsNullOrWhiteSpace(stateModel.UUID)}* | *{stateModel.Token}.-{string.IsNullOrWhiteSpace(stateModel.Token)}*");
-                    Systems_out = new();
-                    Systems_out.Add("!! CMDr-Daten Unbekannt !!");
-                    return Systems_out.ToArray();
+                    List<string> no = new();
+                    no.Add("!! CMDr-Daten Unbekannt !!");
+                    return no.ToArray();
                 }
                 else
                 {
@@ -56,9 +55,9 @@ namespace UGC_API.Handler.v1_0
             }
             if(stateModel.Version < Configs.Plugin.First().min_version)
             {
-                Systems_out = new();
-                Systems_out.Add("!! Plugin Outdated !!");
-                return Systems_out.ToArray();
+                List<string> no = new();
+                no.Add("!! Plugin Outdated !!");
+                return no.ToArray();
             }            
             if (true)
             {

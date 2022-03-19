@@ -65,7 +65,7 @@ namespace UGC_API.EDDN
             API_System.System_Name = JumpData.StarSystem;
             API_System.Factions = System.Text.Json.JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(System.Text.Json.JsonSerializer.Serialize(JumpData.Factions));
             UpdateSystem(API_System);
-            //Task.Run(() => { ShedulerHandler.StateListUpdate(); });
+            Task.Run(() => { ShedulerHandler.StateListUpdate(); });
         }
 
         internal static void CreateSystemDayEntry(EDDN_FSDJumpModel JumpData, DateTime time)
