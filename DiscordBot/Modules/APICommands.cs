@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UGC_API.DiscordBot.Services;
 using UGC_API.Functions;
+using UGC_API.Handler;
 
 namespace UGC_API.DiscordBot.Modules
 {
@@ -19,6 +20,7 @@ namespace UGC_API.DiscordBot.Modules
         {
             _handler = handler;
         }
+        #region Token gen
         [SlashCommand("token", "get your V2 token!")]
         public async Task v2token()
         {
@@ -32,6 +34,8 @@ namespace UGC_API.DiscordBot.Modules
             DiscordBot.SendDM("Info", $"Dein Token lautet:\n `{ VerifyToken.GetToken(U_ID)}`", "gold", Context.User);
             await RespondAsync("Das Token wird dir per DM gesendet!");
         }
+        #endregion
+        #region authcarrier
         [SlashCommand("authcarrier", "Authentificate Ownership to a Carrier")]
         public async Task AuthCarrier(string Callsign, string Captain)
         {
@@ -96,11 +100,27 @@ namespace UGC_API.DiscordBot.Modules
             }
             await RespondAsync("Da hat etwas bict gekalppt");
         }
+        #endregion
+        #region Add 3rd Party Service
+        [SlashCommand("addservice", "Add a 3rd Party Service.")]
+        public async Task addservice(string Name)
+        {
+            RespondAsync("Command Executed!");
+            if (!DiscordBot.check_perm(Context.User as SocketGuildUser, 10))
+            {
+                
+                return;
+            }
+            Database_Models.DB_Service service = new();
+            service = ServiceHandler.AddService(Name);
+            DiscordBot.SendDM("Info", $"Service Registriert:\n `{service.name}`-`{service.token}`", "gold", Context.User);
+        }
+        #endregion
         [SlashCommand("update", "update the data cache")]
         public async Task updatechache()
         {
             var DatabaseHandler = new Database.DatabaseHandler();
-            DatabaseHandler.UpdateDataCache();
+            TimerHandler.OnUpdateDataCacheTimer();
             await RespondAsync("Chache wir aktuallisiert.");
         }
     }

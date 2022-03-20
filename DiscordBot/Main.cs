@@ -164,5 +164,33 @@ namespace UGC_API.DiscordBot
             return Color.Blue;
         }
         #endregion
+        #region Functions
+        internal static bool check_perm(SocketGuildUser user, int Need = 1)
+        {
+            SocketGuild guild = DiscordBot.Bot.GetGuild(Configs.Values.Bot.Guild);
+            var Roles = user.Roles;
+            int uLevel = 0;
+            foreach (var Role in Roles)
+            {
+                foreach (var Perm in Configs.Values.Bot.Perms)
+                {
+                    if (Role.Id != Perm.Id) { continue; }
+                    else
+                    {
+                        if (Perm.Level > uLevel) uLevel = Perm.Level;
+                        if (uLevel >= Need)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            if (uLevel >= Need)
+            {
+                return true;
+            }
+            return false;
+        }
+        #endregion
     }
 }

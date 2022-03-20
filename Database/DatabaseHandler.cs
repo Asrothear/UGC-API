@@ -41,16 +41,5 @@ namespace UGC_API.Database
         {
             return true;
         }
-        internal void UpdateDataCache()
-        {
-            Config_F.Configs = new List<DB_Config>(db.DB_Config);
-            Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
-            Configs.Events = Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
-            Configs.UpdateSystems = Config_F.Configs[0].update_systems;
-            CarrierHandler.LoadCarrier(true);
-            SystemHandler.LoadSystems(true);
-            MarketHandler.LoadMarket(true);
-            VerifyToken._Verify_Token = new(db.Verify_Token);
-        }
     }
 }

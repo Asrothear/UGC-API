@@ -45,6 +45,36 @@
             /// <param name="value"></param>
             <returns>A newly created QLS request.</returns>
         </member>
+        <member name="T:UGC_API.Handler.ServiceHandler">
+            <summary>
+            Functions to verify Thrid-Party Services such as Anweisungs-Plugin etc
+            </summary>
+        </member>
+        <member name="P:UGC_API.Models.v1_0.AuthModel.id">
+            <summary>
+            Returns the ID of the Service, if Service unkown id is 0.
+            </summary>
+        </member>
+        <member name="P:UGC_API.Models.v1_0.AuthModel.response">
+            <summary>
+            Response Body. Contains Information refering the AuthToken.
+            </summary>
+        </member>
+        <member name="P:UGC_API.Models.v1_0.AuthModel.Response.Valid">
+            <summary>
+            Token Vallid
+            </summary>
+        </member>
+        <member name="P:UGC_API.Models.v1_0.AuthModel.Response.Cmdr">
+            <summary>
+            Token refers to an active CMDr
+            </summary>
+        </member>
+        <member name="P:UGC_API.Models.v1_0.AuthModel.Response.Blocked">
+            <summary>
+            Token ist Blocked for the requesting Service
+            </summary>
+        </member>
         <member name="M:UGC_API.Startup.#ctor(Microsoft.Extensions.Configuration.IConfiguration)">
             <summary>
             Initializes a new instance of the <see cref="T:UGC_API.Startup"/> class.

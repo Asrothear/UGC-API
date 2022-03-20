@@ -18,11 +18,11 @@ namespace UGC_API.Service
                 inpu = vars.Value;
             }
             try
-            {//Linux
-                return TimeZoneInfo.ConvertTimeFromUtc(inpu, TimeZoneInfo.FindSystemTimeZoneById("CET"));
-            } catch(Exception e)
             {//windows
                 return TimeZoneInfo.ConvertTimeFromUtc(inpu, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+            } catch(Exception e)
+            {//Linux
+                return TimeZoneInfo.ConvertTimeFromUtc(inpu, TimeZoneInfo.FindSystemTimeZoneById("CET"));
             }
         }
     }

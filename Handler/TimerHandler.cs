@@ -25,6 +25,7 @@ namespace UGC_API.Handler
             await Task.Run(() => { CarrierHandler.LoadCarrier(true); });
             await Task.Run(() => { MarketHandler.LoadMarket(true); });
             await Task.Run(() => { ShedulerHandler.StateListUpdate(); });
+            await Task.Run(() => { ServiceHandler.LoadService(true); });
             TimerHandler.Start();
         }
     }
@@ -41,7 +42,7 @@ namespace UGC_API.Handler
             UpdateDataCacheTimer.Enabled = true;
             UpdateDataCacheTimer.Enabled = true;
         }
-        public static void OnUpdateDataCacheTimer(object sender, ElapsedEventArgs e)
+        public static void OnUpdateDataCacheTimer(object sender = null, ElapsedEventArgs e = null)
         {
             Config_F.Configs = new List<DB_Config>(DatabaseHandler.db.DB_Config);
             Configs.Systems = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
@@ -82,13 +83,13 @@ namespace UGC_API.Handler
                 {
                     Systems.Add(CSystem);
                 }
-                if (Systems.Count == 0)
-                {
-                    Systems = new();
-                    Systems.Add("Alles Aktuell!");
-                }
-                StateHandler.Systems_out = Systems;
             }
+            if (Systems.Count == 0)
+            {
+                Systems = new();
+                Systems.Add("Alles Aktuell!");
+            }
+            StateHandler.Systems_out = Systems;
             updating = false;
         }
     }

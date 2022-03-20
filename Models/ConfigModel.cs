@@ -32,8 +32,9 @@ namespace UGC_API.Models
         }
         public class PermsConfig
         {
-            public int Level { get; set; } = 0;
+            public ulong Id { get; set; } = 0;
             public string Name { get; set; } = "";
+            public int Level { get; set; } = 0;
         }
     }
 }
