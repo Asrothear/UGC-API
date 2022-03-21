@@ -37,8 +37,8 @@ namespace UGC_API.Handler
             Timer UpdateTickTimer = new();
             UpdateDataCacheTimer.Elapsed += new(OnUpdateDataCacheTimer);
             UpdateTickTimer.Elapsed += new(OnUpdateTickTimer);
-            UpdateDataCacheTimer.Interval += 5 * (60 * 1000);
-            UpdateTickTimer.Interval += 30 * (60 * 1000);
+            UpdateDataCacheTimer.Interval += 15 * (60 * 1000);
+            UpdateTickTimer.Interval += 5 * (60 * 1000);
             UpdateDataCacheTimer.Enabled = true;
             UpdateDataCacheTimer.Enabled = true;
         }

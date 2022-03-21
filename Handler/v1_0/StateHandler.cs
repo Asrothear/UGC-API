@@ -62,19 +62,18 @@ namespace UGC_API.Handler.v1_0
             if (true)
             {
                 List<string> Filter = new();
-                foreach(string Sys in Systems_out)
+                foreach (string Sys in Systems_out)
                 {
                     if (Sys.Contains("~")) continue;
                     Filter.Add(Sys);
                 }
-                Systems_out = new();
+                if (Filter.Count == 0)
+                {
+                    List<string> ss = new();
+                    ss.Add("Alles Aktuell!");
+                    return ss.ToArray();
+                }
                 Systems_out = Filter;
-            }
-            if (Systems_out.Count == 0)
-            {
-                Systems_out = new();
-                Systems_out.Add("Alles Aktuell!");
-                return Systems_out.ToArray();
             }
             //Berechne Distanz zum CMDr
             if (advanced)
