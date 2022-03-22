@@ -13,7 +13,9 @@ namespace UGC_API.Database_Models
         public string Name { get; set; } = "";
         public string Callsign { get; set; } = "";
         public string System { get; set; }
+        public ulong SystemAdress { get; set; }
         public string prev_System { get; set; }
+        public ulong prev_SystemAdress { get; set; }
         public string DockingAccess { get; set; }
         public string AllowNotorious { get; set; }
         public string FuelLevel { get; set; }

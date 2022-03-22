@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,8 +18,22 @@ namespace UGC_API.Functions
             _Systeme = new(DatabaseHandler.db.DB_Systemes);
             _SystemData = new(DatabaseHandler.db.DB_SystemData);
         }
-
-        internal static void UpdateSystemData(string starSystem, long systemAddress, double[] starPos, long population)
+        internal static double[] GetSystemCoords(ulong SystemAddress)
+        {
+            var SystemByAddress = _SystemData.Find(x => x.systemAddress == SystemAddress);
+            if (SystemByAddress == null)
+            {
+                return null;
+            }
+            string[] coord = SystemByAddress.starPos.Replace("[", "").Replace("]", "").Split(',');
+            List<double> coords = new();
+            foreach(var coor in coord)
+            {
+                coords.Add(double.Parse(coor, CultureInfo.InvariantCulture));
+            }
+            return coords.ToArray();
+        }
+        internal static void UpdateSystemData(string starSystem, ulong systemAddress, double[] starPos, long population)
         {
             var syst = _SystemData.FirstOrDefault(sys => sys.starSystem.ToLower() == starSystem.ToLower());
             if (syst == null)

@@ -11,14 +11,17 @@ namespace UGC_API.Models.v1_0
 
     public class CarrierModel
     {
-        public static List<CarrierModel> _Carriers = new List<CarrierModel>();
+        //public static List<CarrierModel> _Carriers = new List<CarrierModel>();
         public int id { get; set; }
         public long CarrierID { get; set; }
         public ulong OwnerDC { get; set; }
         public string Name { get; set; } = "";
         public string Callsign { get; set; } = "";
+        public double[] last_pos { get; set; }
         public string System { get; set; }
+        public ulong SystemAdress { get; set; }
         public string prev_System { get; set; }
+        public ulong prev_SystemAdress { get; set; }
         public string DockingAccess { get; set; }
         public bool? AllowNotorious { get; set; }
         public double FuelLevel { get; set; }

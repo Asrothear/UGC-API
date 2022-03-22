@@ -28,6 +28,7 @@ namespace UGC_API.Models
             public ulong DevChannel { get; set; } = 000000000000;
             public ulong RulesChannel { get; set; } = 000000000000;
             public ulong WelcomeChannel { get; set; } = 000000000000;
+            public ulong CarrierJumpChannel { get; set; } = 000000000000;
             public List<PermsConfig> Perms { get; set; } = new();
         }
         public class PermsConfig

@@ -9,7 +9,7 @@ namespace UGC_API.EDDN.Model
     {
         public DateTime timestamp { get; set; }
         public string StarSystem { get; set; }
-        public long SystemAddress { get; set; }
+        public ulong SystemAddress { get; set; }
         public double[] StarPos { get; set; }
         public string SystemAllegiance { get; set; }
         public string SystemEconomy { get; set; }

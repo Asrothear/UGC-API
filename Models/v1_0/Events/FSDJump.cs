@@ -10,7 +10,7 @@ namespace UGC_API.Models.v1_0.Events
         public DateTime Timestamp { get; set; }
         public string Event { get; set; }
         public string StarSystem { get; set; }
-        public long SystemAddress { get; set; }
+        public ulong SystemAddress { get; set; }
         public double[] StarPos { get; set; }
         public string SystemAllegiance { get; set; }
         public string SystemEconomy { get; set; }

@@ -11,7 +11,7 @@ namespace UGC_API.Models.v1_0
         public DateTime Timestamp { get; set; }
         public DateTime last_update { get; set; }
         public int User_ID { get; set; }
-        public long System_ID { get; set; }
+        public ulong System_ID { get; set; }
         public string System_Name { get; set; }
         public List<FactionsL> Factions { get; set; } = new();
         public class FactionsL

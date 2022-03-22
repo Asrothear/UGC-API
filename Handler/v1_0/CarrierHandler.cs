@@ -49,18 +49,23 @@ namespace UGC_API.Handler.v1_0
             if (Carrier == null) Carrier = new();
             Carrier.CarrierID = carrierJumpCancelled.CarrierID;
             Carrier.System = Carrier.prev_System;
+            Carrier.SystemAdress = Carrier.SystemAdress;
             Carrier.prev_System = "";
+            Carrier.prev_SystemAdress = 0;
             UpdateCarrier(Carrier);
         }
 
         private static void CarrierJumpRequest(Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest)
         {
-            var Carrier = _Carriers.FirstOrDefault(c => c.CarrierID == carrierJumpRequest.CarrierID);
+            var Carrier = _Carriers.Find(c => c.CarrierID == carrierJumpRequest.CarrierID);
             if (Carrier == null) Carrier = new();
             Carrier.CarrierID = carrierJumpRequest.CarrierID;
             Carrier.prev_System = Carrier.System;
+            Carrier.prev_SystemAdress = Carrier.SystemAdress;
             Carrier.System = carrierJumpRequest.SystemName;
+            Carrier.SystemAdress = carrierJumpRequest.SystemAddress;
             UpdateCarrier(Carrier);
+            DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest);
         }
 
         private static void CarrierJump(Models.v1_0.Events.CarrierJump carrierJump)
@@ -69,7 +74,9 @@ namespace UGC_API.Handler.v1_0
             if (Carrier == null) Carrier = new();
             Carrier.CarrierID = carrierJump.MarketID;
             Carrier.prev_System = Carrier.System;
+            Carrier.prev_SystemAdress = Carrier.SystemAdress;
             Carrier.System = carrierJump.StarSystem;
+            Carrier.SystemAdress = carrierJump.SystemAddress;
             UpdateCarrier(Carrier);
         }
 
@@ -130,7 +137,9 @@ namespace UGC_API.Handler.v1_0
                     Name = DB_Carrier.Name,
                     Callsign = DB_Carrier.Callsign,
                     System = DB_Carrier.System,
+                    SystemAdress = DB_Carrier.SystemAdress,
                     prev_System = DB_Carrier.prev_System == "" ? null : DB_Carrier.prev_System,
+                    prev_SystemAdress = DB_Carrier.prev_SystemAdress,
                     DockingAccess = DB_Carrier.DockingAccess,
                     AllowNotorious = (DB_Carrier.AllowNotorious != "1" ? false : true),
                     FuelLevel = double.Parse(DB_Carrier.FuelLevel, CultureInfo.InvariantCulture),
@@ -279,7 +288,9 @@ namespace UGC_API.Handler.v1_0
             DBCarrier.Name = CarrierEntry.Name;
             DBCarrier.Callsign = CarrierEntry.Callsign;
             DBCarrier.System = CarrierEntry.System;
+            DBCarrier.SystemAdress = CarrierEntry.SystemAdress;
             DBCarrier.prev_System = CarrierEntry.prev_System;
+            DBCarrier.prev_SystemAdress = CarrierEntry.prev_SystemAdress;
             DBCarrier.DockingAccess = CarrierEntry.DockingAccess;
             DBCarrier.AllowNotorious = CarrierEntry.AllowNotorious.ToString();
             DBCarrier.FuelLevel = CarrierEntry.FuelLevel.ToString();
@@ -317,7 +328,9 @@ namespace UGC_API.Handler.v1_0
                 DBCarrier.Name = CAR.Name;
                 DBCarrier.Callsign = CAR.Callsign;
                 DBCarrier.System = CAR.System;
+                DBCarrier.SystemAdress = CAR.SystemAdress;
                 DBCarrier.prev_System = CAR.prev_System;
+                DBCarrier.prev_SystemAdress = CAR.prev_SystemAdress;
                 DBCarrier.DockingAccess = CAR.DockingAccess;
                 DBCarrier.AllowNotorious = CAR.AllowNotorious.ToString();
                 DBCarrier.FuelLevel = CAR.FuelLevel.ToString();

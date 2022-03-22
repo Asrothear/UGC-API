@@ -65,7 +65,9 @@ namespace UGC_API.Database
                 entity.Property(e => e.Name).HasColumnName("Name");
                 entity.Property(e => e.Callsign).HasColumnName("Callsign");
                 entity.Property(e => e.System).HasColumnName("System");
+                entity.Property(e => e.SystemAdress).HasColumnName("SystemAdress");
                 entity.Property(e => e.prev_System).HasColumnName("prev_System");
+                entity.Property(e => e.prev_SystemAdress).HasColumnName("prev_SystemAdress");
                 entity.Property(e => e.DockingAccess).HasColumnName("DockingAccess");
                 entity.Property(e => e.AllowNotorious).HasColumnName("AllowNotorious");
                 entity.Property(e => e.FuelLevel).HasColumnName("FuelLevel");

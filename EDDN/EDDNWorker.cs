@@ -33,6 +33,7 @@ namespace UGC_API.EDDN
                 {
                     case "FSDJump":
                         var JumpData = System.Text.Json.JsonSerializer.Deserialize<EDDN_FSDJumpModel>(InternalData.ToString());
+                        Systems.UpdateSystemData(JumpData.StarSystem, JumpData.SystemAddress, JumpData.StarPos, JumpData.Population);
                         if (JumpData.Factions != null && Configs.Systems.Contains<string>(JumpData.StarSystem))
                         {
                             if (!locks)
