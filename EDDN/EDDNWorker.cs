@@ -137,7 +137,13 @@ namespace UGC_API.EDDN
                 {
                     db.DB_Systemes.Update(UpdateEntry);
                 }
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }catch(Exception ex)
+                {
+
+                }
                 db.Dispose();
             }
         }

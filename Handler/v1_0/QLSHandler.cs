@@ -37,18 +37,17 @@ namespace UGC_API.Handler.v1_0
             Event = QLSData["event"]?.Value<string>() ?? "";
             user = User.GetUser(UUID);
             if (user == null) return;
+            if (!Filter(QLSData["event"]?.Value<string>() ?? ""))
+            {
+                return;
+            }
             user.user = QLSData["user"]?.Value<string>() ?? "";
             TimeStamp = QLSData["timestamp"]?.Value<DateTime>() ?? DateTime.Now;
             user.version_plugin_major = QLSData["ugc_p_version"]?.Value<double?>() ?? 0;
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             user.last_data_insert = GetTime.DateNow();
-            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);
-            if (!Filter(QLSData["event"]?.Value<string>() ?? ""))
-            {
-                return;
-            }          
-            
+            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);            
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
             watch.Stop();
             LoggingService.schreibeLogZeile($"QLSHandler Execution Time: {watch.ElapsedMilliseconds} ms");
