@@ -65,7 +65,7 @@ namespace UGC_API.Handler.v1_0
             Carrier.prev_SystemAdress = Carrier.SystemAdress;
             Carrier.System = carrierJumpRequest.SystemName;
             Carrier.SystemAdress = carrierJumpRequest.SystemAddress;
-            UpdateCarrier(Carrier);
+            UpdateCarrier(Carrier);            
             DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest, sys);
         }
 

@@ -40,7 +40,13 @@ namespace UGC_API.DiscordBot
                 else
                 {
                     LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} YES CORDS");
-                    double distance = Math.Round(Math.Sqrt(Math.Pow(CarrierCoords[0] - SystemCoords[0], 2) + Math.Pow(CarrierCoords[1] - SystemCoords[1], 2) + Math.Pow(CarrierCoords[2] - SystemCoords[2], 2)), 2);
+                    double c_x = Convert.ToDouble(CarrierCoords[0], CultureInfo.InvariantCulture);
+                    double c_y = Convert.ToDouble(CarrierCoords[1], CultureInfo.InvariantCulture);
+                    double c_z = Convert.ToDouble(CarrierCoords[2], CultureInfo.InvariantCulture);
+                    double s_x = Convert.ToDouble(SystemCoords[0], CultureInfo.InvariantCulture);
+                    double s_y = Convert.ToDouble(SystemCoords[1], CultureInfo.InvariantCulture);
+                    double s_z = Convert.ToDouble(SystemCoords[2], CultureInfo.InvariantCulture);
+                    double distance = Math.Round(Math.Sqrt(Math.Pow(c_x - s_x, 2) + Math.Pow(c_y - s_y, 2) + Math.Pow(c_z - s_y, 2)), 2);
                     //double Fuel = Math.Round((10 + (distance / 4))*(1+((carrier.SpaceUsage.TotalCapacity-carrier.SpaceUsage.FreeSpace+carrier.FuelLevel)/25000)));
                     var x = distance * (carrier.SpaceUsage.TotalCapacity - carrier.SpaceUsage.FreeSpace + carrier.FuelLevel + 25000);
                     x = x / 200000;
