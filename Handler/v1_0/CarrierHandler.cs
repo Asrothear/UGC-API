@@ -60,13 +60,14 @@ namespace UGC_API.Handler.v1_0
             var Carrier = _Carriers.Find(c => c.CarrierID == carrierJumpRequest.CarrierID);
             if (Carrier == null) Carrier = new();
             var sys = Carrier.System;
+            var sysa = Carrier.SystemAdress;
             Carrier.CarrierID = carrierJumpRequest.CarrierID;
             Carrier.prev_System = Carrier.System;
             Carrier.prev_SystemAdress = Carrier.SystemAdress;
             Carrier.System = carrierJumpRequest.SystemName;
             Carrier.SystemAdress = carrierJumpRequest.SystemAddress;
-            UpdateCarrier(Carrier);
-            DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest, sys);
+            UpdateCarrier(Carrier);            
+            DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest, sys, sysa);
         }
 
         private static void CarrierJump(Models.v1_0.Events.CarrierJump carrierJump)

@@ -13,7 +13,7 @@ namespace UGC_API.DiscordBot
 {
     public class Functions
     {
-        internal static void AnnounceJump(Models.v1_0.CarrierModel carrier, Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest, string OldSys)
+        internal static void AnnounceJump(Models.v1_0.CarrierModel carrier, Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest, string OldSys, ulong sysa)
         {
             try
             {
@@ -21,7 +21,7 @@ namespace UGC_API.DiscordBot
                 ITextChannel channel = DiscordBot.Bot.GetChannel(Configs.Values.Bot.CarrierJumpChannel) as ITextChannel;
                 if (channel == null) return;
                 var SystemCoords = Systems.GetSystemCoords(carrierJumpRequest.SystemAddress);
-                var CarrierCoords = Systems.GetSystemCoords(carrier.SystemAdress);
+                var CarrierCoords = Systems.GetSystemCoords(sysa);
                 EmbedBuilder embedb = new EmbedBuilder()
                         .WithColor(DiscordBot.GetColor("gold"))
                         .WithTitle($"Sprung Initiert - {carrier.Name}")
@@ -40,12 +40,23 @@ namespace UGC_API.DiscordBot
                 else
                 {
                     LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} YES CORDS");
-                    double distance = Math.Round(Math.Sqrt(Math.Pow(CarrierCoords[0] - SystemCoords[0], 2) + Math.Pow(CarrierCoords[1] - SystemCoords[1], 2) + Math.Pow(CarrierCoords[2] - SystemCoords[2], 2)), 2);
+                    double c_x = Convert.ToDouble(CarrierCoords[0], CultureInfo.InvariantCulture);
+                    double c_y = Convert.ToDouble(CarrierCoords[1], CultureInfo.InvariantCulture);
+                    double c_z = Convert.ToDouble(CarrierCoords[2], CultureInfo.InvariantCulture);
+                    double s_x = Convert.ToDouble(SystemCoords[0], CultureInfo.InvariantCulture);
+                    double s_y = Convert.ToDouble(SystemCoords[1], CultureInfo.InvariantCulture);
+                    double s_z = Convert.ToDouble(SystemCoords[2], CultureInfo.InvariantCulture);
+                    double x = Math.Pow(c_x - s_x, 2);
+                    double y = Math.Pow(c_y - s_y, 2);
+                    double z = Math.Pow(c_z - s_z, 2);
+                    double d = Math.Sqrt(x + y + z);
+                    d = Math.Round(d,2);
+                    //double distance = Math.Round(Math.Sqrt(Math.Pow(c_x - s_x, 2) + Math.Pow(c_y - s_y, 2) + Math.Pow(c_z - s_y, 2)), 2);
                     //double Fuel = Math.Round((10 + (distance / 4))*(1+((carrier.SpaceUsage.TotalCapacity-carrier.SpaceUsage.FreeSpace+carrier.FuelLevel)/25000)));
-                    var x = distance * (carrier.SpaceUsage.TotalCapacity - carrier.SpaceUsage.FreeSpace + carrier.FuelLevel + 25000);
-                    x = x / 200000;
-                    double Fuel = Math.Round(5 + x);
-                    embedb.AddField("Distanz", $"{distance}ly");
+                    var f = d * (carrier.SpaceUsage.TotalCapacity - carrier.SpaceUsage.FreeSpace + carrier.FuelLevel + 25000);
+                    f = f / 200000;
+                    double Fuel = Math.Round(5 + f);
+                    embedb.AddField("Distanz", $"{d}ly");
                     embedb.AddField("Erwarteter Treibstoff verbrauch", $"{Fuel}t");
                 }
                 LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} - {SystemCoords} - {CarrierCoords}");

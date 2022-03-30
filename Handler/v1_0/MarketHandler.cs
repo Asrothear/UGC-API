@@ -38,13 +38,17 @@ namespace UGC_API.Handler.v1_0
             LoggingService.schreibeLogZeile($"MarketHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
-        internal static List<Models.v1_0.Events.Market> GetMarket(string name)
+        internal static List<Models.v1_0.Events.Market> GetMarket(string name, ulong Id)
         {
             LoadMarket();
-            var outs = _Markets.Where(m => m.StationName.ToLower() == name.ToLower()).ToList();
+            var outs = _Markets.Where(m => m.MarketID == Id).ToList();
             if(outs == null)
             {
-                return new List<Models.v1_0.Events.Market>();
+                outs = _Markets.Where(m => m.StationName.ToLower() == name.ToLower()).ToList();
+                if (outs == null)
+                {
+                    return new List<Models.v1_0.Events.Market>();
+                }
             }
             return outs;
         }

@@ -84,7 +84,7 @@ namespace UGC_API.Handler.v1_0
                     DockingHandler.UnDocked(user);
                     break;
                 case "Mission":
-                    MissionHandler.Init();
+                    MissionHandler.MissionEvent(v, Event);
                     break;
                 case "Market":
                     MarketHandler.MarketEvent(v, Event, user);

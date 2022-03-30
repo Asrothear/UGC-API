@@ -8,20 +8,7 @@ using UGC_API.Models.v1_0;
 
 
 namespace UGC_API.Controllers.v1_0
-{
-    [ApiVersion("1.0")]
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class Market : ControllerBase
-    {
-        [HttpGet("{Name}")]
-        [MapToApiVersion("1.0")]
-        public List<Models.v1_0.Events.Market> Get(string Name)
-        {
-            var Out = MarketHandler.GetMarket(Name);
-            return Out;
-        }
-    }
+{    
     [ApiVersion("1.0")]
     [ApiController]
     [Route("api/v{version:apiVersion}/[controller]")]
