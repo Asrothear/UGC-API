@@ -42,7 +42,7 @@ namespace UGC_API.Handler.v1_0
         {
             LoadMarket();
             var outs = _Markets.Where(m => m.MarketID == Id).ToList();
-            if(outs == null)
+            if(outs.Count == 0)
             {
                 outs = _Markets.Where(m => m.StationName.ToLower() == name.ToLower()).ToList();
                 if (outs == null)

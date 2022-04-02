@@ -3,48 +3,52 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
 using System.Web;
+using UGC_API.Database;
+using UGC_API.Models.v1_0.Events;
+using UGC_API.Service;
 
 namespace UGC_API.Handler.v1_0
 {
     public class MissionHandler
     {
-        public static void MissionEvent(string json, string @event)
+        public static List<MissionsModel> _Missions = new();
+        private static bool UpdateRuning;
+        internal static void LoadMissions(bool force = false)
         {
-            switch (@event)
+            if (!UpdateRuning)
             {
-                case "MissionAccepted":
-                    MissionAccepted();
-                    break;
-                case "MissionCompleted":
-                    MissionCompleted();
-                    break;
-                case "MissionAbandoned":
-                    MissionAbandoned();
-                    break;
-                case "MissionFailed":
-                    MissionFailed();
-                    break;
-                default:
-                    return;
+                UpdateRuning = true;
+                if (_Missions.Count != 0 && !force) return;
+                _Missions = new();
+                if (force) _Missions = new List<MissionsModel>(DatabaseHandler.db.Missions);
+                UpdateRuning = false;
             }
-
-            static void MissionAccepted()
-            {
-
-            }
-            static void MissionCompleted()
-            {
-
-            }
-            static void MissionAbandoned()
-            {
-
-            }
-            static void MissionFailed()
-            {
-
-            }
+        }
+        public static void MissionEvent(string json, string @event, Database_Models.DB_User user)
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
+            MissionsModel newMission = JsonSerializer.Deserialize<MissionsModel>(json);
+            newMission.Event = @event;
+            newMission.CMDr = user.id;
+            var Data = JObject.Parse(json);
+            Data.Remove("Name");
+            Data.Remove("event");
+            Data.Remove("MissionID");
+            Data.Remove("ugc_p_minor");
+            Data.Remove("ugc_p_branch");
+            Data.Remove("ugc_p_version");
+            newMission.JSON = Data.ToString();
+            MissionsModel oldMission = _Missions.Find(x => x.MissionID == newMission.MissionID && x.Event == newMission.Event);
+            if (oldMission != null) return;
+            _Missions.Add(newMission);
+            DatabaseHandler.db.Missions.Add(newMission);
+            DatabaseHandler.db.SaveChanges();
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"MissionHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
     }
 }

@@ -26,6 +26,7 @@ namespace UGC_API.Handler
             await Task.Run(() => { MarketHandler.LoadMarket(true); });
             await Task.Run(() => { ShedulerHandler.StateListUpdate(); });
             await Task.Run(() => { ServiceHandler.LoadService(true); });
+            await Task.Run(() => { MissionHandler.LoadMissions(true); });
             TimerHandler.Start();
         }
     }
@@ -79,7 +80,7 @@ namespace UGC_API.Handler
                 {
                     Systems.Add($"~{CSystem}~");
                 }
-                else if (HSystem.last_update < Tick.DateTimeTick)
+                else if (HSystem.last_update < Tick.DateTimeTick.AddHours(3))
                 {
                     Systems.Add(CSystem);
                 }

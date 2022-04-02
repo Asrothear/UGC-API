@@ -25,6 +25,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_Localisation> Localisation { get; set; }
         public virtual DbSet<DB_Plugin> Plugin { get; set; }
         public virtual DbSet<DB_Service> Service { get; set; }
+        public virtual DbSet<Models.v1_0.Events.MissionsModel> Missions { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -186,6 +187,16 @@ namespace UGC_API.Database
                 entity.Property(e => e.token).HasColumnName("token");
                 entity.Property(e => e.active).HasColumnName("active");
                 entity.Property(e => e.blocked).HasColumnName("blocked");
+            });
+            MoBuilder.Entity<Models.v1_0.Events.MissionsModel>(entity =>
+            {
+                entity.HasKey(e => e.MissionID);
+                entity.ToTable($"ugc_*missions", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.MissionID).HasDatabaseName("MissionID");
+                entity.Property(e => e.timestamp).HasColumnName("timestamp");
+                entity.Property(e => e.Event).HasColumnName("Event");
+                entity.Property(e => e.CMDr).HasColumnName("CMDr");
+                entity.Property(e => e.JSON).HasColumnName("JSON");
             });
         }
     }

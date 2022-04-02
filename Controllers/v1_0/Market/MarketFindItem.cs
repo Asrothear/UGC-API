@@ -7,7 +7,7 @@ using UGC_API.Handler.v1_0;
 using UGC_API.Models.v1_0;
 
 
-namespace UGC_API.Controllers.v1_0
+namespace UGC_API.Controllers.v1_0.Market
 {    
     [ApiVersion("1.0")]
     [ApiController]

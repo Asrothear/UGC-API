@@ -23,7 +23,7 @@ namespace UGC_API.Handler.v1_0
                 Timestamp = timeStamp,
                 User = user.id,
                 Event = @event,
-                JSON = Data.ToString()                
+                JSON = Data.ToString()
             };
             var ss = String.Format("{0:0.0#}", user.version_plugin_major);
             NewLog.version_plugin = $"{ss},{user.version_plugin_minor} {user.branch}";
