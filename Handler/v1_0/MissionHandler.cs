@@ -37,6 +37,8 @@ namespace UGC_API.Handler.v1_0
             var Data = JObject.Parse(json);
             Data.Remove("Name");
             Data.Remove("event");
+            Data.Remove("ugc_token_v2");
+            Data.Remove("user");
             Data.Remove("MissionID");
             Data.Remove("ugc_p_minor");
             Data.Remove("ugc_p_branch");
