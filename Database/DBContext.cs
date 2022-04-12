@@ -190,9 +190,10 @@ namespace UGC_API.Database
             });
             MoBuilder.Entity<Models.v1_0.Events.MissionsModel>(entity =>
             {
-                entity.HasKey(e => e.MissionID);
+                entity.HasKey(e => e.id);
                 entity.ToTable($"ugc_*missions", Configs.Values.DB.Database);
-                entity.HasIndex(e => e.MissionID).HasDatabaseName("MissionID");
+                entity.HasIndex(e => e.id).HasDatabaseName("id");
+                entity.Property(e => e.MissionID).HasColumnName("MissionID");
                 entity.Property(e => e.timestamp).HasColumnName("timestamp");
                 entity.Property(e => e.Event).HasColumnName("Event");
                 entity.Property(e => e.CMDr).HasColumnName("CMDr");

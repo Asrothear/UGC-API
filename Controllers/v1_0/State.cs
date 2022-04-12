@@ -36,7 +36,7 @@ namespace UGC_API.Controllers.v1_0
                 Branch = branch
             };
             var StateHandler = new StateHandler();
-            var ous = StateHandler.state(stateModel);
+            string[] ous = StateHandler.state(stateModel);
             watch.Stop();
             LoggingService.schreibeLogZeile($"StateHandler Execution Time: {watch.ElapsedMilliseconds} ms - {cmdr}");
             return ous;

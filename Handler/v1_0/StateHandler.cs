@@ -106,7 +106,14 @@ namespace UGC_API.Handler.v1_0
                     _syst.Add(_systData);
                 }
                 //Ausgabe der Erweiterten System-Liste *EOE
-                return _syst.OrderBy(y => y.Distance).ToList().Select(r => r.Name).ToArray();
+                var sortet = _syst.OrderBy(y => y.Distance).ToList().Select(r => r.Name).ToArray();
+                if (sortet.Length < 1)
+                {
+                    List<string> list = new List<string>();
+                    list.Add("Alles Aktuell!");
+                    sortet = list.ToArray();
+                };
+                return sortet;
             }
             else
             {

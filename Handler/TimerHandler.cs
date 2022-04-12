@@ -71,16 +71,23 @@ namespace UGC_API.Handler
             updating = true;
             SystemHandler.LoadSystems();
             List<string> Systems = new();
+            var time = GetTime.DateNow();
+            var tick = Tick.DateTimeTick.AddHours(3);
             foreach (var CSystem in Configs.Systems)
             {
                 //Hole alle Einträge aus dem aktuellen Monat
-                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.last_update.Day == GetTime.DateNow().Day && s.last_update.Month == GetTime.DateNow().Month && s.last_update.Year == GetTime.DateNow().Year && s.System_Name == CSystem));
+                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.Timestamp.Day == time.Day && s.Timestamp.Month == time.Month && s.last_update.Year == time.Year && s.System_Name == CSystem));
                 //Filer Systeme
                 if (HSystem == null)
                 {
+                    if (time > tick)
+                    {
+                        Systems.Add(CSystem);
+                        continue;
+                    }
                     Systems.Add($"~{CSystem}~");
                 }
-                else if (HSystem.last_update < Tick.DateTimeTick.AddHours(3))
+                else if (time > tick && HSystem.last_update < tick)
                 {
                     Systems.Add(CSystem);
                 }
