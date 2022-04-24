@@ -21,8 +21,6 @@ namespace UGC_API.Handler.v1_0
         internal int? result { get; set; } = null;
         internal void Startup(object s)
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             if (s == null) { result = 1; return; }
             QLSData = JObject.Parse(s.ToString());
             string UUID = User.CreateUUID(QLSData["ugc_token_v2"]["uuid"].ToString());
@@ -49,8 +47,6 @@ namespace UGC_API.Handler.v1_0
             user.last_data_insert = GetTime.DateNow();
             Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);            
             Run(s.ToString().Replace("&", "and").Replace("'", ""));
-            watch.Stop();
-            LoggingService.schreibeLogZeile($"QLSHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
         internal bool Filter(string evt)
         {
@@ -69,7 +65,7 @@ namespace UGC_API.Handler.v1_0
                     break;
                 case "FSDJump":
                     DockingHandler.UnDocked(user);
-                    JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
+                    //JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
                     break;
                 case "Location":
                     LocationHandler.UserSetLocation(user, JsonSerializer.Deserialize<Location>(v)?.StarPos, JsonSerializer.Deserialize<Location>(v)?.StarSystem);

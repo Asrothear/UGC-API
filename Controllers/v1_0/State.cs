@@ -24,8 +24,6 @@ namespace UGC_API.Controllers.v1_0
         [MapToApiVersion("1.0")]
         public string[] Get([FromHeader] string version, [FromHeader] string br, [FromHeader] string branch, [FromHeader] string cmdr, [FromHeader] string uuid, [FromHeader] string token)
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             StateModel stateModel = new StateModel
             {
                 UUID = Functions.User.CreateUUID(uuid),
@@ -37,8 +35,6 @@ namespace UGC_API.Controllers.v1_0
             };
             var StateHandler = new StateHandler();
             string[] ous = StateHandler.state(stateModel);
-            watch.Stop();
-            LoggingService.schreibeLogZeile($"StateHandler Execution Time: {watch.ElapsedMilliseconds} ms - {cmdr}");
             return ous;
         }
     }

@@ -20,8 +20,6 @@ namespace UGC_API.Handler.v1_0
         private static bool UpdateRuning = false;
         internal static void CarrierEvent(string json, string @event)
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             switch (@event)
             {
                 case "CarrierStats":
@@ -39,8 +37,6 @@ namespace UGC_API.Handler.v1_0
                 default:
                     break;
             }
-            watch.Stop();
-            LoggingService.schreibeLogZeile($"CarrierHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
         private static void CarrierJumpCancelled(Models.v1_0.Events.CarrierJumpCancelled carrierJumpCancelled)
@@ -119,6 +115,7 @@ namespace UGC_API.Handler.v1_0
                 if (force) Carriers.LoadFromDB();
                 _Carriers = ParseCarrier(Carriers._Carriers);
                 UpdateRuning = false;
+                Service.LoggingService.schreibeLogZeile($"{_Carriers.Count} Carrier´s geladen.");
             }
         }
         internal static CarrierModel GetCarrier(string CS)

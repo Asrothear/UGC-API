@@ -20,6 +20,7 @@ namespace UGC_API.Handler.v1_0
             _Systeme = new();
             if (force) Systems.LoadFromDB();
             _Systeme = ParseSystem(Systems._Systeme);
+            Service.LoggingService.schreibeLogZeile($"{_Systeme.Count} System´s geladen.");
         }
 
         private static List<SystemModel> ParseSystem(List<DB_Systeme> db_Systeme)

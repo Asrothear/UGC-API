@@ -24,6 +24,7 @@ namespace UGC_API.Handler
         {
             if (_Sevice.Count != 0 && !force) return;
             if (force) LoadFromDB();
+            Service.LoggingService.schreibeLogZeile($"{_Sevice.Count} Sevice´s geladen.");
         }
         internal static DB_Service AddService(string Name)
         {

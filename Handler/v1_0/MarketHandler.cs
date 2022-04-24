@@ -17,8 +17,6 @@ namespace UGC_API.Handler.v1_0
         internal static ulong LastMarketID = 0;
         internal static void MarketEvent(string json, string @event, DB_User user)
         {
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
             LoadMarket();
             switch (@event)
             {
@@ -34,8 +32,6 @@ namespace UGC_API.Handler.v1_0
                 default:
                     break;
             }
-            watch.Stop();
-            LoggingService.schreibeLogZeile($"MarketHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
 
         internal static List<Models.v1_0.Events.Market> GetMarket(string name, ulong Id)
@@ -138,6 +134,7 @@ namespace UGC_API.Handler.v1_0
             _Markets = new();
             if (force) Markets.LoadFromDB();
             _Markets = ParseMarket(Markets._Markets);
+            Service.LoggingService.schreibeLogZeile($"{_Markets.Count} Market´s geladen.");
         }
 
         private static List<Models.v1_0.Events.Market> ParseMarket(List<DB_Market> db_markets)
@@ -166,14 +163,15 @@ namespace UGC_API.Handler.v1_0
                 if (LastMarketID == MarketEntry.MarketID) return;
                 DBMarket = new();
                 create = true;
+                return;
             }
             DBMarket.MarketID = MarketEntry.MarketID;
             LastMarketID = MarketEntry.MarketID;
             DBMarket.StarSystem = MarketEntry.StarSystem;
             DBMarket.StationName = MarketEntry.StationName;
             DBMarket.StationType = MarketEntry.StationType;
-            DBMarket.Items = JsonSerializer.Serialize(MarketEntry.Items);
-            DBMarket.Last_Update = DateTime.Now;
+            //DBMarket.Items = JsonSerializer.Serialize(MarketEntry.Items);
+            //DBMarket.Last_Update = DateTime.Now;
             using (DBContext db = new())
             {
                 if (create)

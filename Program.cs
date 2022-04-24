@@ -21,7 +21,6 @@ using Microsoft.Extensions.PlatformAbstractions;
 using UGC_API.Database;
 using System.Threading;
 using UGC_API.Service;
-using UGC_API.EDDN;
 using UGC_API.Handler;
 
 namespace UGC_API
@@ -39,7 +38,6 @@ namespace UGC_API
                 Config.Configs.ReadConfig();
                 DatabaseHandler.LoadData();
                 TaskHandler.Start();
-                EDDNListener.listener();
                 Thread thread = new Thread(DiscordBot.DiscordBot.Main);
                 thread.Start();
                 Tick.GetTick();

@@ -35,7 +35,7 @@ namespace UGC_API.Functions
         }
         internal static void UpdateSystemData(string starSystem, ulong systemAddress, double[] starPos, long population)
         {
-            var syst = _SystemData.FirstOrDefault(sys => sys.starSystem.ToLower() == starSystem.ToLower());
+            var syst = _SystemData.Find(sys => sys.systemAddress == systemAddress);
             if (syst == null)
             {
                 syst = new DB_SystemData
@@ -56,7 +56,13 @@ namespace UGC_API.Functions
             using(DBContext db = new())
             {
                 db.DB_SystemData.Update(syst);
-                db.SaveChanges();
+                try
+                {
+                    db.SaveChanges();
+                }catch (Exception ex)
+                {
+
+                }
             }
         }
     }

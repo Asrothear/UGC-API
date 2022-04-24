@@ -105,12 +105,12 @@ namespace UGC_API.DiscordBot.Modules
         [SlashCommand("addservice", "Add a 3rd Party Service.")]
         public async Task addservice(string Name)
         {
-            RespondAsync("Command Executed!");
             if (!DiscordBot.check_perm(Context.User as SocketGuildUser, 10))
             {
-                
+                RespondAsync("Keine Berechtigung!");
                 return;
             }
+            RespondAsync("Neuer Service wird redistriert!");
             Database_Models.DB_Service service = new();
             service = ServiceHandler.AddService(Name);
             DiscordBot.SendDM("Info", $"Service Registriert:\n `{service.name}`-`{service.token}`", "gold", Context.User);

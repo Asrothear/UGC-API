@@ -20,7 +20,7 @@ namespace UGC_API.EDDN
 {
     internal class EDDNWorker
     {
-        bool locks = false;
+        ulong lastsystem = 0;
         internal void WorkerThread(JObject resObjJson)
         {
             var InternalData = resObjJson["message"]?.Value<JObject>() ?? null;
@@ -33,25 +33,63 @@ namespace UGC_API.EDDN
                 {
                     case "FSDJump":
                         var JumpData = System.Text.Json.JsonSerializer.Deserialize<EDDN_FSDJumpModel>(InternalData.ToString());
-                        Systems.UpdateSystemData(JumpData.StarSystem, JumpData.SystemAddress, JumpData.StarPos, JumpData.Population);
+                        Task.Run(() => {Systems.UpdateSystemData(JumpData.StarSystem, JumpData.SystemAddress, JumpData.StarPos, JumpData.Population); });
+                        
                         if (JumpData.Factions != null && Configs.Systems.Contains<string>(JumpData.StarSystem))
                         {
-                            if (!locks)
+                            if (lastsystem != JumpData.SystemAddress)
                             {
-                                locks = true;
+                                lastsystem = JumpData.SystemAddress;
                                 JumpHandler(JumpData);
                             }
                         }
                         break;
                 }
             }
-            else if (InternalData.ToString().Contains(""))
+            else if (InternalData.ContainsKey("commodities"))
             {
-                // Jobject has possible Market Data, try to Parse Data
+                // Jobject has possible MarketData, try to Parse Data
+                var MarketData = System.Text.Json.JsonSerializer.Deserialize<EDDN_MarketModel>(resObjJson["message"].ToString());
+                EDDN_MarketHandler(MarketData);
             }
         }
+        private void EDDN_MarketHandler(EDDN_MarketModel MarketData)
+        {
+            var create = false;
+            var DBMarket = Markets._Markets.FirstOrDefault(c => c.MarketID == MarketData.marketId);
+            if (DBMarket == null)
+            {
+                if (MarketHandler.LastMarketID == MarketData.marketId) return;
+                DBMarket = new();
+                create = true;
+            }
+            MarketHandler.LastMarketID = MarketData.marketId;
+            DBMarket.MarketID = MarketData.marketId;
+            DBMarket.StarSystem = MarketData.systemName;
+            DBMarket.StationName = MarketData.stationName;
+            DBMarket.Items = System.Text.Json.JsonSerializer.Serialize(MarketData.commodities);
+            DBMarket.Last_Update = DateTime.Now;
+            using (DBContext db = new())
+            {
+                if (create)
+                {
+                    DBMarket.StationType = "Unknown (EDDN)";
+                    Markets._Markets.Add(DBMarket);
+                    db.Market.Add(DBMarket);
+                }
+                else
+                {
+                    db.Market.Update(DBMarket);
+                }
+                db.SaveChanges();
+                db.Dispose();
+            }
+
+        }
         private void JumpHandler(EDDN_FSDJumpModel JumpData)
-        {            
+        {
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             string[] t_arry = JumpData.timestamp.ToString("d").Split('.');
             int year = Convert.ToInt32(t_arry[2]) + 1286;
             var time = DateTime.Parse($"{year}-{t_arry[1]}-{t_arry[0]}");
@@ -65,6 +103,8 @@ namespace UGC_API.EDDN
             API_System.System_ID = JumpData.SystemAddress;
             API_System.System_Name = JumpData.StarSystem;
             API_System.Factions = System.Text.Json.JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(System.Text.Json.JsonSerializer.Serialize(JumpData.Factions));
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"EDDNWorker-JumpHandler {JumpData.StarSystem} Execution Time: {watch.ElapsedMilliseconds} ms");
             Task.Run(() => { ShedulerHandler.StateListUpdate(); });
             UpdateSystem(API_System);
         }

@@ -10,6 +10,7 @@ using UGC_API.Functions;
 using UGC_API.Handler.v1_0;
 using UGC_API.Models.v1_0;
 using UGC_API.Service;
+using UGC_API.EDDN;
 
 namespace UGC_API.Handler
 {
@@ -24,10 +25,11 @@ namespace UGC_API.Handler
             await Task.Run(() => { SystemHandler.LoadSystems(true); });
             await Task.Run(() => { CarrierHandler.LoadCarrier(true); });
             await Task.Run(() => { MarketHandler.LoadMarket(true); });
-            await Task.Run(() => { ShedulerHandler.StateListUpdate(); });
+            await Task.Run(() => { ShedulerHandler.StateListUpdate(); LoggingService.schreibeLogZeile($"StateListUpdate geladen."); });
             await Task.Run(() => { ServiceHandler.LoadService(true); });
             await Task.Run(() => { MissionHandler.LoadMissions(true); });
             TimerHandler.Start();
+            EDDNListener.listener();
         }
     }
     public class TimerHandler
@@ -73,19 +75,29 @@ namespace UGC_API.Handler
             List<string> Systems = new();
             var time = GetTime.DateNow();
             var tick = Tick.DateTimeTick.AddHours(3);
+            if(time.Day != tick.Day)
+            {
+                Systems = new();
+                Systems.Add("Alles Aktuell!");
+                StateHandler.Systems_out = Systems;
+                updating = false;
+                return;
+            }
             foreach (var CSystem in Configs.Systems)
             {
                 //Hole alle Einträge aus dem aktuellen Monat
-                SystemModel HSystem = SystemHandler._Systeme.FirstOrDefault(s => (s.Timestamp.Day == time.Day && s.Timestamp.Month == time.Month && s.last_update.Year == time.Year && s.System_Name == CSystem));
+                SystemModel HSystem = SystemHandler._Systeme.Find(s => (s.Timestamp.Day == time.Day && s.Timestamp.Month == time.Month && s.last_update.Year == time.Year && s.System_Name == CSystem));
                 //Filer Systeme
                 if (HSystem == null)
                 {
-                    if (time > tick)
+                    if (time.Day == tick.Day && time > tick)
                     {
                         Systems.Add(CSystem);
-                        continue;
                     }
-                    Systems.Add($"~{CSystem}~");
+                    else
+                    {
+                        Systems.Add($"~{CSystem}~");
+                    }
                 }
                 else if (time > tick && HSystem.last_update < tick)
                 {

@@ -20,7 +20,7 @@ namespace UGC_API.EDDN
         {
             await Task.Run(new Action(() =>
             {
-                Debug.Print("LISTENING EDDN");
+                LoggingService.schreibeLogZeile($"EDDNListener gestartet.");
 
                 var utf8 = new UTF8Encoding();
 
@@ -36,6 +36,7 @@ namespace UGC_API.EDDN
                             var bytes = client.ReceiveFrameBytes();
                             var uncompressed = ZlibStream.UncompressBuffer(bytes);
                             var result = utf8.GetString(uncompressed);
+                            //LoggingService.schreibeEDDNLog(result)
                             JObject resObjJson = JObject.Parse(result);
                             var EDDNWorker = new EDDNWorker();                            
                             EDDNWorker.WorkerThread(resObjJson);

@@ -25,6 +25,7 @@ namespace UGC_API.Handler.v1_0
                 _Missions = new();
                 if (force) _Missions = new List<MissionsModel>(DatabaseHandler.db.Missions);
                 UpdateRuning = false;
+                Service.LoggingService.schreibeLogZeile($"{_Missions.Count} Mission´s geladen.");
             }
         }
         public static void MissionEvent(string json, string @event, Database_Models.DB_User user)

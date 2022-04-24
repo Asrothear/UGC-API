@@ -117,7 +117,7 @@ namespace UGC_API.Handler.v1_0
             }
             else
             {
-                //Ausgabe der Noemalen-Systemliste *EOE
+                //Ausgabe der Normalen-Systemliste *EOE
                 return Systems_out.ToArray();
             }
         }
