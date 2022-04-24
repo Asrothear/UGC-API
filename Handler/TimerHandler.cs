@@ -70,6 +70,8 @@ namespace UGC_API.Handler
         internal static void StateListUpdate()
         {
             if (updating) return;
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             updating = true;
             SystemHandler.LoadSystems();
             List<string> Systems = new();
@@ -111,6 +113,8 @@ namespace UGC_API.Handler
             }
             StateHandler.Systems_out = Systems;
             updating = false;
+            watch.Stop();
+            LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Execution Time: {watch.ElapsedMilliseconds} ms");
         }
     }
 }

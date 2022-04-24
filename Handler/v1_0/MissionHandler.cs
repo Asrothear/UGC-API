@@ -48,8 +48,14 @@ namespace UGC_API.Handler.v1_0
             MissionsModel oldMission = _Missions.Find(x => x.MissionID == newMission.MissionID && x.Event == newMission.Event);
             if (oldMission != null) return;
             _Missions.Add(newMission);
-            DatabaseHandler.db.Missions.Add(newMission);
-            DatabaseHandler.db.SaveChanges();
+            Task.Run(() =>
+            {
+                try
+                {
+                    DatabaseHandler.db.Missions.Add(newMission);
+                    DatabaseHandler.db.SaveChanges();
+                }catch (Exception ex) { }
+            });
             watch.Stop();
             LoggingService.schreibeLogZeile($"MissionHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
