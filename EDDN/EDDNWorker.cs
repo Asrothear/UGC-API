@@ -41,6 +41,7 @@ namespace UGC_API.EDDN
                             {
                                 lastsystem = JumpData.SystemAddress;
                                 JumpHandler(JumpData);
+                                lastsystem = 0;
                             }
                         }
                         break;

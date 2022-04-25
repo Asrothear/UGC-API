@@ -61,6 +61,7 @@ namespace UGC_API.Handler
         {
             var Tick = new Tick();
             Tick.GetTick();
+            ShedulerHandler.StateListUpdate();
         }
 
     }
@@ -70,6 +71,7 @@ namespace UGC_API.Handler
         private static bool updating = false;
         internal static void StateListUpdate()
         {
+            LoggingService.schreibeLogZeile($"StateListUpdate - {updating}");
             if (updating) return;
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
@@ -84,6 +86,7 @@ namespace UGC_API.Handler
                 Systems.Add("Alles Aktuell!");
                 StateHandler.Systems_out = Systems;
                 updating = false;
+                LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Tick was yesterday Execution Time: {watch.ElapsedMilliseconds} ms");
                 return;
             }
             foreach (var CSystem in Configs.Systems)
