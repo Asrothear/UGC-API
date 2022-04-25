@@ -66,18 +66,6 @@ namespace UGC_API.Controllers.v1_0
             var qls = new QLSHandler();
             Thread thread = new Thread(new ParameterizedThreadStart(qls.Startup));
             thread.Start(s);
-            int xxx = 0;
-            while(qls.result == null)
-            {
-                await Task.Delay(500);
-                xxx++;
-                if(xxx/2 >= 60)
-                {
-                    return StatusCode(500);
-                }
-            }
-            if (qls.result == 0) return StatusCode(403);
-            if (qls.result == 1) return StatusCode(200);
             return StatusCode(200);
         }
     }

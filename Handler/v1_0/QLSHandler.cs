@@ -18,19 +18,17 @@ namespace UGC_API.Handler.v1_0
         internal DateTime TimeStamp { get; set; }
         internal JObject QLSData { get; set; } = null;
         internal DB_User user { get; set; } = null;
-        internal int? result { get; set; } = null;
         internal void Startup(object s)
         {
-            if (s == null) { result = 1; return; }
+            if (s == null) { return; }
             QLSData = JObject.Parse(s.ToString());
             string UUID = User.CreateUUID(QLSData["ugc_token_v2"]["uuid"].ToString());
-            if (UUID == "none" || UUID == "" || UUID == " " || UUID == null) { result = 0; return; }
+            if (UUID == "none" || UUID == "" || UUID == " " || UUID == null) {return; }
             string Token = QLSData["ugc_token_v2"]["token"].ToString();
-            if (Token == "none" || Token == "" || Token == " " || Token == null) { result = 0; return; }
+            if (Token == "none" || Token == "" || Token == " " || Token == null) {return; }
             string verify = QLSData["ugc_token_v2"]?["verify"]?.Value<string>() ?? "";
             if ((!User.ExistUser(UUID)) && VerifyToken.ExistToken(verify)) User.CreateUserAccount(UUID, Token, verify);
-            if (!User.CheckTokenHash(UUID, Token)) { result = 0; return; }
-            result = 1;
+            if (!User.CheckTokenHash(UUID, Token)) { return; }
             var Logg = new LogHandler();
             Event = QLSData["event"]?.Value<string>() ?? "";
             user = User.GetUser(UUID);
@@ -65,7 +63,7 @@ namespace UGC_API.Handler.v1_0
                     break;
                 case "FSDJump":
                     DockingHandler.UnDocked(user);
-                    //JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
+                    JumpHandler.FSDJump(JsonSerializer.Deserialize<FSDJump>(v), QLSData, TimeStamp, user);
                     break;
                 case "Location":
                     LocationHandler.UserSetLocation(user, JsonSerializer.Deserialize<Location>(v)?.StarPos, JsonSerializer.Deserialize<Location>(v)?.StarSystem);

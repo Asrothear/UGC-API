@@ -36,6 +36,7 @@ namespace UGC_API.Handler
     {
         internal static void Start()
         {
+            LoggingService.schreibeLogZeile($"TimerHandler geladen.");
             Timer UpdateDataCacheTimer = new();
             Timer UpdateTickTimer = new();
             UpdateDataCacheTimer.Elapsed += new(OnUpdateDataCacheTimer);
@@ -43,7 +44,7 @@ namespace UGC_API.Handler
             UpdateDataCacheTimer.Interval += 15 * (60 * 1000);
             UpdateTickTimer.Interval += 5 * (60 * 1000);
             UpdateDataCacheTimer.Enabled = true;
-            UpdateDataCacheTimer.Enabled = true;
+            UpdateTickTimer.Enabled = true;
         }
         public static void OnUpdateDataCacheTimer(object sender = null, ElapsedEventArgs e = null)
         {
@@ -52,9 +53,9 @@ namespace UGC_API.Handler
             Configs.Events = Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
             Configs.UpdateSystems = Config_F.Configs[0].update_systems;
             VerifyToken._Verify_Token = new(DatabaseHandler.db.Verify_Token);
-            v1_0.SystemHandler.LoadSystems(true);
-            v1_0.CarrierHandler.LoadCarrier(true);
-            v1_0.MarketHandler.LoadMarket(true);
+            //v1_0.SystemHandler.LoadSystems(true);
+            //v1_0.CarrierHandler.LoadCarrier(true);
+            //1_0.MarketHandler.LoadMarket(true);
         }
         public static void OnUpdateTickTimer(object sender, ElapsedEventArgs e)
         {
