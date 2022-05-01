@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Timers;
 using UGC_API.Handler.v1_0;
 using UGC_API.Service;
+using System.Text.Json;
 
 namespace UGC_API.Database
 {
@@ -23,10 +24,10 @@ namespace UGC_API.Database
             {
                 db.Database.EnsureCreated();
                 Config_F.Configs = new List<DB_Config>(db.DB_Config);
-                var temp = Config_F.Configs[0].systems.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",").ToList();
+                var temp = JsonSerializer.Deserialize<List<string>>(Config_F.Configs[0].systems_s);
                 temp.Sort();
                 Configs.Systems = temp.ToArray();
-                Configs.Events =Config_F.Configs[0].events.Replace("[", "").Replace("]", "").Replace("\"", "").Split(",");
+                Configs.Events = JsonSerializer.Deserialize<List<string>>(Config_F.Configs[0].events_s).ToArray();
                 Configs.UpdateSystems = Config_F.Configs[0].update_systems;
                 Configs.Plugin = new List<DB_Plugin>(db.Plugin);
                 User._Users = new(db.DB_Users);

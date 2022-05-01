@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using UGC_API.Database;
 using UGC_API.Database_Models;
+using UGC_API.EDDN.Model;
 
 namespace UGC_API.Functions
 {
@@ -20,12 +21,12 @@ namespace UGC_API.Functions
         }
         internal static double[] GetSystemCoords(ulong SystemAddress)
         {
-            var SystemByAddress = _SystemData.Find(x => x.systemAddress == SystemAddress);
+            var SystemByAddress = _SystemData.Find(x => x.SystemAddress == SystemAddress);
             if (SystemByAddress == null)
             {
                 return null;
             }
-            string[] coord = SystemByAddress.starPos.Replace("[", "").Replace("]", "").Split(',');
+            string[] coord = SystemByAddress.StarPos.Replace("[", "").Replace("]", "").Split(',');
             List<double> coords = new();
             foreach(var coor in coord)
             {
@@ -33,25 +34,32 @@ namespace UGC_API.Functions
             }
             return coords.ToArray();
         }
-        internal static void UpdateSystemData(string starSystem, ulong systemAddress, double[] starPos, long population)
+        internal static void UpdateSystemData(EDDN_FSDJumpModel Data)
         {
-            var syst = _SystemData.Find(sys => sys.systemAddress == systemAddress);
+            var syst = _SystemData.Find(sys => sys.SystemAddress == Data.SystemAddress);
             if (syst == null)
             {
                 syst = new DB_SystemData
                 {
-                    starSystem = starSystem,
-                    systemAddress = systemAddress,
-                    starPos = JsonSerializer.Serialize(starPos),
-                    population = population
+                    StarSystem = Data.StarSystem,
+                    SystemAddress = Data.SystemAddress,
+                    StarPos = JsonSerializer.Serialize(Data.StarPos),
+                    Population = Data.Population,
+                    SystemAllegiance = Data.SystemAllegiance,
+                    Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions)),
                 };
+                syst.FactionsCount = syst.Factions.Count;
+                syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
             }
             else
             {
-                syst.starSystem = starSystem;
-                syst.systemAddress = systemAddress;
-                syst.starPos = JsonSerializer.Serialize(starPos);
-                syst.population = population;
+                syst.StarSystem = Data.StarSystem;
+                syst.SystemAddress = Data.SystemAddress;
+                syst.StarPos = JsonSerializer.Serialize(Data.StarPos);
+                syst.Population = Data.Population;
+                syst.Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions));
+                syst.FactionsCount = syst.Factions.Count;
+                syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
             }
             using(DBContext db = new())
             {

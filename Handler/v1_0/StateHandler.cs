@@ -93,10 +93,10 @@ namespace UGC_API.Handler.v1_0
                 List<SystemDistance> _syst = new();
                 foreach (var System in Systems_out)
                 {
-                    DB_SystemData SystemData = Systems._SystemData.FirstOrDefault(sy => sy.starSystem.ToLower() == System.Replace("~", "").ToLower());
+                    DB_SystemData SystemData = Systems._SystemData.FirstOrDefault(sy => sy.StarSystem.ToLower() == System.Replace("~", "").ToLower());
                     if (SystemData == null) continue;
                     SystemDistance _systData = new();
-                    var star_pos = SystemData.starPos.Replace("[", "").Replace("]", "").Split(',');
+                    var star_pos = SystemData.StarPos.Replace("[", "").Replace("]", "").Split(',');
                     double s_x = double.Parse(star_pos[0], CultureInfo.InvariantCulture);
                     double s_y = double.Parse(star_pos[1], CultureInfo.InvariantCulture);
                     double s_z = double.Parse(star_pos[2], CultureInfo.InvariantCulture);

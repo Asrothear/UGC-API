@@ -119,9 +119,8 @@ namespace UGC_API.DiscordBot.Modules
         [SlashCommand("update", "update the data cache")]
         public async Task updatechache()
         {
-            var DatabaseHandler = new Database.DatabaseHandler();
-            TimerHandler.OnUpdateDataCacheTimer();
             await RespondAsync("Chache wir aktuallisiert.");
+            TimerHandler.OnUpdateDataCacheTimer();
         }
     }
 }

@@ -52,8 +52,8 @@ namespace UGC_API.Database
                 entity.HasKey(e => e.id);
                 entity.ToTable("ugc_*config", Configs.Values.DB.Database);
                 entity.HasIndex(e => e.id).HasDatabaseName("id");
-                entity.Property(e => e.systems).HasColumnName("systems");
-                entity.Property(e => e.events).HasColumnName("events");
+                entity.Property(e => e.systems_s).HasColumnName("systems_s");
+                entity.Property(e => e.events_s).HasColumnName("events_s");
                 entity.Property(e => e.update_systems).HasColumnName("update_systems");
             });
             MoBuilder.Entity<DB_Carrier>(entity =>
@@ -139,13 +139,16 @@ namespace UGC_API.Database
             });
             MoBuilder.Entity<DB_SystemData>(entity =>
             {
-                entity.HasKey(e => e.id);
+                entity.HasKey(e => e.Id);
                 entity.ToTable($"ugc_*systems", Configs.Values.DB.Database);
-                entity.HasIndex(e => e.id).HasDatabaseName("id");
-                entity.Property(e => e.starSystem).HasColumnName("name");
-                entity.Property(e => e.systemAddress).HasColumnName("address");
-                entity.Property(e => e.starPos).HasColumnName("starPos");
-                entity.Property(e => e.population).HasColumnName("population");
+                entity.HasIndex(e => e.Id).HasDatabaseName("id");
+                entity.Property(e => e.StarSystem).HasColumnName("name");
+                entity.Property(e => e.SystemAddress).HasColumnName("address");
+                entity.Property(e => e.StarPos).HasColumnName("starPos");
+                entity.Property(e => e.SystemAllegiance).HasColumnName("SystemAllegiance");
+                entity.Property(e => e.Faction_String).HasColumnName("Faction_String");
+                entity.Property(e => e.FactionsCount).HasColumnName("FactionsCount");
+                entity.Property(e => e.Population).HasColumnName("population");
             });
             MoBuilder.Entity<DB_Systeme>(entity =>
             {
