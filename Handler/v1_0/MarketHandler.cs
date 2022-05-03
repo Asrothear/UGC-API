@@ -130,11 +130,15 @@ namespace UGC_API.Handler.v1_0
 
         internal static void LoadMarket(bool force = false)
         {
-            if (_Markets.Count != 0 && !force) return;
-            _Markets = new();
-            if (force) Markets.LoadFromDB();
-            _Markets = ParseMarket(Markets._Markets);
-            Service.LoggingService.schreibeLogZeile($"{_Markets.Count} Market´s geladen.");
+            try
+            {
+                if (_Markets.Count != 0 && !force) return;
+                _Markets = new();
+                if (force || _Markets.Count == 0) Markets.LoadFromDB();
+                LoggingService.schreibeLogZeile($"Pasring {Markets._Markets.Count} Markets");
+                _Markets = ParseMarket(Markets._Markets);
+                Service.LoggingService.schreibeLogZeile($"{_Markets.Count} Market´s geladen.");
+            }catch(Exception ex) { Service.LoggingService.schreibeLogZeile(ex.Message); }
         }
 
         private static List<Models.v1_0.Events.Market> ParseMarket(List<DB_Market> db_markets)

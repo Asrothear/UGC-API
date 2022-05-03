@@ -9,6 +9,8 @@ namespace UGC_API.Database_Models
         public string StarSystem { get; set; }
         public ulong SystemAddress { get; set; }
         public string StarPos { get; set; }
+        [NotMapped]
+        public double[] Coords { get; set; }
         public long Population { get; set; }
         public string SystemAllegiance { get; set; }
         public int? FactionsCount { get; set; } = 0;

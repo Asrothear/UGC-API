@@ -20,7 +20,7 @@ namespace UGC_API.Handler
         private static int xx = 0;
         internal static async void Start()
         {
-            Debug.WriteLine($"Execution: {xx}");
+            LoggingService.schreibeLogZeile($"TaskHandler.Start Execution: {xx}");
             xx++;
             await Task.Run(() => { Localisation.LoadLocalisation(true); });
             await Task.Run(() => { SystemHandler.LoadSystems(true); });
@@ -30,7 +30,7 @@ namespace UGC_API.Handler
             await Task.Run(() => { ServiceHandler.LoadService(true); });
             await Task.Run(() => { MissionHandler.LoadMissions(true); });
             TimerHandler.Start();
-            EDDNListener.listener();
+            //EDDNListener.listener();
         }
     }
     public class TimerHandler

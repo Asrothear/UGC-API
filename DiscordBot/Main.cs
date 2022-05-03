@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.DependencyInjection;
 using UGC_API.DiscordBot.Services;
+using System.Collections.Generic;
 
 namespace UGC_API.DiscordBot
 {
@@ -47,6 +48,7 @@ namespace UGC_API.DiscordBot
                     Bot.Log += LogAsync;
                     commands.Log += LogAsync;
                     Bot.Ready += ReadyAsync;
+                    Bot.SlashCommandExecuted += SlashCommands.Execute;
 
                     _ = Bot.SetActivityAsync(new Game($"auf {Configs.Values.Bot.Prefix}token", ActivityType.Watching, ActivityProperties.None));
                     // this is where we get the Token value from the configuration file, and start the bot
@@ -65,7 +67,20 @@ namespace UGC_API.DiscordBot
             // this returns a ServiceProvider that is used later to call for those services
             // we can add types we have access to here, hence adding the new using statement:
             // using csharpi.Services;
+            var config = new DiscordSocketConfig()
+            {
+                AlwaysDownloadUsers = true,
+                // Other config options can be presented here.
+                GatewayIntents = GatewayIntents.All
+            };
+            if (config.MessageCacheSize < 500)
+            {
+                Debug.WriteLine(config.MessageCacheSize);
+                config.MessageCacheSize = 500;
+                Debug.WriteLine(config.MessageCacheSize);
+            }
             return new ServiceCollection()
+                .AddSingleton(config)
                 .AddSingleton<DiscordSocketClient>()
                 .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
                 .AddSingleton<CommandHandler>()
@@ -77,16 +92,32 @@ namespace UGC_API.DiscordBot
             {
                 if (Configs.Values.Debug)
                 {
-                    //DiscordLogInfo("DEBUG", "Ready", "orange");
-
-                    
+                    //DiscordLogInfo("DEBUG", "Ready", "orange");                    
                 }
                 else
                 {
-                    
+                    IEnumerable<IMessage> messages = await (await (Bot.GetGuild(Configs.Values.Bot.Guild) as IGuild).GetChannelAsync(Configs.Values.Bot.InfoChannel) as ITextChannel).GetMessagesAsync(10).FlattenAsync();
+                    Task.Run(async () =>
+                    {
+                        foreach (var mes in messages)
+                        {
+                            await mes.DeleteAsync();
+                            await Task.Delay(300);
+                        }
+                    });                    
                     DiscordLogInfo("Bot Satus", "Ready", "orange");
                 }
-                await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
+                //await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
+                await SlashCommands.Generate();
+                var commands = await Bot.GetGuild(Configs.Values.Bot.Guild).GetApplicationCommandsAsync();
+                foreach(var command in commands)
+                {
+                    if (command.ApplicationId == Bot.GetApplicationInfoAsync().Result.Id)
+                    {                        
+                        await command.DeleteAsync();
+                    }
+                }
+                await SlashCommands.Build();
                 startup = true;
             }
         }

@@ -55,7 +55,7 @@ namespace UGC_API.DiscordBot.Modules
             {
                 if(chk.Length != 3)
                 {
-                    RespondAsync($"Callsign häkfte zu kurz! Bsp. `ABC-CDA\n`Du hast `{Callsign}` angegeben");
+                    RespondAsync($"Callsign hälfte zu kurz! Bsp. `ABC-CDA\n`Du hast `{Callsign}` angegeben");
                     return;
                 }
             }
@@ -121,6 +121,11 @@ namespace UGC_API.DiscordBot.Modules
         {
             await RespondAsync("Chache wir aktuallisiert.");
             TimerHandler.OnUpdateDataCacheTimer();
+        }
+        [SlashCommand("findsystem", "Sucht ein System, anhand bestimmter Kriterien aus der Library raus.")]
+        public async Task RespondAsync(int minSolDistance, int maxSolDistance, ulong minPopulation, ulong maxPopulation, int minxPopulation)
+        {
+            await RespondAsync("Chache wir aktuallisiert.");
         }
     }
 }

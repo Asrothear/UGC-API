@@ -33,7 +33,7 @@ namespace UGC_API.DiscordBot.Services
             _client.InteractionCreated += HandleInteraction;
 
             // process the command execution results 
-            _commands.SlashCommandExecuted += SlashCommandExecuted;
+            //_commands.SlashCommandExecuted += SlashCommandExecuted;
             _commands.ContextCommandExecuted += ContextCommandExecuted;
             _commands.ComponentCommandExecuted += ComponentCommandExecuted;
         }

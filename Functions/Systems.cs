@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using UGC_API.Database;
 using UGC_API.Database_Models;
 using UGC_API.EDDN.Model;
+using UGC_API.Service;
 
 namespace UGC_API.Functions
 {
@@ -18,21 +19,27 @@ namespace UGC_API.Functions
         {
             _Systeme = new(DatabaseHandler.db.DB_Systemes);
             _SystemData = new(DatabaseHandler.db.DB_SystemData);
+            LoggingService.schreibeLogZeile($"{_Systeme.Count} System´s geladen.");
+            LoggingService.schreibeLogZeile($"{_SystemData.Count} SystemData geladen.");
+            Task.Run(() =>
+            {
+                foreach (var sysd in _SystemData)
+                {
+                    GetSystemCoords(sysd.SystemAddress);
+                }
+                LoggingService.schreibeLogZeile($"{_SystemData.FindAll(x => x.StarPos.Length == 3).Count} Coordinaten geladen.");
+            });
         }
-        internal static double[] GetSystemCoords(ulong SystemAddress)
+        internal static void GetSystemCoords(ulong SystemAddress)
         {
             var SystemByAddress = _SystemData.Find(x => x.SystemAddress == SystemAddress);
             if (SystemByAddress == null)
             {
-                return null;
+                return;
             }
-            string[] coord = SystemByAddress.StarPos.Replace("[", "").Replace("]", "").Split(',');
-            List<double> coords = new();
-            foreach(var coor in coord)
-            {
-                coords.Add(double.Parse(coor, CultureInfo.InvariantCulture));
-            }
-            return coords.ToArray();
+            if(SystemByAddress.Coords != null && SystemByAddress.Coords.Length == 3) { return;}
+            SystemByAddress.Coords = JsonSerializer.Deserialize<double[]>(SystemByAddress.StarPos);
+            return;
         }
         internal static void UpdateSystemData(EDDN_FSDJumpModel Data)
         {
@@ -44,22 +51,26 @@ namespace UGC_API.Functions
                     StarSystem = Data.StarSystem,
                     SystemAddress = Data.SystemAddress,
                     StarPos = JsonSerializer.Serialize(Data.StarPos),
+                    Coords = Data.StarPos,
                     Population = Data.Population,
                     SystemAllegiance = Data.SystemAllegiance,
                     Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions)),
                 };
                 syst.FactionsCount = syst.Factions.Count;
                 syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
+                _SystemData.Add(syst);
             }
             else
             {
                 syst.StarSystem = Data.StarSystem;
                 syst.SystemAddress = Data.SystemAddress;
                 syst.StarPos = JsonSerializer.Serialize(Data.StarPos);
+                syst.Coords = Data.StarPos;
                 syst.Population = Data.Population;
                 syst.Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions));
                 syst.FactionsCount = syst.Factions.Count;
                 syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
+                syst.SystemAllegiance = Data.SystemAllegiance;
             }
             using(DBContext db = new())
             {
