@@ -1,9 +1,15 @@
-﻿using Discord.WebSocket;
+﻿using Discord;
+using Discord.WebSocket;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using UGC_API.Database_Models;
+using UGC_API.DiscordBot.DCModels;
 using UGC_API.Functions;
 using UGC_API.Handler;
 
@@ -45,19 +51,35 @@ namespace UGC_API.DiscordBot.Modules
 
         internal async static void Findsystem(SocketSlashCommand command)
         {
-            await command.RespondAsync("Not finished yet", ephemeral: true);
+            await command.RespondAsync("Suche läuft", ephemeral: true);
+            List<SystemData> stack = new List<SystemData>();
             int minsoldistance = Convert.ToInt32(command.Data.Options.FirstOrDefault(x => x.Name == "minsoldistance")?.Value);
             int maxsoldistance = Convert.ToInt32(command.Data.Options.FirstOrDefault(x => x.Name == "maxsoldistance")?.Value);
             long minpopulation = Convert.ToInt64(command.Data.Options.FirstOrDefault(x => x.Name == "minpopulation")?.Value);
             long maxpopulation = Convert.ToInt64(command.Data.Options.FirstOrDefault(x => x.Name == "maxpopulation")?.Value);
             string systemallegiance = command.Data.Options.FirstOrDefault(x => x.Name == "systemallegiance").Value.ToString();
-            List<DB_SystemData> stack = new List<DB_SystemData>(Systems._SystemData);
-            if (stack.Count == 0) return;
-            stack.Remove(stack.Find(x => x.SystemAddress == 10477373803));
+            List<DB_SystemData> haystack = new List<DB_SystemData>(Systems._SystemData);
+            if (haystack.Count == 0)
+            {
+                command.ModifyOriginalResponseAsync(x =>
+                {
+                    x.Content = $"{haystack.Count} Systeme gefunden.";
+                });
+                return;
+            };
+            haystack.Remove(haystack.Find(x => x.SystemAddress == 10477373803));
             List<DB_SystemData> needle = new List<DB_SystemData>();
             double[] SOL = { 0, 0, 0 };
-            needle = stack.FindAll(x => x.SystemAllegiance?.ToLower() == systemallegiance.ToLower());
-            needle = needle.FindAll(x => x.Population > 500);
+            needle = haystack.FindAll(x => x.SystemAllegiance?.ToLower() == systemallegiance.ToLower());
+            //needle = needle.FindAll(x => x.Population > 500);
+            if (minpopulation > 0)
+            {
+                needle = needle.FindAll(x => x.Population < minpopulation);
+            }
+            if (maxpopulation > 0 && maxpopulation < 500000000)
+            {
+                needle = needle.FindAll(x => x.Population > maxpopulation);
+            }
             foreach (var sysd in needle)
             {
                 Systems.GetSystemCoords(sysd.SystemAddress);
@@ -70,15 +92,40 @@ namespace UGC_API.DiscordBot.Modules
             {
                 needle = needle.FindAll(x => Functions.GetDistance(x.Coords, SOL) < maxsoldistance);
             }
-            if (minpopulation > 500)
+            if(needle.Count == 0)
             {
-                needle = needle.FindAll(x => x.Population < minpopulation);
+                command.ModifyOriginalResponseAsync(x => {
+                    x.Content = $"{needle.Count} Systeme gefunden.";
+                });
+                return;
             }
-            if (maxpopulation > 0 && maxpopulation < 500000000)
+            foreach(var stich in needle)
             {
-                needle = needle.FindAll(x => x.Population > maxpopulation);
+                var straw = JsonSerializer.Deserialize<SystemData>(JsonSerializer.Serialize(stich));
+                straw.DistanceToSol = Functions.GetDistance(straw.Coords, SOL);
+                straw.Factions = JsonSerializer.Deserialize<List<SystemData.FactionsModel>>(stich.Faction_String);
+                stack.Add(straw);
+            }            
+            using (var tempFiles = new TempFileCollection())
+            {
+                string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                Directory.CreateDirectory(tempDirectory);
+                string file = tempFiles.AddExtension("json");
+                File.WriteAllText(file, JsonSerializer.Serialize(stack, new JsonSerializerOptions { WriteIndented = true }).Replace(@"\u0022", "\"").Replace(@"\u0027", "'"));
+                File.Copy(file, Path.Combine(tempDirectory, Path.GetFileName(file)));
+                var zn = $"{Path.GetTempPath()}{Path.GetFileName(file)}.zip";
+                ZipFile.CreateFromDirectory(tempDirectory, zn);
+                List<FileAttachment> files = new List<FileAttachment>();
+                files.Add(new FileAttachment(zn));
+                await command.ModifyOriginalResponseAsync(x=> {
+                    x.Attachments = files;
+                    x.Content = $"{stack.Count} Systeme gefunden. Sende Datei.";
+                    });
+                File.Delete(zn);
+                Directory.Delete(tempDirectory, true);
+                //Directory.Delete(zn.Replace(Path.GetFileName(file),$"Temp1_{Path.GetFileName(file)}"), true);
+                tempFiles.Delete();
             }
-
         }
 
         internal static async void Authcarrier(SocketSlashCommand command)

@@ -78,7 +78,7 @@ namespace UGC_API.DiscordBot.Services
                     .WithDescription("system Treue")
                     .WithRequired(true)
                     .AddChoice("empire", "empire")
-                    .AddChoice("ondependent", "independent")
+                    .AddChoice("independent", "independent")
                     .AddChoice("federation", "federation")
                     .WithType(ApplicationCommandOptionType.String)
                 )
@@ -88,13 +88,20 @@ namespace UGC_API.DiscordBot.Services
                 _appCommand.Add(command.Build());
             }
         }
-        public static async Task Build()
+        public static async Task Build(IReadOnlyCollection<SocketApplicationCommand> commands, bool newBuild)
         {
             try
             {
-                foreach (var command in _appCommand)
+                if (!newBuild)
                 {
-                    await DiscordBot.Bot.Rest.CreateGuildCommand(command, Configs.Values.Bot.Guild);
+                    var gg = DiscordBot.Bot.GetGuild(Configs.Values.Bot.Guild);
+                    await gg.BulkOverwriteApplicationCommandAsync(_appCommand.ToArray());
+                }
+                else {
+                    foreach (var command in _appCommand)
+                    {
+                        await DiscordBot.Bot.Rest.CreateGuildCommand(command, Configs.Values.Bot.Guild);
+                    }
                 }
             }
             catch (Exception exception)

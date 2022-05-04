@@ -110,14 +110,7 @@ namespace UGC_API.DiscordBot
                 //await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
                 await SlashCommands.Generate();
                 var commands = await Bot.GetGuild(Configs.Values.Bot.Guild).GetApplicationCommandsAsync();
-                foreach(var command in commands)
-                {
-                    if (command.ApplicationId == Bot.GetApplicationInfoAsync().Result.Id)
-                    {                        
-                        await command.DeleteAsync();
-                    }
-                }
-                await SlashCommands.Build();
+                await SlashCommands.Build(commands, commands.Count != SlashCommands._appCommand.Count);                               
                 startup = true;
             }
         }

@@ -188,12 +188,13 @@ namespace UGC_API.Handler.v1_0
             try
             {
                 var _Obj = JObject.Parse(DB_Carrier.Replace("[", "").Replace("]", "").Replace("\\", ""));
-                OBJ.CarrierBalance = _Obj["CarrierBalance"]?.Value<long?>() ?? 0;
-                OBJ.ReserveBalance = _Obj["ReserveBalance"]?.Value<long?>() ?? 0;
-                OBJ.AvailableBalance = _Obj["AvailableBalance"]?.Value<long?>() ?? 0;
-                OBJ.ReservePercent = _Obj["ReservePercent"]?.Value<long?>() ?? 0;
-                OBJ.TaxRate = _Obj["TaxRate"]?.Value<long?>() ?? 0;
-            }catch(Exception e)
+                OBJ.CarrierBalance = _Obj["CarrierBalance"]?.Value<long?>() != null ? _Obj["CarrierBalance"].Value<long>() : 0;
+                OBJ.ReserveBalance = _Obj["ReserveBalance"]?.Value<long?>() != null ? _Obj["ReserveBalance"].Value<long>() : 0;
+                OBJ.AvailableBalance = _Obj["AvailableBalance"]?.Value<long?>() != null ? _Obj["AvailableBalance"].Value<long>() : 0;
+                OBJ.ReservePercent = _Obj["ReservePercent"]?.Value<long?>() != null ? _Obj["ReservePercent"].Value<long>() : 0;
+                OBJ.TaxRate = _Obj["TaxRate"]?.Value<double?>() != null ? _Obj["TaxRate"].Value<double>() : 0;
+            }
+            catch(Exception e)
             {
                 OBJ = JsonSerializer.Deserialize<CarrierModel.FinanceModel>(DB_Carrier);
             }

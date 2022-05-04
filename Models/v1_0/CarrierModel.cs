@@ -54,11 +54,11 @@ namespace UGC_API.Models.v1_0
         }
         public class FinanceModel
         {
-            public long? CarrierBalance { get; set; }
-            public long? ReserveBalance { get; set; }
-            public long? AvailableBalance { get; set; }
-            public long? ReservePercent { get; set; }
-            public double? TaxRate { get; set; }
+            public long CarrierBalance { get; set; } = 0;
+            public long ReserveBalance { get; set; } = 0;
+            public long AvailableBalance { get; set; } = 0;
+            public long ReservePercent { get; set; } = 0;
+            public double TaxRate { get; set; } = 0;
         }
         public class ModulePacksModel
         {
