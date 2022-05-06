@@ -17,6 +17,8 @@ namespace UGC_API.DiscordBot.Modules
 {
     public class CommandFunctions
     {
+        private static double[] SOL = { 0, 0, 0 };
+        private static double[] Wapiya = { 54.21875, -154.84375, 30.625 };
         public static async Task Token(SocketSlashCommand command)
         {
             var U_ID = command.User.Id;
@@ -41,6 +43,41 @@ namespace UGC_API.DiscordBot.Modules
             Database_Models.DB_Service service = new();
             service = ServiceHandler.AddService(command.Data.Options.FirstOrDefault(x => x.Name == "name").Value.ToString());
             DiscordBot.SendDM("Info", $"Service Registriert:\n `{service.name}`-`{service.token}`", "gold", command.User);
+        }
+
+        internal static void DistanceToSol(SocketSlashCommand command)
+        {
+            command.RespondAsync("Berechne...");
+            string Name = command.Data.Options.FirstOrDefault(x => x.Name == "name").Value.ToString();            
+            if (Name == null)
+            {
+                command.ModifyOriginalResponseAsync(x => {
+                    x.Content = $"Argument `Name` leer.";
+                });
+            }
+            command.ModifyOriginalResponseAsync(x => {
+                x.Content = $"Berechne...{Name}";
+            });
+            var sys = Systems._SystemData.FindAll(x => x.StarSystem == Name);
+            if(sys == null || sys.Count == 0)
+            {
+                command.ModifyOriginalResponseAsync(x => {
+                    x.Content = $"System nicht in der UGC Library gefunden.";
+                });
+                return;
+            }
+            if (sys.Count > 1)
+            {
+                command.ModifyOriginalResponseAsync(x => {
+                    x.Content = $"Es wurde mehr als 1 System mit diesem Namen gefunden. Ausgabe nicht möglich!";
+                });
+                return;
+            }
+            var System = sys.First();
+            Systems.GetSystemCoords(System.SystemAddress);
+            command.ModifyOriginalResponseAsync(x => {
+                x.Content = $"{Name} ist {Functions.GetDistance(System.Coords, Wapiya)}ly von Wapiya entfernt.";
+            });
         }
 
         internal static async void Update(SocketSlashCommand command)
@@ -69,7 +106,6 @@ namespace UGC_API.DiscordBot.Modules
             };
             haystack.Remove(haystack.Find(x => x.SystemAddress == 10477373803));
             List<DB_SystemData> needle = new List<DB_SystemData>();
-            double[] SOL = { 0, 0, 0 };
             needle = haystack.FindAll(x => x.SystemAllegiance?.ToLower() == systemallegiance.ToLower());
             //needle = needle.FindAll(x => x.Population > 500);
             if (minpopulation > 0)

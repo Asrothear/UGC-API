@@ -6,7 +6,9 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using UGC_API.Database;
 using UGC_API.Database_Models;
+using UGC_API.EDDN;
 using UGC_API.EDDN.Model;
+using UGC_API.Handler;
 using UGC_API.Service;
 
 namespace UGC_API.Functions
@@ -17,18 +19,25 @@ namespace UGC_API.Functions
         public static List<DB_SystemData> _SystemData = new();
         internal static void LoadFromDB()
         {
-            _Systeme = new(DatabaseHandler.db.DB_Systemes);
-            _SystemData = new(DatabaseHandler.db.DB_SystemData);
+            using (DBContext db = new())
+            {
+                _Systeme = new(db.DB_Systemes);
+                _SystemData = new(db.DB_SystemData);
+            }
             LoggingService.schreibeLogZeile($"{_Systeme.Count} System´s geladen.");
             LoggingService.schreibeLogZeile($"{_SystemData.Count} SystemData geladen.");
-            Task.Run(() =>
+            TimerHandler.Start();
+            EDDNListener.listener();
+            Task.Run(() => { LoggingService.schreibeLogZeile($"ShedulerHandler wird geladen..."); ShedulerHandler.StateListUpdate(); LoggingService.schreibeLogZeile($"StateListUpdate geladen."); });
+            LoggingService.schreibeLogZeile($"{_SystemData.Count} Coordinaten werden geladen...");
+            var xx = 0;
+            /*foreach (var sysd in _SystemData)
             {
-                foreach (var sysd in _SystemData)
-                {
-                    GetSystemCoords(sysd.SystemAddress);
-                }
-                LoggingService.schreibeLogZeile($"{_SystemData.FindAll(x => x.StarPos.Length == 3).Count} Coordinaten geladen.");
-            });
+                GetSystemCoords(sysd.SystemAddress);
+                xx++;
+            }
+            */
+            LoggingService.schreibeLogZeile($"{xx} Coordinaten geladen.");
         }
         internal static void GetSystemCoords(ulong SystemAddress)
         {
@@ -56,8 +65,9 @@ namespace UGC_API.Functions
                     SystemAllegiance = Data.SystemAllegiance,
                     Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions)),
                 };
-                syst.FactionsCount = syst.Factions.Count;
+                syst.FactionsCount = syst.Factions?.Count ?? 0;
                 syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
+                GetSystemCoords(syst.SystemAddress);
                 _SystemData.Add(syst);
             }
             else
@@ -68,9 +78,10 @@ namespace UGC_API.Functions
                 syst.Coords = Data.StarPos;
                 syst.Population = Data.Population;
                 syst.Factions = JsonSerializer.Deserialize<List<DB_SystemData.FactionsModel>>(JsonSerializer.Serialize(Data.Factions));
-                syst.FactionsCount = syst.Factions.Count;
+                syst.FactionsCount = syst.Factions?.Count ?? 0;
                 syst.Faction_String = JsonSerializer.Serialize(syst.Factions);
                 syst.SystemAllegiance = Data.SystemAllegiance;
+                GetSystemCoords(syst.SystemAddress);
             }
             using(DBContext db = new())
             {

@@ -22,8 +22,9 @@ namespace UGC_API.Controllers.v1_0
         // GET api/<ValuesController>/5
         [HttpGet]
         [MapToApiVersion("1.0")]
-        public string[] Get([FromHeader] string version, [FromHeader] string br, [FromHeader] string branch, [FromHeader] string cmdr, [FromHeader] string uuid, [FromHeader] string token)
+        public string[] Get([FromHeader] string version, [FromHeader] string br, [FromHeader] string branch, [FromHeader] string cmdr, [FromHeader] string uuid, [FromHeader] string token, [FromHeader] string onlyBGS)
         {
+            if (string.IsNullOrWhiteSpace(onlyBGS)) onlyBGS = "True";
             StateModel stateModel = new StateModel
             {
                 UUID = Functions.User.CreateUUID(uuid),
@@ -31,10 +32,12 @@ namespace UGC_API.Controllers.v1_0
                 Visible = cmdr != "True" ? false : true,
                 Version = Convert.ToDouble(version),
                 Minor = Convert.ToInt32(br),
-                Branch = branch
+                Branch = branch,
+                onlyBGS= onlyBGS != "True" ? false : true
             };
             var StateHandler = new StateHandler();
             string[] ous = StateHandler.state(stateModel);
+            //LoggingService.schreibeLogZeile($"State-API {ous.Length}-{stateModel.onlyBGS}:{onlyBGS}");
             return ous;
         }
     }

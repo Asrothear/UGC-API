@@ -64,7 +64,7 @@ namespace UGC_API.DiscordBot
                 channel.SendMessageAsync(embed: embedb.Build());
             }catch(Exception ex)
             {
-                LoggingService.schreibeLogZeile($"{ex.ToString()}");
+                LoggingService.schreibeLogZeile($"{ex} Models.v1_0.CarrierModel {carrier}, Models.v1_0.Events.CarrierJumpRequest {carrierJumpRequest}, string {OldSys}, ulong {sysa}");
             }
         }
     }

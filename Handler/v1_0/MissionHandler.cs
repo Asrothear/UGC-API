@@ -20,12 +20,15 @@ namespace UGC_API.Handler.v1_0
         {
             if (!UpdateRuning)
             {
-                UpdateRuning = true;
-                if (_Missions.Count != 0 && !force) return;
-                _Missions = new();
-                if (force) _Missions = new List<MissionsModel>(DatabaseHandler.db.Missions);
-                UpdateRuning = false;
-                Service.LoggingService.schreibeLogZeile($"{_Missions.Count} Mission´s geladen.");
+                using (DBContext db = new())
+                {
+                    UpdateRuning = true;
+                    if (_Missions.Count != 0 && !force) return;
+                    _Missions = new();
+                    if (force) _Missions = new List<MissionsModel>(db.Missions);
+                    UpdateRuning = false;
+                    Service.LoggingService.schreibeLogZeile($"{_Missions.Count} Mission´s geladen.");
+                }
             }
         }
         public static void MissionEvent(string json, string @event, Database_Models.DB_User user)

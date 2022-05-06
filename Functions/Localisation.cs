@@ -16,7 +16,10 @@ namespace UGC_API.Functions
 
         internal static void LoadFromDB()
         {
-            _Localisations = new List<DB_Localisation>(DatabaseHandler.db.Localisation);
+            using (DBContext db = new())
+            {
+                _Localisations = new List<DB_Localisation>(db.Localisation);
+            }
         }
         internal static void LoadLocalisation(bool force = false)
         {

@@ -22,15 +22,12 @@ namespace UGC_API.Handler
         {
             LoggingService.schreibeLogZeile($"TaskHandler.Start Execution: {xx}");
             xx++;
-            await Task.Run(() => { Localisation.LoadLocalisation(true); });
-            await Task.Run(() => { SystemHandler.LoadSystems(true); });
-            await Task.Run(() => { CarrierHandler.LoadCarrier(true); });
-            await Task.Run(() => { MarketHandler.LoadMarket(true); });
-            await Task.Run(() => { ShedulerHandler.StateListUpdate(); LoggingService.schreibeLogZeile($"StateListUpdate geladen."); });
-            await Task.Run(() => { ServiceHandler.LoadService(true); });
-            await Task.Run(() => { MissionHandler.LoadMissions(true); });
-            TimerHandler.Start();
-            //EDDNListener.listener();
+            Task.Run(() => { LoggingService.schreibeLogZeile($"Localisations werden geladen..."); Localisation.LoadLocalisation(true); });
+            Task.Run(() => { LoggingService.schreibeLogZeile($"SystemHandler wird geladen..."); SystemHandler.LoadSystems(true); });
+            Task.Run(() => { LoggingService.schreibeLogZeile($"CarrierHandler wird geladen..."); CarrierHandler.LoadCarrier(true); });
+            Task.Run(() => { LoggingService.schreibeLogZeile($"MarketHandler wird geladen..."); MarketHandler.LoadMarket(true); });
+            Task.Run(() => { LoggingService.schreibeLogZeile($"ServiceHandler wird geladen..."); ServiceHandler.LoadService(true); });
+            Task.Run(() => { LoggingService.schreibeLogZeile($"MissionHandler wird geladen..."); MissionHandler.LoadMissions(true); });
         }
     }
     public class TimerHandler
@@ -85,15 +82,15 @@ namespace UGC_API.Handler
             List<string> Systems = new();
             var time = GetTime.DateNow();
             var tick = Tick.DateTimeTick.AddHours(3);
-            if(time.Day != tick.Day)
+            /*if(time.Day != tick.Day)
             {
                 Systems = new();
                 Systems.Add("Alles Aktuell!");
                 StateHandler.Systems_out = Systems;
                 updating = false;
-                LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Tick was yesterday Execution Time: {watch.ElapsedMilliseconds} ms");
+                //LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Tick was yesterday Execution Time: {watch.ElapsedMilliseconds} ms");
                 return;
-            }
+            }*/
             foreach (var CSystem in Configs.Systems)
             {
                 //Hole alle Einträge aus dem aktuellen Monat
@@ -110,7 +107,7 @@ namespace UGC_API.Handler
                         Systems.Add($"~{CSystem}~");
                     }
                 }
-                else if (time > tick && HSystem.last_update < tick)
+                else if (time.Day == tick.Day && time > tick && HSystem.last_update < tick)
                 {
                     Systems.Add(CSystem);
                 }

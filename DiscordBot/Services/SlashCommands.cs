@@ -35,6 +35,9 @@ namespace UGC_API.DiscordBot.Services
                 case "findsystem":
                     CommandFunctions.Findsystem(command);
                     break;
+                case "distancetohome":
+                    CommandFunctions.DistanceToSol(command);
+                    break;
             }
         }
         public static async Task Generate()
@@ -82,6 +85,13 @@ namespace UGC_API.DiscordBot.Services
                     .AddChoice("federation", "federation")
                     .WithType(ApplicationCommandOptionType.String)
                 )
+            );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("distancetohome")
+                .WithDescription("Berechnet die Entfernung des Systems zu Wapiya.")
+                .AddOption("name", ApplicationCommandOptionType.String, "Name des System (System muss in der UGC-Libaray sein)", isRequired: true)
+                //.AddOption("Coord", ApplicationCommandOptionType.String, "1.1,2.2,3,3")
             );
             foreach (var command in _commands)
             {

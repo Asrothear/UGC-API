@@ -29,7 +29,7 @@ namespace UGC_API.Functions
                 tick = JsonSerializer.Deserialize<List<Models.v1_0.TickModel>>(json);
                 DateTimeTick = GetTime.DateNow(tick.ElementAt(0).time);
                 AktualTick[0] = $"{DateTimeTick}\n(~{DateTimeTick.AddHours(3)}(+3h)~)";
-                LoggingService.schreibeLogZeile($"GetTick-Success: {AktualTick[0]}");
+                //LoggingService.schreibeLogZeile($"GetTick-Success: {AktualTick[0]}");
             }
             catch (Exception ex)
             {

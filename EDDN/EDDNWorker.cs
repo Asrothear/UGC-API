@@ -34,22 +34,25 @@ namespace UGC_API.EDDN
                     case "FSDJump":
                         var JumpData = System.Text.Json.JsonSerializer.Deserialize<EDDN_FSDJumpModel>(InternalData.ToString());
                         Task.Run(() => {Systems.UpdateSystemData(JumpData); });
-                        
+                        bool ugs = false;
                         if (JumpData.Factions != null && Configs.Systems.Contains<string>(JumpData.StarSystem))
                         {
                             if (lastsystem != JumpData.SystemAddress)
                             {
+                                ugs = true;
                                 lastsystem = JumpData.SystemAddress;
                                 JumpHandler(JumpData);
                                 lastsystem = 0;
                             }
                         }
+                        //LoggingService.schreibeEDDNLog($"EDDNWorker {JumpData.StarSystem} UGC:{ugs}");
                         break;
                 }
             }
             else if (InternalData.ContainsKey("commodities"))
             {
                 // Jobject has possible MarketData, try to Parse Data
+                if (!MarketHandler.loaded) return;
                 var MarketData = System.Text.Json.JsonSerializer.Deserialize<EDDN_MarketModel>(resObjJson["message"].ToString());
                 EDDN_MarketHandler(MarketData);
             }
@@ -106,7 +109,6 @@ namespace UGC_API.EDDN
             API_System.Factions = System.Text.Json.JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(System.Text.Json.JsonSerializer.Serialize(JumpData.Factions));
             watch.Stop();
             LoggingService.schreibeLogZeile($"EDDNWorker-JumpHandler {JumpData.StarSystem} Execution Time: {watch.ElapsedMilliseconds} ms");
-            Task.Run(() => { ShedulerHandler.StateListUpdate(); });
             UpdateSystem(API_System);
         }
 
@@ -147,7 +149,7 @@ namespace UGC_API.EDDN
             UpdateSystem(newSystemEntry, true);
             return;
         }
-        public async static void UpdateSystem(Models.v1_0.SystemModel SystemEntry, bool create = false)
+        public static void UpdateSystem(Models.v1_0.SystemModel SystemEntry, bool create = false)
         {
             var UpdateEntry = Systems._Systeme.FirstOrDefault(sy => sy.Timestamp == SystemEntry.Timestamp && sy.System_Name == SystemEntry.System_Name);
             if (UpdateEntry == null)
@@ -172,6 +174,7 @@ namespace UGC_API.EDDN
             {
                 if (create)
                 {
+                    Systems._Systeme.Add(UpdateEntry);
                     db.DB_Systemes.Add(UpdateEntry);
                 }
                 else

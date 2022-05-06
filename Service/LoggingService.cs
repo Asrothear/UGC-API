@@ -13,7 +13,7 @@ namespace UGC_API.Service
     {
         private const int NumberOfRetries = 3;
         private const int DelayOnRetry = 1000;
-        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\LogFiles\");
+        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\");
 
         public static void HeartbeatLog(object sender, ElapsedEventArgs e)
         {
@@ -66,7 +66,7 @@ namespace UGC_API.Service
                     {
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine(v);
+                            sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] " + v);
                         }
                     }
                     break;
@@ -93,7 +93,7 @@ namespace UGC_API.Service
         public static string erstelleEDDNDatei()
         {
             var dat = DateTime.Now.ToString("yyyy - MM - dd");
-            string fileName = $"EDDN-{dat}.log";
+            string fileNameEDDN = $"EDDN-{dat}.log";
             try
             {
                 Directory.CreateDirectory(logfileDir);
@@ -103,10 +103,10 @@ namespace UGC_API.Service
 
             }
 
-            StreamWriter sw = File.AppendText(logfileDir + fileName);
+            StreamWriter sw = File.AppendText(logfileDir + fileNameEDDN);
             sw.Close();
             
-            return (logfileDir + fileName);
+            return (logfileDir + fileNameEDDN);
         }
     }
 }

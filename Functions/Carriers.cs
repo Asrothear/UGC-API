@@ -21,7 +21,10 @@ namespace UGC_API.Functions
                 Debug.WriteLine($"Carriers.LoadFromDB() Execution: {xx}");
                 xx++;
                 updating = true;
-                _Carriers = new List<DB_Carrier>(DatabaseHandler.db.Carrier);
+                using (DBContext db = new())
+                {
+                    _Carriers = new List<DB_Carrier>(db.Carrier);
+                }
                 updating = false;
             }
         }

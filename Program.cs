@@ -30,6 +30,7 @@ namespace UGC_API
         public static void Main(string[] args)
         {
             LoggingService.erstelleLogDatei();
+            LoggingService.schreibeLogZeile($"###########################################################################################");
             var watch = new System.Diagnostics.Stopwatch();
             var Tick = new Functions.Tick();
             watch.Start();

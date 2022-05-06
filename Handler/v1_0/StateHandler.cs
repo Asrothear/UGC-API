@@ -59,7 +59,7 @@ namespace UGC_API.Handler.v1_0
                 no.Add("!! Plugin Outdated !!");
                 return no.ToArray();
             }            
-            if (true)
+            if (stateModel.onlyBGS)
             {
                 List<string> Filter = new();
                 foreach (string Sys in Systems_out)
