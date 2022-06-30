@@ -58,8 +58,12 @@ namespace UGC_API.Models.v1_0
             public long ReserveBalance { get; set; } = 0;
             public long AvailableBalance { get; set; } = 0;
             public long ReservePercent { get; set; } = 0;
-            public double TaxRate { get; set; } = 0;
+            public double TaxRate_rearm { get; set; } = 0;
+            public double TaxRate_refuel { get; set; } = 0;
+            public double TaxRate_repair { get; set; } = 0;
+            public double TaxRate_shipyard { get; set; } = 0;
         }
+        // "Finance": {"TaxRate_rearm": 100, "CarrierBalance": 2980334654, "ReserveBalance": 510635000, "ReservePercent": 17, "TaxRate_refuel": 100, "TaxRate_repair": 100, "AvailableBalance": 2469699654, "TaxRate_shipyard": 100}
         public class ModulePacksModel
         {
             public string PackTheme { get; set; }

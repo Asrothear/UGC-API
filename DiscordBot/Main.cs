@@ -23,7 +23,8 @@ namespace UGC_API.DiscordBot
         private InteractionService _commands;
         public static SocketMessage Smessage;
         private static bool startup = false;
-
+        internal static RatelimitManager RatelimitService = new RatelimitManager();
+        internal static string foot = $"C#-DisordBot by Lord Asrothear#1337\n © 2020-{GetTime.DateNow().Year}\n";
         public static void Main()
             => new DiscordBot().MainAsync().GetAwaiter().GetResult();
 
@@ -96,15 +97,11 @@ namespace UGC_API.DiscordBot
                 }
                 else
                 {
-                    IEnumerable<IMessage> messages = await (await (Bot.GetGuild(Configs.Values.Bot.Guild) as IGuild).GetChannelAsync(Configs.Values.Bot.InfoChannel) as ITextChannel).GetMessagesAsync(10).FlattenAsync();
-                    Task.Run(async () =>
-                    {
-                        foreach (var mes in messages)
-                        {
-                            await mes.DeleteAsync();
-                            await Task.Delay(300);
-                        }
-                    });                    
+
+                    // create once when needed, dont mix routes/functions lol
+                    var service = new RatelimitManager();
+                    // use this to call the function
+                    //await service.ExecuteWithRatelimits(CleanUp());
                     DiscordLogInfo("Bot Satus", "Ready", "orange");
                 }
                 //await _commands.RegisterCommandsToGuildAsync(Configs.Values.Bot.Guild);
@@ -114,6 +111,25 @@ namespace UGC_API.DiscordBot
                 startup = true;
             }
         }
+
+        private async void CleanUp()
+        {
+            /*
+            foreach (var chn in Configs.Values.Bot.CleanUp)
+            {
+                Task.Run(async () => {
+                    IEnumerable <IMessage> messages = await (await (Bot.GetGuild(Configs.Values.Bot.Guild) as IGuild).GetChannelAsync(chn) as ITextChannel).GetMessagesAsync(10).FlattenAsync();                
+                    foreach (var mes in messages)
+                    {
+                        if (mes.IsPinned || mes.CreatedAt.DateTime > GetTime.DateNow().AddDays(7)) continue;
+                        //await mes.DeleteAsync();
+                        await service.ExecuteWithRatelimits(mes.Channel.DeleteMessageAsync, mes.Id);
+                        await Task.Delay(300);
+                    }
+                });
+            }*/
+        }
+
         private Task LogAsync(LogMessage msg)
         {
             Debug.WriteLine(msg.ToString());
@@ -122,16 +138,23 @@ namespace UGC_API.DiscordBot
         }
         #endregion
         #region Logs
-        public static async void SendDM(string title, string content, string color, SocketUser user)
+        public static async void SendDM(string title, string content, string color, SocketUser user, bool mbed = false)
         {
             //if (Configs.Debug) return;
             try
             {
                 var DM = user.CreateDMChannelAsync().Result;
                 if (DM == null) return;
-                var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
-                Embed embedLog = EmbedBuilder.Build();
-                DM.SendMessageAsync(embed: embedLog);
+                if (!mbed)
+                {
+                    var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText(foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
+                    Embed embedLog = EmbedBuilder.Build();
+                    DM.SendMessageAsync(embed: embedLog);
+                }
+                else
+                {
+                    DM.SendMessageAsync(content);
+                }
             }
             catch (Exception e)
             {
@@ -146,7 +169,7 @@ namespace UGC_API.DiscordBot
             {
                 ITextChannel textChannel = Bot.GetChannel(Configs.Values.Bot.LogChannel) as ITextChannel;
                 if (textChannel == null) return;
-                var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
+                var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText(foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
                 textChannel.SendMessageAsync(embed: embedLog);
             }
@@ -163,7 +186,7 @@ namespace UGC_API.DiscordBot
             {
                 ITextChannel textChannel = Bot.GetChannel(Configs.Values.Bot.InfoChannel) as ITextChannel;
                 if (textChannel == null) return;
-                var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
+                var EmbedBuilder = new EmbedBuilder().WithColor(GetColor(color)).WithTitle(title).WithDescription(content).WithFooter(footer => footer.WithText(foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 Embed embedLog = EmbedBuilder.Build();
                 textChannel.SendMessageAsync(embed: embedLog);
             }

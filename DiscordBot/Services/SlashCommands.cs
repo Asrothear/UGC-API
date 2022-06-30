@@ -38,6 +38,33 @@ namespace UGC_API.DiscordBot.Services
                 case "distancetohome":
                     CommandFunctions.DistanceToSol(command);
                     break;
+                case "fuel":
+                    CommandFunctions.Fuel(command);
+                    break;
+                case "range":
+                    CommandFunctions.Range(command);
+                    break;
+                case "sortexp":
+                    CommandFunctions.SortExp(command);
+                    break;
+                case "flush":
+                    CommandFunctions.Flush(command);
+                    break;
+                case "carrier":
+                    CommandFunctions.Carrier(command);
+                    break;
+                case "systems":
+                    CommandFunctions.SystemsList(command);
+                    break;
+                case "addsystem":
+                    CommandFunctions.Addsystem(command);
+                    break;
+                case "delsystem":
+                    CommandFunctions.Delystem(command);
+                    break;
+                case "activity":
+                    CommandFunctions.Activity(command);
+                    break;
             }
         }
         public static async Task Generate()
@@ -46,7 +73,7 @@ namespace UGC_API.DiscordBot.Services
                 new SlashCommandBuilder()
                 .WithName("token")
                 .WithDescription("get your V2 token!")
-                //.AddOption("user", ApplicationCommandOptionType.User, "The users whos roles you want to be listed", isRequired: true)
+                .AddOption("plain", ApplicationCommandOptionType.Boolean, "[Optional] Sended eine Normale Textnachricht. Für den Fall das Embeds nicht korrekt angezeigt werden", isRequired: false)
             );
             _commands.Add(
                 new SlashCommandBuilder()
@@ -93,6 +120,61 @@ namespace UGC_API.DiscordBot.Services
                 .AddOption("name", ApplicationCommandOptionType.String, "Name des System (System muss in der UGC-Libaray sein)", isRequired: true)
                 //.AddOption("Coord", ApplicationCommandOptionType.String, "1.1,2.2,3,3")
             );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("fuel")
+                .WithDescription("Berechnet den ungefähren Treibstoff verbauch für die Angegebene Distanz für einen Carrier")
+                .AddOption("callsign", ApplicationCommandOptionType.String, "[Optional] Rufzeichen des Carriers")
+                .AddOption("distanz", ApplicationCommandOptionType.Number, "Distanz der Strecke in Lichtjahren -> 12,3", isRequired: true)
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("range")
+                .WithDescription("Berechnet die Ungefähre Recihweite für einen Carrier")
+                .AddOption("callsign", ApplicationCommandOptionType.String, "[Optional] Rufzeichen des Carriers")
+                .AddOption("fuel", ApplicationCommandOptionType.Number, "[Optional] Menge des Treibstoff im Tank -> 12,3")
+                .AddOption("freightfuel", ApplicationCommandOptionType.Number, "[Optional] Menge Tritium in Frachtraum -> 12,3")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("sortexp")
+                .WithDescription("Liest Exp-Daten aus der Log.")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("flush")
+                .WithDescription("Leert den Kanal.")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("carrier")
+                .WithDescription("Zeigt Informationen der UGC-Crrier an.")
+                .AddOption("callsign", ApplicationCommandOptionType.String, "[Optional] Ruffzeichen des Carriers")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("systems")
+                .WithDescription("Zeigt alle Systeme an die in der BGS-Überwachung sind.")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("addsystem")
+                .WithDescription("Fügt ein System in die BGS-Überwachung ein.")
+                .AddOption("system", ApplicationCommandOptionType.String, "Name des System", isRequired: true)
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("delsystem")
+                .WithDescription("Entfernt ein System aus der BGS-Überwachung.")
+                .AddOption("system", ApplicationCommandOptionType.String, "Name des System", isRequired: true)
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("activity")
+                .WithDescription("Zeige die Anzahl der aktiven BGS Aktionen in den letzten x Stunden in System Y")
+                .AddOption("system", ApplicationCommandOptionType.String, "Name des System", isRequired: true)
+                .AddOption("stunden", ApplicationCommandOptionType.Number, "Name des System", isRequired: true)
+                );
             foreach (var command in _commands)
             {
                 _appCommand.Add(command.Build());

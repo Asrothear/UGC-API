@@ -49,7 +49,13 @@ namespace UGC_API
             }
             watch.Stop();
             LoggingService.schreibeLogZeile($"StartUp Time: {watch.ElapsedMilliseconds} ms");
-            CreateHostBuilder(args).Build().Run();
+            try
+            {
+                CreateHostBuilder(args).Build().Run();
+            }catch(Exception ex)
+            {
+                LoggingService.schreibeLogZeile(ex.Message);
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

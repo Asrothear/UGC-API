@@ -12,6 +12,7 @@ namespace UGC_API.Handler.v1_0
 {
     public class LogHandler
     {
+        internal static List<DB_Log> _log = new();
         public async void Create(string logtext, DateTime timeStamp, DB_User user, string @event)
         {
             Task.Delay(500).Wait();

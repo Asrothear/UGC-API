@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using UGC_API.Database;
@@ -29,15 +30,16 @@ namespace UGC_API.Functions
             TimerHandler.Start();
             EDDNListener.listener();
             Task.Run(() => { LoggingService.schreibeLogZeile($"ShedulerHandler wird geladen..."); ShedulerHandler.StateListUpdate(); LoggingService.schreibeLogZeile($"StateListUpdate geladen."); });
-            LoggingService.schreibeLogZeile($"{_SystemData.Count} Coordinaten werden geladen...");
             var xx = 0;
-            /*foreach (var sysd in _SystemData)
-            {
-                GetSystemCoords(sysd.SystemAddress);
-                xx++;
-            }
-            */
-            LoggingService.schreibeLogZeile($"{xx} Coordinaten geladen.");
+            Task.Run(async () => {
+                LoggingService.schreibeLogZeile($"{_SystemData.Count} Coordinaten werden geladen...");
+                foreach (var sysd in _SystemData)
+                {
+                    GetSystemCoords(sysd.SystemAddress);
+                    xx++;
+                }
+                LoggingService.schreibeLogZeile($"{xx} Coordinaten geladen.");
+            });
         }
         internal static void GetSystemCoords(ulong SystemAddress)
         {
@@ -49,6 +51,24 @@ namespace UGC_API.Functions
             if(SystemByAddress.Coords != null && SystemByAddress.Coords.Length == 3) { return;}
             SystemByAddress.Coords = JsonSerializer.Deserialize<double[]>(SystemByAddress.StarPos);
             return;
+        }
+        internal static async Task<double[]> GetSystemCoordsByEddbApiAsync(ulong SystemAddress)
+        {
+            using HttpClient Client = new HttpClient();
+            double[] coords = new double[3];
+            var response = await Client.GetAsync($"https://eddbapi.elitebgs.app/api/v4/systems?systemaddress={SystemAddress}");
+            var json = await response.Content.ReadAsStringAsync();
+            Client.Dispose();
+            var cords = JsonSerializer.Deserialize<EDDB_SystemsModel>(json);
+
+            if (cords.x != null && cords.y != null && cords.z != null)
+            {
+                coords[0] = (double)cords.x;
+                coords[1] = (double)cords.y;
+                coords[2] = (double)cords.z;
+                return coords;
+            }
+            return null;
         }
         internal static void UpdateSystemData(EDDN_FSDJumpModel Data)
         {

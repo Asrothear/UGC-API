@@ -18,16 +18,16 @@ namespace UGC_API.Handler
     public class TaskHandler
     {
         private static int xx = 0;
-        internal static async void Start()
+        internal static void Start()
         {
-            LoggingService.schreibeLogZeile($"TaskHandler.Start Execution: {xx}");
-            xx++;
+            LoggingService.schreibeLogZeile($"TaskHandler.Start Execution: {xx++}");
             Task.Run(() => { LoggingService.schreibeLogZeile($"Localisations werden geladen..."); Localisation.LoadLocalisation(true); });
             Task.Run(() => { LoggingService.schreibeLogZeile($"SystemHandler wird geladen..."); SystemHandler.LoadSystems(true); });
             Task.Run(() => { LoggingService.schreibeLogZeile($"CarrierHandler wird geladen..."); CarrierHandler.LoadCarrier(true); });
             Task.Run(() => { LoggingService.schreibeLogZeile($"MarketHandler wird geladen..."); MarketHandler.LoadMarket(true); });
             Task.Run(() => { LoggingService.schreibeLogZeile($"ServiceHandler wird geladen..."); ServiceHandler.LoadService(true); });
             Task.Run(() => { LoggingService.schreibeLogZeile($"MissionHandler wird geladen..."); MissionHandler.LoadMissions(true); });
+            BGSOrderAPI.GetCurrentList();
         }
     }
     public class TimerHandler
@@ -37,12 +37,16 @@ namespace UGC_API.Handler
             LoggingService.schreibeLogZeile($"TimerHandler geladen.");
             Timer UpdateDataCacheTimer = new();
             Timer UpdateTickTimer = new();
+            Timer UpdateStateListTimer = new();
             UpdateDataCacheTimer.Elapsed += new(OnUpdateDataCacheTimer);
             UpdateTickTimer.Elapsed += new(OnUpdateTickTimer);
+            UpdateStateListTimer.Elapsed += new(OnUpdateStateListTimer);
             UpdateDataCacheTimer.Interval += 15 * (60 * 1000);
-            UpdateTickTimer.Interval += 5 * (60 * 1000);
+            UpdateTickTimer.Interval += 10 * (60 * 1000);
+            UpdateStateListTimer.Interval += 5 * (60 * 1000);
             UpdateDataCacheTimer.Enabled = true;
             UpdateTickTimer.Enabled = true;
+            UpdateStateListTimer.Enabled = true;
         }
         public static void OnUpdateDataCacheTimer(object sender = null, ElapsedEventArgs e = null)
         {
@@ -63,6 +67,9 @@ namespace UGC_API.Handler
         {
             var Tick = new Tick();
             Tick.GetTick();
+        }
+        public static void OnUpdateStateListTimer(object sender, ElapsedEventArgs e)
+        {
             ShedulerHandler.StateListUpdate();
         }
 
@@ -75,9 +82,9 @@ namespace UGC_API.Handler
         {
             LoggingService.schreibeLogZeile($"StateListUpdate - {updating}");
             if (updating) return;
+            updating = true;
             var watch = new System.Diagnostics.Stopwatch();
             watch.Start();
-            updating = true;
             SystemHandler.LoadSystems();
             List<string> Systems = new();
             var time = GetTime.DateNow();

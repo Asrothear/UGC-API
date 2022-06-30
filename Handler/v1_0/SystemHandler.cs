@@ -14,12 +14,15 @@ namespace UGC_API.Handler.v1_0
     public class SystemHandler
     {
         internal static List<SystemModel> _Systeme = new();
+        internal static bool loaded = false;
         internal static void LoadSystems(bool force = false)
         {
             if (_Systeme.Count != 0 && !force) return;
+            loaded = false;
             _Systeme = new();
             if (force) Systems.LoadFromDB();
-            _Systeme = ParseSystem(Systems._Systeme);            
+            _Systeme = ParseSystem(Systems._Systeme);
+            loaded = true;
         }
 
         private static List<SystemModel> ParseSystem(List<DB_Systeme> db_Systeme)

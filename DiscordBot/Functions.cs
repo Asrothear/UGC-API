@@ -23,7 +23,7 @@ namespace UGC_API.DiscordBot
             d = Math.Round(d, 2);
             return d;
         }
-        internal static void AnnounceJump(Models.v1_0.CarrierModel carrier, Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest, string OldSys, ulong sysa)
+        internal static async void AnnounceJump(Models.v1_0.CarrierModel carrier, Models.v1_0.Events.CarrierJumpRequest carrierJumpRequest, string OldSys, ulong sysa)
         {
             try
             {
@@ -31,8 +31,21 @@ namespace UGC_API.DiscordBot
                 ITextChannel channel = DiscordBot.Bot.GetChannel(Configs.Values.Bot.CarrierJumpChannel) as ITextChannel;
                 if (channel == null) return;
                 Systems.GetSystemCoords(carrierJumpRequest.SystemAddress);
-                var SystemCoords = JsonSerializer.Deserialize<double[]>(Systems._SystemData.Find(x => x.SystemAddress == carrierJumpRequest.SystemAddress).StarPos);
-                var CarrierCoords = JsonSerializer.Deserialize<double[]>(Systems._SystemData.Find(x => x.SystemAddress == sysa).StarPos);
+                var sys = Systems._SystemData.Find(x => x.SystemAddress == carrierJumpRequest.SystemAddress);
+                double[] SystemCoords = null;
+                if (sys != null) SystemCoords = JsonSerializer.Deserialize<double[]>(sys.StarPos);
+                if(SystemCoords == null)
+                {
+                    SystemCoords = await Systems.GetSystemCoordsByEddbApiAsync(carrierJumpRequest.SystemAddress);
+                }
+
+                var car = Systems._SystemData.Find(x => x.SystemAddress == sysa);
+                double[] CarrierCoords = null;
+                if (car != null) CarrierCoords = JsonSerializer.Deserialize<double[]>(car.StarPos);
+                if (CarrierCoords == null)
+                {
+                    CarrierCoords = await Systems.GetSystemCoordsByEddbApiAsync(sysa);
+                }
                 EmbedBuilder embedb = new EmbedBuilder()
                         .WithColor(DiscordBot.GetColor("gold"))
                         .WithTitle($"Sprung Initiert - {carrier.Name}")
@@ -42,7 +55,7 @@ namespace UGC_API.DiscordBot
                         .AddField("Ziel System", $"{carrierJumpRequest.SystemName}")
                         .AddField("Sprung angefordert", $"<t:{((DateTimeOffset)GetTime.DateNow(carrierJumpRequest.timestamp)).ToUnixTimeSeconds()}:F>")
                         .AddField("Sprung beendet", $"<t:{((DateTimeOffset)GetTime.DateNow(carrierJumpRequest.timestamp.AddMinutes(15))).ToUnixTimeSeconds()}:R>")
-                        .WithFooter(footer => footer.WithText($"© Lord Asrothear\n2020-{GetTime.DateNow().Year}")/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
+                        .WithFooter(footer => footer.WithText(DiscordBot.foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 if (SystemCoords == null || CarrierCoords == null)
                 {
                     LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} NO CORDS");
@@ -56,7 +69,7 @@ namespace UGC_API.DiscordBot
                     //double Fuel = Math.Round((10 + (distance / 4))*(1+((carrier.SpaceUsage.TotalCapacity-carrier.SpaceUsage.FreeSpace+carrier.FuelLevel)/25000)));
                     var f = d * (carrier.SpaceUsage.TotalCapacity - carrier.SpaceUsage.FreeSpace + carrier.FuelLevel + 25000);
                     f = f / 200000;
-                    double Fuel = Math.Round(5 + f);
+                    double? Fuel = Math.Round(5 + f);
                     embedb.AddField("Distanz", $"{d}ly");
                     embedb.AddField("Erwarteter Treibstoff verbrauch", $"{Fuel}t");
                 }
@@ -65,6 +78,20 @@ namespace UGC_API.DiscordBot
             }catch(Exception ex)
             {
                 LoggingService.schreibeLogZeile($"{ex} Models.v1_0.CarrierModel {carrier}, Models.v1_0.Events.CarrierJumpRequest {carrierJumpRequest}, string {OldSys}, ulong {sysa}");
+                ITextChannel channel = DiscordBot.Bot.GetChannel(Configs.Values.Bot.CarrierJumpChannel) as ITextChannel;
+                if (channel == null) return;
+                EmbedBuilder embedb = new EmbedBuilder()
+                       .WithColor(DiscordBot.GetColor("gold"))
+                       .WithTitle($"Sprung Initiert - {carrier.Name}")
+                       .WithDescription(carrier.Callsign)
+                       .AddField("Aktuelles System", $"{OldSys}")
+                       //$"<t:{dd}:F> (<t:{dd}:R>)"); long unixTime = ((DateTimeOffset)foo).ToUnixTimeSeconds();
+                       .AddField("Ziel System", $"{carrierJumpRequest.SystemName}")
+                       .AddField("Sprung angefordert", $"<t:{((DateTimeOffset)GetTime.DateNow(carrierJumpRequest.timestamp)).ToUnixTimeSeconds()}:F>")
+                       .AddField("Sprung beendet", $"<t:{((DateTimeOffset)GetTime.DateNow(carrierJumpRequest.timestamp.AddMinutes(15))).ToUnixTimeSeconds()}:R>")
+                       .WithFooter(footer => footer.WithText(DiscordBot.foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
+                embedb.AddField("\u200b", "System oder Carrier Galaxie-Koordinaten unbekannt. Treibstoff verbauch nicht berechenbar. (0x2F)");
+                channel.SendMessageAsync(embed: embedb.Build());
             }
         }
     }

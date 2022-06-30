@@ -33,7 +33,10 @@ namespace UGC_API.EDDN
                 {
                     case "FSDJump":
                         var JumpData = System.Text.Json.JsonSerializer.Deserialize<EDDN_FSDJumpModel>(InternalData.ToString());
-                        Task.Run(() => {Systems.UpdateSystemData(JumpData); });
+                        Task.Run(() => {
+                            Systems.UpdateSystemData(JumpData);
+                            ShedulerHandler.StateListUpdate();
+                        });
                         bool ugs = false;
                         if (JumpData.Factions != null && Configs.Systems.Contains<string>(JumpData.StarSystem))
                         {
@@ -53,8 +56,11 @@ namespace UGC_API.EDDN
             {
                 // Jobject has possible MarketData, try to Parse Data
                 if (!MarketHandler.loaded) return;
-                var MarketData = System.Text.Json.JsonSerializer.Deserialize<EDDN_MarketModel>(resObjJson["message"].ToString());
-                EDDN_MarketHandler(MarketData);
+                try {
+                    var MarketData = System.Text.Json.JsonSerializer.Deserialize<EDDN_MarketModel>(resObjJson["message"].ToString());
+                    EDDN_MarketHandler(MarketData);
+                }catch(Exception ex) { };
+                
             }
         }
         private void EDDN_MarketHandler(EDDN_MarketModel MarketData)

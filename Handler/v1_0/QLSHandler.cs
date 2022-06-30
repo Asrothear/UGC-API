@@ -43,8 +43,15 @@ namespace UGC_API.Handler.v1_0
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             user.last_data_insert = GetTime.DateNow();
-            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);            
-            Run(s.ToString().Replace("&", "and").Replace("'", ""));
+            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);
+            try
+            {
+                Run(s.ToString().Replace("&", "and").Replace("'", ""));
+            }
+            catch (Exception ex)
+            {
+                LoggingService.schreibeLogZeile(ex.Message);
+            }
         }
         internal bool Filter(string evt)
         {
@@ -56,6 +63,7 @@ namespace UGC_API.Handler.v1_0
             if (Event.Contains("Carrier")) index = "Carrier";
             if (Event.Contains("Mission")) index = "Mission";
             if (Event.Contains("Market")) index = "Market";
+            if (Event.Contains("Sell") && Event.Contains("Data")) index = "ExploData";
             switch (index)
             {
                 case "LoadGame":
@@ -82,6 +90,9 @@ namespace UGC_API.Handler.v1_0
                     break;
                 case "Market":
                     MarketHandler.MarketEvent(v, Event, user);
+                    break;
+                case "ExploData":
+                    ExplorerHandler.SellEvent(v, Event, user);
                     break;
                 default:
                     BGSPointsHandler.Init();

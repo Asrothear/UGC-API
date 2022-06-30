@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using UGC_API.Handler.v1_0;
+using UGC_API.Service;
 
 namespace UGC_API.Controllers.v1_0
 {
@@ -61,6 +62,7 @@ namespace UGC_API.Controllers.v1_0
                 s = JObject.Parse(ss);
             }catch (Exception ex)
             {
+                LoggingService.schreibeLogZeile(ex.Message);
                 return StatusCode(403);
             }
             var qls = new QLSHandler();

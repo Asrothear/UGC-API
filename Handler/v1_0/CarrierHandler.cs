@@ -57,13 +57,15 @@ namespace UGC_API.Handler.v1_0
             if (Carrier == null) Carrier = new();
             var sys = Carrier.System;
             var sysa = Carrier.SystemAdress;
+            
             Carrier.CarrierID = carrierJumpRequest.CarrierID;
             Carrier.prev_System = Carrier.System;
             Carrier.prev_SystemAdress = Carrier.SystemAdress;
             Carrier.System = carrierJumpRequest.SystemName;
             Carrier.SystemAdress = carrierJumpRequest.SystemAddress;
-            UpdateCarrier(Carrier);            
-            DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest, sys, sysa);
+            UpdateCarrier(Carrier);
+            
+            if(SystemHandler.loaded) DiscordBot.Functions.AnnounceJump(Carrier, carrierJumpRequest, sys, sysa);
         }
 
         private static void CarrierJump(Models.v1_0.Events.CarrierJump carrierJump)
@@ -188,11 +190,14 @@ namespace UGC_API.Handler.v1_0
             try
             {
                 var _Obj = JObject.Parse(DB_Carrier.Replace("[", "").Replace("]", "").Replace("\\", ""));
-                OBJ.CarrierBalance = _Obj["CarrierBalance"]?.Value<long?>() != null ? _Obj["CarrierBalance"].Value<long>() : 0;
-                OBJ.ReserveBalance = _Obj["ReserveBalance"]?.Value<long?>() != null ? _Obj["ReserveBalance"].Value<long>() : 0;
-                OBJ.AvailableBalance = _Obj["AvailableBalance"]?.Value<long?>() != null ? _Obj["AvailableBalance"].Value<long>() : 0;
-                OBJ.ReservePercent = _Obj["ReservePercent"]?.Value<long?>() != null ? _Obj["ReservePercent"].Value<long>() : 0;
-                OBJ.TaxRate = _Obj["TaxRate"]?.Value<double?>() != null ? _Obj["TaxRate"].Value<double>() : 0;
+                OBJ.CarrierBalance = _Obj["CarrierBalance"]?.Value<long?>() ?? 0;
+                OBJ.ReserveBalance = _Obj["ReserveBalance"]?.Value<long?>() ?? 0;
+                OBJ.AvailableBalance = _Obj["AvailableBalance"]?.Value<long?>() ?? 0;
+                OBJ.ReservePercent = _Obj["ReservePercent"]?.Value<long?>() ?? 0;
+                OBJ.TaxRate_rearm = _Obj["TaxRate_rearm"]?.Value<double?>() ?? 0;
+                OBJ.TaxRate_refuel = _Obj["TaxRate_refuel"]?.Value<double?>() ?? 0;
+                OBJ.TaxRate_repair = _Obj["TaxRate_repair"]?.Value<double?>() ?? 0;
+                OBJ.TaxRate_shipyard = _Obj["TaxRate_shipyard"]?.Value<double?>() ?? 0;
             }
             catch(Exception e)
             {
