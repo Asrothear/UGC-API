@@ -13,8 +13,22 @@ namespace UGC_API.Service
     {
         private const int NumberOfRetries = 3;
         private const int DelayOnRetry = 1000;
-        private static string logfileDir = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\");
+        private static bool LogReady=false;
+        private static DateTime Current = GetTime.DateNow();
+        private static string logfileDir = "";
 
+        public static void ControllDate()
+        {
+            if(Current.Day != GetTime.DateNow().Day)
+            {
+                if (LogReady)
+                {
+                    schreibeLogZeile($"Erstelle neue Logdatei... {Current.Date} -> {GetTime.DateNow().Date}");
+                }
+                Current = GetTime.DateNow();
+                erstelleLogDatei();
+            }
+        }
         public static void HeartbeatLog(object sender, ElapsedEventArgs e)
         {
             using (FileStream fs = new(logfileDir, FileMode.Append))
@@ -28,6 +42,8 @@ namespace UGC_API.Service
 
         public async static void schreibeLogZeile(string content, string Zusatzinformationen = "")
         {
+            ControllDate();
+            if (!LogReady) return;
             for (int i = 1; i <= NumberOfRetries; ++i)
             {
                 try
@@ -36,7 +52,7 @@ namespace UGC_API.Service
                     {
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] " + content);
+                            sw.WriteLine($"[{Current.ToString("yyyy-MM-dd HH:mm:ss")}] " + content);
 
                             if (String.IsNullOrWhiteSpace(Zusatzinformationen) == false)
                             {
@@ -66,7 +82,7 @@ namespace UGC_API.Service
                     {
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] " + v);
+                            sw.WriteLine($"[{Current.ToString("yyyy-MM-dd HH:mm:ss")}] " + v);
                         }
                     }
                     break;
@@ -81,14 +97,14 @@ namespace UGC_API.Service
 
         public static void erstelleLogDatei()
         {
-            string fileName = DateTime.Now.ToString("yyyy-MM-dd") + ".log";
-
-            Directory.CreateDirectory(logfileDir);
-
-            StreamWriter sw = File.AppendText(logfileDir + fileName);
+            LogReady = false;
+            string fileName = Current.ToString("yyyy-MM-dd") + ".log";
+            string DIR = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @".\Logs\");
+            Directory.CreateDirectory(DIR);
+            logfileDir = DIR + fileName;
+            StreamWriter sw = File.AppendText(logfileDir);
             sw.Close();
-
-            logfileDir += fileName;
+            LogReady = true;
         }
         public static string erstelleEDDNDatei()
         {
