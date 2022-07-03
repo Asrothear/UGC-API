@@ -52,7 +52,7 @@ namespace UGC_API.Service
                     {
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine($"[{Current.ToString("yyyy-MM-dd HH:mm:ss")}] " + content);
+                            sw.WriteLine($"[{GetTime.DateNow().ToString("yyyy-MM-dd HH:mm:ss")}] " + content);
 
                             if (String.IsNullOrWhiteSpace(Zusatzinformationen) == false)
                             {
@@ -82,7 +82,7 @@ namespace UGC_API.Service
                     {
                         using (StreamWriter sw = new StreamWriter(fs))
                         {
-                            sw.WriteLine($"[{Current.ToString("yyyy-MM-dd HH:mm:ss")}] " + v);
+                            sw.WriteLine($"[{GetTime.DateNow().ToString("yyyy-MM-dd HH:mm:ss")}] " + v);
                         }
                     }
                     break;

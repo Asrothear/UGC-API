@@ -43,14 +43,16 @@ namespace UGC_API.Handler.v1_0
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             user.last_data_insert = GetTime.DateNow();
-            Logg.Create(s.ToString().Replace("&", "and").Replace("'", ""), TimeStamp, user, Event);
+            string ss = s.ToString().Replace("&", "and").Replace("'", "");
+            Logg.Create(ss, TimeStamp, user, Event);
             try
             {
-                Run(s.ToString().Replace("&", "and").Replace("'", ""));
+                Run(ss);
             }
             catch (Exception ex)
             {
                 LoggingService.schreibeLogZeile(ex.Message);
+                LogErrorToDB.Add(ss, ex, TimeStamp, user, Event);
             }
         }
         internal bool Filter(string evt)

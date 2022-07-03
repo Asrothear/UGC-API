@@ -27,6 +27,7 @@ namespace UGC_API.Database
         public virtual DbSet<DB_Service> Service { get; set; }
         public virtual DbSet<Models.v1_0.Events.MissionsModel> Missions { get; set; }
         public virtual DbSet<DB_Explorer> DB_Explorer { get; set; }
+        public virtual DbSet<DB_Error> DB_Error { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -202,7 +203,8 @@ namespace UGC_API.Database
                 entity.Property(e => e.Event).HasColumnName("Event");
                 entity.Property(e => e.CMDr).HasColumnName("CMDr");
                 entity.Property(e => e.JSON).HasColumnName("JSON");
-            });MoBuilder.Entity<DB_Explorer>(entity =>
+            });
+            MoBuilder.Entity<DB_Explorer>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.ToTable($"ugc_*explorer", Configs.Values.DB.Database);
@@ -214,6 +216,19 @@ namespace UGC_API.Database
                 entity.Property(e => e.Bonus).HasColumnName("Bonus");
                 entity.Property(e => e.BaseValue).HasColumnName("BaseValue");
                 entity.Property(e => e.DataType).HasColumnName("DataType");
+            });
+            MoBuilder.Entity<DB_Error>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.ToTable($"ugc_*error", Configs.Values.DB.Database);
+                entity.HasIndex(e => e.Id).HasDatabaseName("id");
+                entity.Property(e => e.Id).HasColumnName("id");
+                entity.Property(e => e.Message).HasColumnName("message");
+                entity.Property(e => e.Error).HasColumnName("fullerror");
+                entity.Property(e => e.Json).HasColumnName("json");
+                entity.Property(e => e.Event).HasColumnName("event");
+                entity.Property(e => e.User).HasColumnName("user");
+                entity.Property(e => e.TimeStamp).HasColumnName("timestamp");
             });
         }
     }
