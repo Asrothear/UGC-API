@@ -80,11 +80,11 @@ namespace UGC_API.Handler
         private static bool updating = false;
         internal static void StateListUpdate()
         {
-            LoggingService.schreibeLogZeile($"StateListUpdate - {updating}");
+            //LoggingService.schreibeLogZeile($"StateListUpdate - {updating}");
             if (updating) return;
             updating = true;
-            var watch = new System.Diagnostics.Stopwatch();
-            watch.Start();
+            //var watch = new System.Diagnostics.Stopwatch();
+            //watch.Start();
             SystemHandler.LoadSystems();
             List<string> Systems = new();
             var time = GetTime.DateNow();
@@ -126,8 +126,8 @@ namespace UGC_API.Handler
             }
             StateHandler.Systems_out = Systems;
             updating = false;
-            watch.Stop();
-            LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Execution Time: {watch.ElapsedMilliseconds} ms");
+            //watch.Stop();
+            //LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Execution Time: {watch.ElapsedMilliseconds} ms");
         }
     }
 }
