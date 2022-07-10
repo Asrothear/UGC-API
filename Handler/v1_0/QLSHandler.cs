@@ -18,6 +18,7 @@ namespace UGC_API.Handler.v1_0
         internal DateTime TimeStamp { get; set; }
         internal JObject QLSData { get; set; } = null;
         internal DB_User user { get; set; } = null;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal void Startup(object s)
         {
             if (s == null) { return; }
@@ -43,6 +44,7 @@ namespace UGC_API.Handler.v1_0
             user.version_plugin_minor = QLSData["ugc_p_minor"]?.Value<int?>() ?? 0;
             user.branch = QLSData["ugc_p_branch"]?.Value<string>() ?? "";
             user.last_data_insert = GetTime.DateNow();
+            logger.Info($"QLS {user.id}");
             string ss = s.ToString().Replace("&", "and").Replace("'", "");
             Logg.Create(ss, TimeStamp, user, Event);
             try
@@ -51,8 +53,15 @@ namespace UGC_API.Handler.v1_0
             }
             catch (Exception ex)
             {
-                LoggingService.schreibeLogZeile(ex.Message);
-                LogErrorToDB.Add(ss, ex, TimeStamp, user, Event);
+                logger.Error(ex);
+                try
+                {
+                    LogErrorToDB.Add(ss, ex, TimeStamp, user, Event);
+                }
+                catch (Exception exx)
+                {
+                    logger.Error(exx);
+                }
             }
         }
         internal bool Filter(string evt)

@@ -13,6 +13,7 @@ namespace UGC_API.DiscordBot
 {
     public class Functions
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static double GetDistance (double[] x1, double[] x2)
         {
             if(x1.Length != 3 || x2.Length != 3) { return 0; }
@@ -27,7 +28,7 @@ namespace UGC_API.DiscordBot
         {
             try
             {
-                LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign}");
+                logger.Info($"AnnounceJump {carrier.Callsign}");
                 ITextChannel channel = DiscordBot.Bot.GetChannel(Configs.Values.Bot.CarrierJumpChannel) as ITextChannel;
                 if (channel == null) return;
                 Systems.GetSystemCoords(carrierJumpRequest.SystemAddress);
@@ -58,12 +59,12 @@ namespace UGC_API.DiscordBot
                         .WithFooter(footer => footer.WithText(DiscordBot.foot)/*.WithIconUrl("https://beyondroleplay.de/media/3-logo-st-512x512-png/")*/);
                 if (SystemCoords == null || CarrierCoords == null)
                 {
-                    LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} NO CORDS");
+                    logger.Info($"AnnounceJump {carrier.Callsign} NO CORDS");
                     embedb.AddField("\u200b", "System oder Carrier Galaxie-Koordinaten unbekannt. Treibstoff verbauch nicht berechenbar.");
                 }
                 else
                 {
-                    LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} YES CORDS");                    
+                    logger.Info($"AnnounceJump {carrier.Callsign} YES CORDS");                    
                     double d = GetDistance(CarrierCoords, SystemCoords);
                     //double distance = Math.Round(Math.Sqrt(Math.Pow(c_x - s_x, 2) + Math.Pow(c_y - s_y, 2) + Math.Pow(c_z - s_y, 2)), 2);
                     //double Fuel = Math.Round((10 + (distance / 4))*(1+((carrier.SpaceUsage.TotalCapacity-carrier.SpaceUsage.FreeSpace+carrier.FuelLevel)/25000)));
@@ -73,11 +74,11 @@ namespace UGC_API.DiscordBot
                     embedb.AddField("Distanz", $"{d}ly");
                     embedb.AddField("Erwarteter Treibstoff verbrauch", $"{Fuel}t");
                 }
-                LoggingService.schreibeLogZeile($"AnnounceJump {carrier.Callsign} - {SystemCoords} - {CarrierCoords}");
+                logger.Info($"AnnounceJump {carrier.Callsign} - {SystemCoords} - {CarrierCoords}");
                 channel.SendMessageAsync(embed: embedb.Build());
             }catch(Exception ex)
             {
-                LoggingService.schreibeLogZeile($"{ex} Models.v1_0.CarrierModel {carrier}, Models.v1_0.Events.CarrierJumpRequest {carrierJumpRequest}, string {OldSys}, ulong {sysa}");
+                logger.Error($"{ex}\nModels.v1_0.CarrierModel {carrier}, Models.v1_0.Events.CarrierJumpRequest {carrierJumpRequest}, string {OldSys}, ulong {sysa}");
                 ITextChannel channel = DiscordBot.Bot.GetChannel(Configs.Values.Bot.CarrierJumpChannel) as ITextChannel;
                 if (channel == null) return;
                 EmbedBuilder embedb = new EmbedBuilder()

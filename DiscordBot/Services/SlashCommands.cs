@@ -16,6 +16,7 @@ namespace UGC_API.DiscordBot.Services
     {
         public static List<SlashCommandBuilder> _commands = new List<SlashCommandBuilder>();
         public static List<ApplicationCommandProperties> _appCommand = new();
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static async Task Execute(SocketSlashCommand command)
         {
             switch (command.Data.Name)
@@ -64,6 +65,12 @@ namespace UGC_API.DiscordBot.Services
                     break;
                 case "activity":
                     CommandFunctions.Activity(command);
+                    break;
+                case "updatestate":
+                    CommandFunctions.UpdateState(command);
+                    break;
+                case "overridetick":
+                    CommandFunctions.OverrideTick(command);
                     break;
             }
         }
@@ -175,6 +182,20 @@ namespace UGC_API.DiscordBot.Services
                 .AddOption("system", ApplicationCommandOptionType.String, "Name des System", isRequired: true)
                 .AddOption("stunden", ApplicationCommandOptionType.Number, "Name des System", isRequired: true)
                 );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("updatestate")
+                .WithDescription("Erzwingt das neuladen der Systemliste in der State-API")
+                );
+            _commands.Add(
+                new SlashCommandBuilder()
+                .WithName("overridetick")
+                .WithDescription("Überschreibt den Tick")
+                .AddOption("stunden", ApplicationCommandOptionType.Integer, "fügt x Stunden zum Tick hinzu.")
+                .AddOption("tage", ApplicationCommandOptionType.Integer, "fügt y Tage zum Tick hinzu.")
+                .AddOption("toggle", ApplicationCommandOptionType.Boolean, "True = Override AN | False = Override AUS")
+                );
+
             foreach (var command in _commands)
             {
                 _appCommand.Add(command.Build());
@@ -198,7 +219,7 @@ namespace UGC_API.DiscordBot.Services
             }
             catch (Exception exception)
             {
-                LoggingService.schreibeLogZeile($"Discord_SlashComands.cs: {exception.Message}");
+                logger.Error(exception);
             }
         }
     }

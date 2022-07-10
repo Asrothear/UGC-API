@@ -16,6 +16,7 @@ namespace UGC_API.Controllers.v1_0
     [Route("api/v{version:apiVersion}/[controller]")]
     public class QLS : ControllerBase
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Creates an QLS request.
         /// </summary>
@@ -62,7 +63,7 @@ namespace UGC_API.Controllers.v1_0
                 s = JObject.Parse(ss);
             }catch (Exception ex)
             {
-                LoggingService.schreibeLogZeile(ex.Message);
+                logger.Error(ex);
                 return StatusCode(403);
             }
             var qls = new QLSHandler();

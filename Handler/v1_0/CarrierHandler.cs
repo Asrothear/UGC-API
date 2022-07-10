@@ -18,6 +18,7 @@ namespace UGC_API.Handler.v1_0
         public static List<CarrierModel> _Carriers = new();
         internal static long LastCarrierID = 0;
         private static bool UpdateRuning = false;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void CarrierEvent(string json, string @event)
         {
             switch (@event)
@@ -117,7 +118,7 @@ namespace UGC_API.Handler.v1_0
                 if (force) Carriers.LoadFromDB();
                 _Carriers = ParseCarrier(Carriers._Carriers);
                 UpdateRuning = false;
-                Service.LoggingService.schreibeLogZeile($"{_Carriers.Count} Carrier´s geladen.");
+                logger.Info($"{_Carriers.Count} Carrier´s geladen.");
             }
         }
         internal static CarrierModel GetCarrier(string CS)

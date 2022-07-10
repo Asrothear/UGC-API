@@ -16,6 +16,7 @@ namespace UGC_API.Handler.v1_0
     {
         public static List<MissionsModel> _Missions = new();
         private static bool UpdateRuning;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void LoadMissions(bool force = false)
         {
             if (!UpdateRuning)
@@ -27,7 +28,7 @@ namespace UGC_API.Handler.v1_0
                     _Missions = new();
                     if (force) _Missions = new List<MissionsModel>(db.Missions);
                     UpdateRuning = false;
-                    Service.LoggingService.schreibeLogZeile($"{_Missions.Count} Mission´s geladen.");
+                    logger.Info($"{_Missions.Count} Mission´s geladen.");
                 }
             }
         }
@@ -60,7 +61,7 @@ namespace UGC_API.Handler.v1_0
                 }catch (Exception ex) { }
             });
             watch.Stop();
-            LoggingService.schreibeLogZeile($"MissionHandler Execution Time: {watch.ElapsedMilliseconds} ms");
+            logger.Info($"MissionHandler Execution Time: {watch.ElapsedMilliseconds} ms");
         }
     }
 }

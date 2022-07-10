@@ -10,6 +10,7 @@ namespace UGC_API.Functions
 {
     public class VerifyToken
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static List<DB_Verify_Token> _Verify_Token = new();
         public static void AddToken(string Token, ulong DCid, string DCname)
         {
@@ -35,7 +36,7 @@ namespace UGC_API.Functions
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                LoggingService.schreibeLogZeile(e.ToString());
+                logger.Error(e);
             }
         }
         public static bool ExistToken(string Token)

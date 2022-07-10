@@ -11,6 +11,7 @@ namespace UGC_API.Functions
     public class Markets
     {
         public static List<DB_Market> _Markets = new();
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void LoadFromDB()
         {
             try {
@@ -20,7 +21,7 @@ namespace UGC_API.Functions
             }
             }catch(Exception ex)
             {
-                LoggingService.schreibeLogZeile(ex.Message);
+                logger.Error(ex);
             }
         }
     }

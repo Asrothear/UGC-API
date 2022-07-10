@@ -23,6 +23,7 @@ namespace UGC_API.DiscordBot.Modules
 {
     public class CommandFunctions
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private static double[] SOL = { 0, 0, 0 };
         private static double[] Wapiya = { 54.21875, -154.84375, 30.625 };
         private static bool flushconfirm = false;
@@ -67,9 +68,30 @@ namespace UGC_API.DiscordBot.Modules
             await command.RespondAsync("Das Token wird dir per DM gesendet!");
         }
 
+        internal static void OverrideTick(SocketSlashCommand command)
+        {
+            int hours = Convert.ToInt32(command.Data.Options.FirstOrDefault(x => x.Name == "stunden")?.Value ?? 0);
+            int days = Convert.ToInt32(command.Data.Options.FirstOrDefault(x => x.Name == "tage")?.Value ?? 0);
+            bool toggle = Convert.ToBoolean(command.Data.Options.FirstOrDefault(x => x.Name == "toggle")?.Value ?? true);
+            command.RespondAsync($"OverrideHours:{hours}, OverrideDay:{days}, Override:{toggle}");
+            logger.Info($"OverrideHours:{hours}, OverrideDay:{days}, Override:{toggle}");
+            Tick.OverrideTick(hours, days, toggle);
+            command.ModifyOriginalResponseAsync(x =>
+            {
+                x.Content = $"OverrideHours:`{hours}`, OverrideDay:`{days}`, Override:`{toggle}`\n{GetTime.DateNow(Tick.APITick.ElementAt(0).time)}->{GetTime.DateNow(Tick.APITick.ElementAt(0).time).AddHours(hours).AddDays(days)}";
+            });
+        }
+
+        internal static void UpdateState(SocketSlashCommand command)
+        {
+            command.RespondAsync("State-API Updating");
+            SystemHandler.LoadSystems(true);
+            ShedulerHandler.StateListUpdate();
+        }
+
         internal static void Activity(SocketSlashCommand command)
         {
-            throw new NotImplementedException();
+            command.RespondAsync("throw new NotImplementedException();");            
         }
 
         internal static void Delystem(SocketSlashCommand command)
@@ -108,7 +130,7 @@ namespace UGC_API.DiscordBot.Modules
 
         internal static async void SystemsList(SocketSlashCommand command)
         {
-            command.RespondAsync($"Liste aller {Configs.Systems.Length} Systeme wird ausgegeben.");
+            await command.RespondAsync($"Liste aller {Configs.Systems.Length} Systeme wird ausgegeben.");
             string outs = "";
             foreach (var System in Configs.Systems)
             {
@@ -299,7 +321,7 @@ namespace UGC_API.DiscordBot.Modules
                         }
                     }catch (Exception ex)
                     {
-                        LoggingService.schreibeLogZeile(ex.Message);
+                        logger.Error(ex);
                     }
                 }
                 command.RespondAsync("Fertig", ephemeral: true);

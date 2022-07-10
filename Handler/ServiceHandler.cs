@@ -16,6 +16,7 @@ namespace UGC_API.Handler
     public class ServiceHandler
     {
         static List<DB_Service> _Sevice = new();
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void LoadFromDB()
         {
             _Sevice = new List<DB_Service>(DatabaseHandler.db.Service);
@@ -24,7 +25,7 @@ namespace UGC_API.Handler
         {
             if (_Sevice.Count != 0 && !force) return;
             if (force) LoadFromDB();
-            Service.LoggingService.schreibeLogZeile($"{_Sevice.Count} Sevice´s geladen.");
+            logger.Info($"{_Sevice.Count} Sevice´s geladen.");
         }
         internal static DB_Service AddService(string Name)
         {

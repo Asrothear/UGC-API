@@ -19,6 +19,7 @@ namespace UGC_API.DiscordBot
     #region Main
     public class DiscordBot
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static DiscordSocketClient Bot;
         private InteractionService _commands;
         public static SocketMessage Smessage;
@@ -133,7 +134,7 @@ namespace UGC_API.DiscordBot
         private Task LogAsync(LogMessage msg)
         {
             Debug.WriteLine(msg.ToString());
-            LoggingService.schreibeLogZeile(msg.ToString());
+            logger.Info(msg);
             return Task.CompletedTask;
         }
         #endregion
@@ -158,7 +159,7 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
-                LoggingService.schreibeLogZeile(e.ToString());
+                logger.Error(e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -175,7 +176,7 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
-                LoggingService.schreibeLogZeile(e.ToString());
+                logger.Error(e);
                 Console.WriteLine(e.ToString());
             }
         }
@@ -192,7 +193,7 @@ namespace UGC_API.DiscordBot
             }
             catch (Exception e)
             {
-                LoggingService.schreibeLogZeile(e.ToString());
+                logger.Error(e);
                 Console.WriteLine(e.ToString());
             }
         }

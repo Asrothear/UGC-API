@@ -7,19 +7,25 @@ using UGC_API.Config;
 using UGC_API.Functions;
 using UGC_API.Models.v1_0;
 using UGC_API.Models.v1_0.Events;
+using UGC_API.Service;
 
 namespace UGC_API.Handler.v1_0
 {
     public class JumpHandler
     {
         internal static FSDJump JumpData = null;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static void FSDJump(Models.v1_0.Events.FSDJump fSDJump, JObject qLSData, DateTime timeStamp, Database_Models.DB_User user)
         {
             var ve = JsonSerializer.Serialize(fSDJump.Factions);
             Localisation.Fetch(ve, user);
             JumpData = fSDJump;
             JumpData.Timestamp = timeStamp;
-            string system = qLSData["StarSystem"]?.Value<string>() ?? null;
+            string system = qLSData["StarSystem"]?.Value<string>() ?? "";
+            if(Configs.Systems.Contains<string>(system))
+            {
+                logger.Info($"UGC-Jump {user.id}");
+            }
             LocationHandler.UserSetLocation(user, JumpData.StarPos, JumpData.StarSystem);
             if (!Configs.Systems.Contains<string>(system))
             {

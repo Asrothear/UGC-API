@@ -22,15 +22,23 @@ using UGC_API.Database;
 using System.Threading;
 using UGC_API.Service;
 using UGC_API.Handler;
+using NLog;
 
 namespace UGC_API
 {
     public class Program
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static void Main(string[] args)
         {
-            LoggingService.erstelleLogDatei();
-            LoggingService.schreibeLogZeile($"###########################################################################################");
+            Log.UpdateConfig();
+
+            LogManager.ConfigurationReloaded += (sender, e) =>
+            {
+                //Re apply if config reloaded
+                Log.UpdateConfig();
+            };
+            logger.Info($"###########################################################################################");
             var watch = new System.Diagnostics.Stopwatch();
             var Tick = new Functions.Tick();
             watch.Start();
@@ -45,16 +53,16 @@ namespace UGC_API
             }
             catch (Exception ex)
             {
-                LoggingService.schreibeLogZeile(ex.ToString());
+                logger.Error(ex);
             }
             watch.Stop();
-            LoggingService.schreibeLogZeile($"StartUp Time: {watch.ElapsedMilliseconds} ms");
+            logger.Info($"StartUp Time: {watch.ElapsedMilliseconds} ms");
             try
             {
                 CreateHostBuilder(args).Build().Run();
             }catch(Exception ex)
             {
-                LoggingService.schreibeLogZeile(ex.Message);
+                logger.Fatal(ex);
             }
         }
 

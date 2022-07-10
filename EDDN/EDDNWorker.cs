@@ -21,6 +21,7 @@ namespace UGC_API.EDDN
     internal class EDDNWorker
     {
         ulong lastsystem = 0;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal void WorkerThread(JObject resObjJson)
         {
             var InternalData = resObjJson["message"]?.Value<JObject>() ?? null;
@@ -35,11 +36,13 @@ namespace UGC_API.EDDN
                         var JumpData = System.Text.Json.JsonSerializer.Deserialize<EDDN_FSDJumpModel>(InternalData.ToString());
                         Task.Run(() => {
                             Systems.UpdateSystemData(JumpData);
-                            ShedulerHandler.StateListUpdate();
                         });
                         bool ugs = false;
                         if (JumpData.Factions != null && Configs.Systems.Contains<string>(JumpData.StarSystem))
                         {
+                            Task.Run(() => {
+                                ShedulerHandler.StateListUpdate();
+                            });
                             if (lastsystem != JumpData.SystemAddress)
                             {
                                 ugs = true;
@@ -114,7 +117,7 @@ namespace UGC_API.EDDN
             API_System.System_Name = JumpData.StarSystem;
             API_System.Factions = System.Text.Json.JsonSerializer.Deserialize<List<SystemModel.FactionsL>>(System.Text.Json.JsonSerializer.Serialize(JumpData.Factions));
             watch.Stop();
-            LoggingService.schreibeLogZeile($"EDDNWorker-JumpHandler {JumpData.StarSystem} Execution Time: {watch.ElapsedMilliseconds} ms");
+            logger.Info($"EDDNWorker-JumpHandler {JumpData.StarSystem} Execution Time: {watch.ElapsedMilliseconds} ms");
             UpdateSystem(API_System);
         }
 

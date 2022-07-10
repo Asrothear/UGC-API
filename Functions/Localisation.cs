@@ -11,7 +11,7 @@ namespace UGC_API.Functions
 {
     public class Localisation
     {
-
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static List<DB_Localisation> _Localisations = new();
 
         internal static void LoadFromDB()
@@ -25,7 +25,7 @@ namespace UGC_API.Functions
         {
             if (_Localisations.Count != 0 && !force) return;
             if (force) LoadFromDB();
-            Service.LoggingService.schreibeLogZeile($"{_Localisations.Count} Localisation´s geladen.");
+            logger.Info($"{_Localisations.Count} Localisation´s geladen.");
         }
         internal static void SetUserLang(Models.v1_0.Events.LoadGame loadGame, Database_Models.DB_User user)
         {

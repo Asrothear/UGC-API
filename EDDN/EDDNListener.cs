@@ -16,11 +16,12 @@ namespace UGC_API.EDDN
 {
     public static class EDDNListener
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public async static void listener()
         {
             await Task.Run(new Action(() =>
             {
-                LoggingService.schreibeLogZeile($"EDDNListener gestartet.");
+                logger.Info($"EDDNListener gestartet.");
 
                 var utf8 = new UTF8Encoding();
 

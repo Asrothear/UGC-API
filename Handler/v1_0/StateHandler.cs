@@ -16,7 +16,9 @@ using UGC_API.Service;
 namespace UGC_API.Handler.v1_0
 {
     public class StateHandler
-    {        
+    {
+
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static List<string> Systems_out = new();
         public class SystemDistance
         {
@@ -43,6 +45,7 @@ namespace UGC_API.Handler.v1_0
                 else
                 {
                     user = User.GetUser(stateModel.UUID);
+                    logger.Info($"State-API {user.id}");
                     if (user != null && stateModel.Visible)
                     {
                         advanced = true;

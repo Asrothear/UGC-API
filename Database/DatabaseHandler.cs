@@ -17,6 +17,7 @@ namespace UGC_API.Database
 {
     internal class DatabaseHandler
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static DBContext db = new();
         internal static void LoadData()
         {
@@ -37,7 +38,7 @@ namespace UGC_API.Database
             {
                 Console.WriteLine(e);
                 Debug.WriteLine(e);
-                LoggingService.schreibeLogZeile(e.ToString());
+                logger.Error(e);
             }
         }
         internal static bool CheckUsername(string Username)

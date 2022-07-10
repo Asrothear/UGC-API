@@ -45,6 +45,14 @@
             /// <param name="value"></param>
             <returns>A newly created QLS request.</returns>
         </member>
+        <member name="M:UGC_API.Functions.Tick.OverrideTick(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            Override Tick
+            </summary>
+            <param name="x">OverrideHours Int Hours to Add</param>
+            <param name="y">OverrideDay Int Days to Add</param>
+            <param name="z">Override Bool Toogle Override</param>
+        </member>
         <member name="T:UGC_API.Handler.ServiceHandler">
             <summary>
             Functions to verify Thrid-Party Services such as Anweisungs-Plugin etc

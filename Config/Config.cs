@@ -14,6 +14,7 @@ namespace UGC_API.Config
 {
     internal static class Configs
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public static string[] Systems { get; set; }
         public static string[] Events { get; set; }
         public static int UpdateSystems { get; set; }
@@ -34,7 +35,7 @@ namespace UGC_API.Config
                 File.WriteAllText(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), cfgFile), JsonSerializer.Serialize(new ConfigModel()));
                 path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), cfgFile);
                 Console.WriteLine($"Neue Konfig in {path} erstellt. Bitte diese anpassen!!");
-                LoggingService.schreibeLogZeile($"Neue Konfig in {path} erstellt. Bitte diese anpassen!!");
+                logger.Warn($"Neue Konfig in {path} erstellt. Bitte diese anpassen!!");
                 Thread.Sleep(5000);
                 System.Environment.Exit(0);
             }

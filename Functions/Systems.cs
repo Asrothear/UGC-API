@@ -18,6 +18,7 @@ namespace UGC_API.Functions
     {
         public static List<DB_Systeme> _Systeme = new();
         public static List<DB_SystemData> _SystemData = new();
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void LoadFromDB()
         {
             using (DBContext db = new())
@@ -25,20 +26,20 @@ namespace UGC_API.Functions
                 _Systeme = new(db.DB_Systemes);
                 _SystemData = new(db.DB_SystemData);
             }
-            LoggingService.schreibeLogZeile($"{_Systeme.Count} System´s geladen.");
-            LoggingService.schreibeLogZeile($"{_SystemData.Count} SystemData geladen.");
+            logger.Info($"{_Systeme.Count} System´s geladen.");
+            logger.Info($"{_SystemData.Count} SystemData geladen.");
             TimerHandler.Start();
             EDDNListener.listener();
-            Task.Run(() => { LoggingService.schreibeLogZeile($"ShedulerHandler wird geladen..."); ShedulerHandler.StateListUpdate(); LoggingService.schreibeLogZeile($"StateListUpdate geladen."); });
+            Task.Run(() => { logger.Info($"ShedulerHandler wird geladen..."); ShedulerHandler.StateListUpdate(); logger.Info($"StateListUpdate geladen."); });
             var xx = 0;
             Task.Run(async () => {
-                LoggingService.schreibeLogZeile($"{_SystemData.Count} Coordinaten werden geladen...");
+                logger.Info($"{_SystemData.Count} Coordinaten werden geladen...");
                 foreach (var sysd in _SystemData)
                 {
                     GetSystemCoords(sysd.SystemAddress);
                     xx++;
                 }
-                LoggingService.schreibeLogZeile($"{xx} Coordinaten geladen.");
+                logger.Info($"{xx} Coordinaten geladen.");
             });
         }
         internal static void GetSystemCoords(ulong SystemAddress)

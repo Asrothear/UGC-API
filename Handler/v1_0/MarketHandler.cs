@@ -16,6 +16,7 @@ namespace UGC_API.Handler.v1_0
         public static List<Models.v1_0.Events.Market> _Markets = new();
         internal static ulong LastMarketID = 0;
         internal static bool loaded = false;
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void MarketEvent(string json, string @event, DB_User user)
         {
             LoadMarket();
@@ -137,13 +138,13 @@ namespace UGC_API.Handler.v1_0
                 if (force || _Markets.Count == 0) Markets.LoadFromDB();
                 loaded = false;
                 _Markets = new();
-                LoggingService.schreibeLogZeile($"Pasring {Markets._Markets.Count} Markets");
+                logger.Info($"Pasring {Markets._Markets.Count} Markets");
                 _Markets = ParseMarket(Markets._Markets);
-                Service.LoggingService.schreibeLogZeile($"{_Markets.Count} Market´s geladen.");
+                logger.Info($"{_Markets.Count} Market´s geladen.");
                 loaded = true;
 
             }
-            catch(Exception ex) { Service.LoggingService.schreibeLogZeile(ex.Message); }
+            catch(Exception ex) { logger.Error(ex); }
         }
 
         private static List<Models.v1_0.Events.Market> ParseMarket(List<DB_Market> db_markets)

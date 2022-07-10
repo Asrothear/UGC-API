@@ -16,7 +16,7 @@ namespace UGC_API.DiscordBot.Services
         private readonly DiscordSocketClient _client;
         private readonly InteractionService _commands;
         private readonly IServiceProvider _services;
-
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         public CommandHandler(DiscordSocketClient client, InteractionService commands, IServiceProvider services)
         {
             _client = client;
@@ -136,7 +136,7 @@ namespace UGC_API.DiscordBot.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
-                LoggingService.schreibeLogZeile(ex.ToString());
+                logger.Error(ex);
                 // if a Slash Command execution fails it is most likely that the original interaction acknowledgement will persist. It is a good idea to delete the original
                 // response, or at least let the user know that something went wrong during the command execution.
                 if (arg.Type == InteractionType.ApplicationCommand)

@@ -17,24 +17,26 @@ namespace UGC_API.Handler
 {
     public class TaskHandler
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private static int xx = 0;
         internal static void Start()
         {
-            LoggingService.schreibeLogZeile($"TaskHandler.Start Execution: {xx++}");
-            Task.Run(() => { LoggingService.schreibeLogZeile($"Localisations werden geladen..."); Localisation.LoadLocalisation(true); });
-            Task.Run(() => { LoggingService.schreibeLogZeile($"SystemHandler wird geladen..."); SystemHandler.LoadSystems(true); });
-            Task.Run(() => { LoggingService.schreibeLogZeile($"CarrierHandler wird geladen..."); CarrierHandler.LoadCarrier(true); });
-            Task.Run(() => { LoggingService.schreibeLogZeile($"MarketHandler wird geladen..."); MarketHandler.LoadMarket(true); });
-            Task.Run(() => { LoggingService.schreibeLogZeile($"ServiceHandler wird geladen..."); ServiceHandler.LoadService(true); });
-            Task.Run(() => { LoggingService.schreibeLogZeile($"MissionHandler wird geladen..."); MissionHandler.LoadMissions(true); });
+            logger.Info($"TaskHandler.Start Execution: {xx++}");
+            Task.Run(() => { logger.Info($"Localisations werden geladen..."); Localisation.LoadLocalisation(true); });
+            Task.Run(() => { logger.Info($"SystemHandler wird geladen..."); SystemHandler.LoadSystems(true); });
+            Task.Run(() => { logger.Info($"CarrierHandler wird geladen..."); CarrierHandler.LoadCarrier(true); });
+            Task.Run(() => { logger.Info($"MarketHandler wird geladen..."); MarketHandler.LoadMarket(true); });
+            Task.Run(() => { logger.Info($"ServiceHandler wird geladen..."); ServiceHandler.LoadService(true); });
+            Task.Run(() => { logger.Info($"MissionHandler wird geladen..."); MissionHandler.LoadMissions(true); });
             BGSOrderAPI.GetCurrentList();
         }
     }
     public class TimerHandler
     {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         internal static void Start()
         {
-            LoggingService.schreibeLogZeile($"TimerHandler geladen.");
+            logger.Info($"TimerHandler geladen.");
             Timer UpdateDataCacheTimer = new();
             Timer UpdateTickTimer = new();
             Timer UpdateStateListTimer = new();
@@ -77,14 +79,16 @@ namespace UGC_API.Handler
     public class ShedulerHandler
     {
 
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
         private static bool updating = false;
         internal static void StateListUpdate()
         {
             //LoggingService.schreibeLogZeile($"StateListUpdate - {updating}");
             if (updating) return;
+            logger.Info($"StateListUpdate");
             updating = true;
-            //var watch = new System.Diagnostics.Stopwatch();
-            //watch.Start();
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
             SystemHandler.LoadSystems();
             List<string> Systems = new();
             var time = GetTime.DateNow();
@@ -126,8 +130,8 @@ namespace UGC_API.Handler
             }
             StateHandler.Systems_out = Systems;
             updating = false;
-            //watch.Stop();
-            //LoggingService.schreibeLogZeile($"StateListUpdate ({StateHandler.Systems_out.Count}) Execution Time: {watch.ElapsedMilliseconds} ms");
+            watch.Stop();
+            logger.Info($"StateListUpdate ({StateHandler.Systems_out.Count}) Execution Time: {watch.ElapsedMilliseconds} ms");
         }
     }
 }
